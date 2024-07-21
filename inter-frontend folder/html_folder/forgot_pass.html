@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="/css_folder/forgot_pass.css">
+<body>
+    <header class="header">
+    </header>
+
+    <main class="center">
+        <div class="image">
+            <div class="content">
+                <div class="div1">
+                    <img src="/image/loginbanner(7).png" style="width: 39.2vw;">
+                </div> <!--end of div1-->
+                <div class="div2">
+                    <span class="styling">Password Assitant</span>
+
+                    <form class="form" autocomplete="off">
+    
+                        <div class="width">
+                            <span class="star"> *</span>
+                            <input name="Mobile_no" class="pariksha" type="text" placeholder="Enter your mobile no" minlength="5", maxlength="15" required>
+                        </div>
+                        
+                        <a href="/html_folder/log_in.html" class="back">Go back</a>
+                        <div class="buttons">
+                            <button class="submit" name="button">Continue</button>
+                            <button class="existing" onclick="window.open('/html_folder/index.html','_parent')">New to Bookswagon? Sign up</button>
+                        <p style="font-size: 2.1vh; color:white;">
+                            By continuing,I agree to the term <a href="#" class="target">Terms of Use</a> & <a href="#" class="target">Privacy Policy</a>
+                        </p>
+                        </div>
+                    </form>    
+                </div><!--end of div2-->
+            </div> <!--end of content-->
+        </div> <!--end of image-->
+    </main>
+    <script src="/javascript_folder/forgot_pass.js"></script>
+    <script type="module" src="/javascript_folder/index.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</body>
+</html>

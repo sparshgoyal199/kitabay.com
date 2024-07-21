@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css_folder/verifyotp.css">
+</head>
+<body>
+    <header class="header">
+
+    </header>
+
+    <main class="center">
+        <div class="image">
+            <div class="content">
+                <div class="div1">
+                    <img src="/image/loginbanner(7).png" style="width: 39.2vw;">
+                </div> <!--end of div1-->
+                <div class="div2">
+                    <div class="common styles">OTP Verification</div>
+                    <span class="common"><span class='specific'>Enter</span> the 6 <span class="specific">digit</span> code</span>
+                    <div class="data">
+                        <input type="text" maxlength="1" class="otpNumber common" id="one" onkeyup="restricting(event)" autocomplete="off">
+                        <input type="text" maxlength="1" class="otpNumber common" id="one" onkeyup="restricting(event)" autocomplete="off">
+                        <input type="text" maxlength="1" class="otpNumber common" id="one" onkeyup="restricting(event)" autocomplete="off">
+                        <input type="text" maxlength="1" class="otpNumber common" id="one" onkeyup="restricting(event)" autocomplete="off">
+                        <input type="text" maxlength="1" class="otpNumber common" id="one" onkeyup="restricting(event)" autocomplete="off">
+                        <input type="text" maxlength="1" class="otpNumber common" id="one" onkeyup="restricting(event)" autocomplete="off">
+                    </div>
+                    <span class="common number">
+                        Not your number? / Didn't receive the code?
+                    </span>
+                    <div>
+                        <a href="/html_folder/forgot_pass.html" class='links'>Try again</a>
+                        <span class='links'>/</span>
+                        <button class='links' id="resend">Resend code</button>
+                    </div>
+                    <button id='submit' class="common verify">Verify</button>
+                </div><!--end of div2-->
+            </div> <!--end of content-->
+        </div> <!--end of image-->
+    </main>
+    <script type="module" src="/javascript_folder/verifyotp.js"></script>
+    <script type="module" src="/javascript_folder/index.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script>
+        function restricting(event){
+            if(event.key == 'ArrowLeft'){
+                if(event.target.previousElementSibling){
+                    event.target.previousElementSibling.focus();
+                    return;
+                }
+                else{
+                    event.target.focus();
+                    return;
+                }
+            }
+            if (/[0-9]/.test(event.target.value)) {
+                if(event.target.nextElementSibling){
+                    event.target.nextElementSibling.focus();
+                }
+                else{
+                    document.querySelector('#submit').focus()
+                }
+            }
+            else{
+                event.target.value = '';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css_folder/log_in.css">
+</head>
+<body>
+    <header class="header">
+    </header>
+    <main class="center">
+        <div class="image">
+            <div class="content">
+                <div class="div1">
+                    <img src="/image/loginbanner(7).png" style="width: 39.2vw;">
+                </div> <!--end of div1-->
+                <div class="div2">
+                    <form class="form" autocomplete="off">
+                        <div class="width" style="margin-top: 2vh;">
+                            <span class="star"> *</span>
+                            <input name="Mobile_no" class="pariksha" type="text" placeholder="Enter your mobile no" minlength="5", maxlength="15" required>
+                        </div>
+                        <div class="width">
+                            <span class="star">*</span>
+                            <input name="Password" class="pariksha" type="password"  placeholder="Enter your password" minlength="8" maxlength="15" required>
+                            <button onclick="togging(event)"><span class="material-symbols-outlined eye">
+                                visibility
+                            </span></button>
+                        </div>
+                        <a href="/html_folder/forgot_pass.html" class="forgot">Forgot your password?</a>
+                        <div class="buttons">
+                            <button class="submit" name="button">Login</button>
+                            <button class="existing" name="button" hr onclick="window.open('sign.html','_parent')" >New to Bookswagon? Sign up</button>
+                        <p style="font-size: 2.4vh; color:white;">
+                            By continuing,I agree to the term <a href="#" class="target">Terms of Use</a> & <a href="#" class="target">Privacy Policy</a>
+                        </p>
+                        </div>
+                    </form>    
+                </div><!--end of div2-->
+            </div> <!--end of content-->
+        </div> <!--end of image-->
+    </main>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script type='module' src='/javascript_folder/index.js'></script>
+    <script src="/javascript_folder/log_in.js"></script>
+</body>
+</html>

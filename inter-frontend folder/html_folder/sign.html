@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+    <title>Bokk-store</title>
+</head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<link rel="stylesheet" href="/css_folder/sign.css">
+<body style="height: 100%; margin-top: 1px">
+    <header class="header">
+        
+    </header>
+
+    <main class="center">
+        <div class="image">
+            <div class="content">
+                <div class="div1">
+                    <img src="/image/loginbanner(7).png" style="width: 39.2vw;">
+                </div> <!--end of div1-->
+                <div class="div2">
+                    <form class="form" autocomplete="off" action="/html_folder/log_in.html">
+                        <div class="width"> 
+                            <span class="star"> * </span>
+                            <input name="Username" class="pariksha" type="text" placeholder="Username" minlength="5" maxlength="20" required>
+                        </div>
+                        <div class="width">
+                            <span class="star"> *</span>
+                            <input name="Email_Address" class="pariksha" type="email" placeholder="Email-Address" required>
+                        </div>
+                        <div class="width">
+                            <span class="star">*</span>
+                            <input name="Password" class="pariksha" type="password"  placeholder="Password (e.g., P@ssw0rd)" minlength="8" maxlength="15" required>
+                            <button onclick="togging(event)"><span class="material-symbols-outlined eye">
+                                visibility
+                            </span></button>
+                        </div>
+                        <div class="width">
+                            <span class="star">*</span>
+                            <input name="Confirm_password" class="pariksha" type="password" minlength="5" maxlength="15" placeholder="Confirm-Password" required>
+                        </div>
+                        <div class="phone">
+                            <img class="flags" src="https://flagcdn.com/w320/in.png">
+                            <input name="Code" list="brow" value="+91" class="selected">
+                            <datalist id="brow" class="selection">              
+                            </datalist>
+                            <div id="grow">
+                                <span class="star" style="margin-left: 4px;">*</span>
+                                <input name="Mobile_no" type="text" class="p-input" placeholder="Enter Mobile Number" ,minlength="5", maxlength="15" required>
+                            </div>
+                        </div>
+                        <button class="submit" name="button">Sign-in</button>
+                        <button class="existing" name="button"><a href="/html_folder/log_in.html" style="color: white; text-decoration: none;">Existing User? Log in</a></button>
+                        <p style="font-size: 2.3vh; color:white;">
+                            By continuing,I agree to the term <a href="#" class="target">Terms of Use</a> & <a href="#" class="target">Privacy Policy</a>
+                        </p>
+                    </form>    
+                </div><!--end of div2-->
+            </div> <!--end of content-->
+        </div> <!--end of image-->
+    </main>
+
+<script src="/javascript_folder/sign.js"></script>
+<script type='module' src='/javascript_folder/index.js'></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
