@@ -16,6 +16,8 @@ phonenumbers = "^8.13.40"
 psycopg2 = "^2.9.9"
 passlib = "^1.7.4"
 bcrypt = "4.0.1"
+mysqlclient = "^2.2.4"
+pymysql = "^1.1.1"
 
 [tool.poetry.scripts]
 dev="mains.main:start"

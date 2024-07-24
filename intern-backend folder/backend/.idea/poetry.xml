@@ -4,6 +4,7 @@
     <option name="poetryVirtualenvPaths">
       <set>
         <option value="$USER_HOME$/AppData/Local/pypoetry/Cache/virtualenvs/mains-q3dNnvlM-py3.12/Scripts/python.exe" />
+        <option value="$PROJECT_DIR$/.venv/Scripts/python.exe" />
       </set>
     </option>
   </component>

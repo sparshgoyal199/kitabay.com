@@ -1,4 +1,5 @@
 let header = document.querySelector('.header')
+let image;
 
 fetch('/html_folder/index.html')
 .then(res => {
@@ -7,10 +8,13 @@ fetch('/html_folder/index.html')
     }
     return res.text()
 })
-.then(data => 
-    {header.innerHTML = data}
+.then((data) => 
+    {
+    header.innerHTML = data;  
+    }
 )
 .catch(error => {
     console.log('some error occured');
     header.innerHTML = 'Some error occured'
 })
+

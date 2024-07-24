@@ -52,7 +52,9 @@ class Signs(SQLModel):
         if len(all_codes) == 0:
             resp = requests.get("https://restcountries.com/v3.1/independent?status=true")
             for i in resp.json():
-                all_codes.append(f"{i["idd"]["root"][:]}{i["idd"]["suffixes"][0]}")
+                a = i["idd"]["root"][:]
+                b = i["idd"]["suffixes"][0]
+                all_codes.append(f"{a}{b}")
 
         if self.Code not in all_codes:
             raise HTTPException(status_code=422, detail="Please enter the valid phone code")
