@@ -11,22 +11,74 @@
     width: 100%;
 }
 
-.sub-header{
-    width: 94vw;
-    height: 20vh;
-    background-color:white ;
-    margin: 4vh auto;
+.rectangle{
     display: flex;
     justify-content: space-evenly;
+    width: 94vw;
+    height: 16vh;
     align-items: center;
+    margin: 2vh auto;
+    background-color: white;
 }
 
-.rectangle-box{
+.books{
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .special{
+    display: flex;
     flex-direction: row;
     align-items: center;
+    font-size: 2.9vh;
+    color: black;
+}
+
+.books > span{
+    font-size: 2.1vh;
+    margin-top: 0.5vh;
+    font-weight: 600;
+}
+
+a > img{
+    height: 11vh;
+}
+
+.carousel-item > img{
+    height: 38vh;
+}
+
+.slide{
+    margin-left: 3vw;
+    margin-right: 3vw;
+}
+.arrow{
+    color: #000;
+    font-size: 5.1vh;
+    font-weight: 500;
+}
+
+
+.sidebar :hover{
+    transform: scale(1.05);
+    transition: transfrom ease-in-out 0.2s;
+}
+
+.menu-and-all{
+    display: flex;
+    align-items: center;
+}
+
+.books:hover{
+    transform: scale(1.1);
+    transition: transform ease-in-out 0.2s;
+}
+
+a:hover{
+    cursor: pointer;
+}
+
+.books span:hover{
+    cursor: pointer;
 }

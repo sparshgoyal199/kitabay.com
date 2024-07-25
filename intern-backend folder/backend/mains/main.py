@@ -1,5 +1,6 @@
 from .model.sign import Signs, Sign, Login, Forgot, Passwords
 from .config.db import create_table, engine
+from sqlalchemy import text
 from typing_extensions import Annotated
 import requests
 from fastapi import FastAPI,HTTPException,Request,status,Path
@@ -106,7 +107,6 @@ def C_password(passwords: Passwords):
             session.refresh(data)
 
             return 'password has been change'
-
 
 def start():
     create_table()

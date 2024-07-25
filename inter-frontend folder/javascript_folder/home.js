@@ -18,3 +18,9 @@ fetch('/html_folder/index.html')
     header.innerHTML = 'Some error occured'
 })
 
+let change_target = document.querySelectorAll('.books')
+for (const i of change_target) {
+    i.childNodes[3].onclick = (event) => {
+        i.childNodes[1].click();
+}
+}
