@@ -22,15 +22,31 @@
                ALL</span>
              </button>
 
-         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
-           <div class="offcanvas-header">
-             <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Backdrop with scrolling</h5>
-             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-           </div>
-           <div class="offcanvas-body">
-             <p>Try scrolling the rest of the page to see this option in action.</p>
-           </div>
-         </div>
+            <div class="offcanvas offcanvas-start width" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel" style="width: 29vw;" >
+              <div class="offcanvas-header background ">
+                <div class="offcanvas-title flex" id="offcanvasWithBothOptionsLabel">
+                  <label for="user_photo"><img class="image" src="/image/user_photo.jpg"></label>
+                  <input id="user_photo" type="file" style="display: none;">
+                  <span class="user_name">Hello, Sparsh</span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" style="margin-top: -2vh; font-size:2.5vh; margin-right: 0.2vw; " ></button>
+              </div>
+              <div class="offcanvas-body gap">
+                <div class="trending">
+                  <span class="trend" >Trending</span>
+                  <a>Best Sellers</a>
+                  <a>New Releases</a>
+                  <a>Popular Ones</a>
+                </div>
+                <hr>
+                <div class="help">
+                  <span class="trend" >Help & Settings</span>
+                  <a>Your Account</a>
+                  <a>Customer Service</a>
+                  <a>Sign Out</a>
+                </div>
+              </div>
+            </div>
          <div class="books">
             <a><img src="/image/8.png"></a>
             <span>biography</span>
@@ -101,6 +117,24 @@
            <span class="visually-hidden">Next</span>
          </button>
        </div>
+       <button class="add_product">merchand</button>
+       <div class="info_extract">
+         <div>
+            <span class="info" >Enter the product information</span>
+         </div>
+         <form class="product_info">
+           <input name="name" class="product_name adjust" type="text" placeholder="Enter the product_name" required>
+           <input name="volume" type="text" class="product_volume adjust" placeholder="Enter the product_volume">
+           <input name="author" type="text" class="author_name adjust" placeholder="Enter the author name" required>
+           <input name="star" type="text" class="star adjust" placeholder="Enter its ratings">
+           <input name="price" type="text" class="product_price adjust" placeholder="Enter the product_price" required>
+           <input name="s_price" type="text" class="slated_price adjust" placeholder="Enter the slated_price" required>
+           <input name="quantity" type="text" class="product_quantity adjust" placeholder="Enter the product quantity" required>
+           <input name="discount" type="text" class="product_discount adjust" placeholder="Enter the discount figure" required>
+           <input name="image" class="product_image" type="file" placeholder="Enter the product_image" required>
+           <button class="submit" >Submit</button>
+         </form>
+      </div>
     </main>
     
     <script src="/javascript_folder/home.js"></script>

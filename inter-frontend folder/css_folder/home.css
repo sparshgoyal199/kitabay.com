@@ -68,6 +68,7 @@ a > img{
 .menu-and-all{
     display: flex;
     align-items: center;
+    font-size: 2.2vh;
 }
 
 .books:hover{
@@ -82,3 +83,127 @@ a:hover{
 .books span:hover{
     cursor: pointer;
 }
+
+.image{
+    border-radius: 50%;
+    width: 7vw;
+    height: 21vh;
+}
+
+.flex{
+    display: flex;
+    align-items: center;
+}
+
+.user_name{
+    margin-left: 1vw;
+    font-size: 4vh;
+}
+.background{
+    background-color: #d98c63;
+
+}
+
+.trending{
+    height: 35vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.trending > a{
+    color: #000;
+    text-decoration: none;
+    font-size: 2.8vh;
+}
+
+.trend{
+    color: #000;
+    font-size: 3.7vh;
+    font-weight: 600;
+}
+
+.help{
+    height: 35vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.help > a{
+    color: #000;
+    text-decoration: none;
+    font-size: 2.8vh;
+}
+
+.gap{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin-left: 2vw;
+}
+
+.help > a:hover{
+    transform: scale(1.03);
+    transition: transform ease-in-out 0.2s;
+}
+
+.trending > a:hover{
+    transform: scale(1.03);
+    transition: transform ease-in-out 0.2s;
+}
+
+@keyframes smooth-appear {
+    to{
+      margin-top: -59vh;
+    }
+}
+
+.info_extract{
+    display: none;
+    margin: 0px auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    width: 30vw;
+    height: 82vh;
+    background-color: white;
+    position: relative;
+    z-index: 9999;
+    margin-top: -100vh;
+    animation: smooth-appear 1s ease forwards;
+}
+
+.product_info{
+    gap: 3vh;
+    margin: 0px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info{
+    font-size: 2.8vh;
+}
+
+.adjust{
+    width: 25vw;
+    height: 4vh;
+    font-size: 2.1vh;
+    padding: 2px 4px;
+}
+
+.product_image{
+    font-size: 2.1vh;
+    width: 24vw;
+}
+
+.submit{
+    font-size: 2.1vh;
+    height: 5vh;
+    border: 1px solid black;
+    border-radius: 13px;
+    width: 5vw;
+    background-color: #e4e4e4;
+}
+
