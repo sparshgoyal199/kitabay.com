@@ -19,6 +19,8 @@ bcrypt = "4.0.1"
 mysqlclient = "^2.2.4"
 pymysql = "^1.1.1"
 sqlalchemy = "^2.0.31"
+cryptography = "^43.0.0"
+python-multipart = "^0.0.9"
 
 [tool.poetry.scripts]
 dev="mains.main:start"

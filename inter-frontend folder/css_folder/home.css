@@ -171,7 +171,7 @@ a:hover{
     position: relative;
     z-index: 9999;
     margin-top: -100vh;
-    animation: smooth-appear 1s ease forwards;
+    animation: smooth-appear 0.8s ease forwards;
 }
 
 .product_info{
@@ -206,4 +206,28 @@ a:hover{
     width: 5vw;
     background-color: #e4e4e4;
 }
+.now{
+    font-size: 4.3vh;
+    font-family:'Conv_Cambria Italic' !important;
+    font-weight: 500;
+}
 
+.trending{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.caraousel{
+    display: flex;
+}
+
+.MultiCarousel { float: left; overflow: hidden; padding: 15px; width: 100%; position:relative; }
+    .MultiCarousel .MultiCarousel-inner { transition: 1s ease all; float: left; }
+        .MultiCarousel .MultiCarousel-inner .item { float: left;}
+        .MultiCarousel .MultiCarousel-inner .item > div { text-align: center; padding:10px; margin:10px; background:#f1f1f1; color:#666;}
+    .MultiCarousel .leftLst, .MultiCarousel .rightLst { position:absolute; border-radius:50%;top:calc(50% - 20px); }
+    .MultiCarousel .leftLst { left:0; }
+    .MultiCarousel .rightLst { right:0; }
+    
+        .MultiCarousel .leftLst.over, .MultiCarousel .rightLst.over { pointer-events: none; background:#ccc; }

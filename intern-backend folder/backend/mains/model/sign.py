@@ -4,7 +4,7 @@ from pydantic import StringConstraints, EmailStr, model_validator
 from sqlmodel import Field
 from typing_extensions import Annotated
 import requests
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile, File
 import phonenumbers
 all_codes = []
 
@@ -122,3 +122,16 @@ class Passwords(SQLModel):
             raise HTTPException(status_code=422, detail="Please enter same password in both the field")
 
         return self
+
+
+class ProductInfo(SQLModel, table=True):
+    product_id: int | None = Field(default=None, primary_key=True)
+    name: str
+    volume: str
+    author: str
+    star: str
+    price: str
+    s_price: str
+    quantity: str
+    discount: str
+    image: bytes
