@@ -110,9 +110,9 @@ def C_password(passwords: Passwords):
 
 
 @app.post('/uploading')
-async def uploading(name: str = Form(...), volume: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...)):
+async def uploading(name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...)):
     image = await image.read()
-    products = ProductInfo(name=name, volume=volume, author=author, star= star, price=price, s_price=s_price, quantity=quantity, discount=discount, image=image)
+    products = ProductInfo(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, image=image)
     with Session(engine) as session:
         session.add(products)
         session.commit()

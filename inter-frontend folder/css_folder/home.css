@@ -231,3 +231,76 @@ a:hover{
     .MultiCarousel .rightLst { right:0; }
     
         .MultiCarousel .leftLst.over, .MultiCarousel .rightLst.over { pointer-events: none; background:#ccc; }
+
+.photos{
+    width: 6.5vw;
+}
+.discount{
+    display: flex;
+    justify-content: end;
+    margin-top: 0vh;
+    margin-right: -0.3vh;
+    margin-bottom: 2vh;
+}
+
+.styling{
+    width: 2.1vw;
+    height: 4.8vh;
+    background-color: red;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.styling > span{
+    font-size: 1.9vh;
+    color: white;
+    font-weight: 600;
+}
+
+.things{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 40vh;
+}
+
+.updates{
+    color: #e42b26;
+    border: 1px solid #e42b26;
+    padding: 1px 1.3vw;
+    visibility: hidden;
+}   
+
+.org{
+    color: #d51912;
+    font-weight: 600;
+    font-size: 2.1vh;
+}
+
+.book_name{
+    color: #676767;
+    font-weight: 600;
+}
+
+.itemss{
+    border-radius: 11px;
+    padding: 0px 7px;
+}
+
+.pad15{
+    box-shadow: inset gray 0px 0px 20px -12px !important;
+    border: 1px solid #ccc;
+    border-radius: 11px;
+}
+
+.plus{
+    width: 8vw;
+}
+.pad16{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

@@ -5,6 +5,7 @@ from sqlmodel import Field
 from typing_extensions import Annotated
 import requests
 from fastapi import HTTPException, UploadFile, File
+from sqlalchemy import LargeBinary,Column
 import phonenumbers
 all_codes = []
 
@@ -124,14 +125,15 @@ class Passwords(SQLModel):
         return self
 
 
+
 class ProductInfo(SQLModel, table=True):
     product_id: int | None = Field(default=None, primary_key=True)
     name: str
-    volume: str
     author: str
     star: str
     price: str
     s_price: str
     quantity: str
     discount: str
-    image: bytes
+    image: bytes = Field(sa_column=Column(LargeBinary(length=(2**32)-1)))
+

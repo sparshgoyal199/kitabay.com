@@ -2,8 +2,9 @@ let header = document.querySelector('.header')
 let image;
 let photo = document.querySelector('#user_photo')
 let image_tag = document.querySelector('.image')
-let add = document.querySelector('.add_product')
 let product_submit = document.querySelector('.submit')
+let width_changes = document.querySelectorAll('.itemss')
+let targets;
 
 fetch('/html_folder/index.html')
 .then(res => {
@@ -150,7 +151,7 @@ window.onload = () => {
     image_tag.src = `${localStorage.getItem('user_pic')}`
 }
 
-add.onclick = () => {
+function adding(event){
     document.querySelector('.info_extract').style.display = 'flex'
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
     
@@ -168,7 +169,45 @@ add.onclick = () => {
     })
     
     document.querySelector('.inp').disabled = true
+    targets = event.target 
+    
 }
+
+function removing(){
+    document.querySelector('.info_extract').style.display = 'none'
+    let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
+    
+    buttons.forEach(e => {
+        if (e.className != 'submit') {
+            e.style.pointerEvents = 'auto'
+        }
+    });
+
+    let magic = document.querySelectorAll('main > *,header');
+    magic.forEach(e => {
+        if (e.className != 'info_extract') {
+            e.style.opacity = '1'
+        }
+    })
+    
+    document.querySelector('.inp').disabled = false
+}
+
+function adds(event){
+    let t = document.createElement('div')
+    t.className = 'item'
+    t.innerHTML = `<div class="pad16" style="width:15vw;" >
+                        <button onclick="adding(event)" ><img src="/image/plus.png" class="plus" ></button>
+                        <button onclick="adding(event)">ADD PRODUCT</button>
+                    </div>`
+    document.querySelector('.MultiCarousel-inner').appendChild(t)
+}
+
+width_changes.forEach((ele) => {
+    ele.style.width = `${11}vw`
+});
+
+
 
 function storing(e){
     let imageStore;
@@ -206,11 +245,44 @@ function storing(e){
         return res.json()
     })
     .then(data =>{
-        swal({
-            icon:"success",
-            text: "Log in successfully",
-            className: "sweetBox"
-          })
+        let remove_tag
+        if (targets.nodeName == 'BUTTON') {
+            remove_tag = targets.parentNode.parentNode
+        }
+        else{
+            remove_tag = targets.parentNode.parentNode.parentNode
+        }
+
+        let image_raw = form_data['image'].files[0];      
+        let filereader = new FileReader()
+        filereader.readAsDataURL(image_raw)
+        let image_page;
+        filereader.onload = ((event) => {
+            image_page = event.target.result
+            remove_tag.innerHTML = `<div class="itemss" style="background-color: #fbf9f9; padding: 0px 7px;" >
+    <div class="pad15">
+        <div class="discount">
+            <div class="styling">
+                <span>${form_data['discount'].value}</span>
+            </div>
+        </div>
+        <div class="things">
+           <img class="photos" src=${image_page} >
+           <button class="updates">Update</button>
+           <span class="book_name" >
+               ${form_data['name'].value}</span>
+           <span class="author_name" >${form_data['author'].value}</span>
+           <div class="prices">
+               <span class="org">₹${form_data['price'].value}</span>
+               <del class="slated">₹${form_data['s_price'].value}</del>
+           </div>
+        </div>
+    </div>
+ </div>`
+        })
+
+        removing();
+        remove_tag.children[0].remove();
     })
     .catch(e => {
         swal({
