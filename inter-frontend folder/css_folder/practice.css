@@ -1,0 +1,49 @@
+.plus{
+  width: 8vw;
+  background-color: white;
+}
+.pad16{
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  align-items: center;
+}
+.center{
+  width: 70vw;
+  margin: 10vh auto;
+}
+.slick-next:before, .slick-prev:before{
+  color: black;
+  font-size: 5vh;
+}
+.slick-next{
+  right: -5%;
+}
+.slick-prev{
+  left: -5%;
+}
+.slick-next, .slick-prev {
+  font-size: 0;
+  line-height: 0;
+  position: absolute;
+  top: 50%;
+  display: block;
+  width: 3vw;
+  height: 4vh;
+  padding: 0;
+  -webkit-transform: translate(0, -50%);
+  -ms-transform: translate(0, -50%);
+  transform: translate(0, -50%);
+  cursor: pointer;
+  color: transparent;
+  border: none;
+  outline: 0;
+  background: 0 0;
+}
+.slick-slide{
+  width: 9vw;
+}
+
+.buts{
+  font-size: 2.3vh;
+}
