@@ -1,4 +1,4 @@
-$(document).ready(function(){
+/*$(document).ready(function(){
   $('.center').slick({
     centerMode: true,
     centerPadding: '60px',
@@ -24,4 +24,14 @@ $(document).ready(function(){
       }
     ]
   });
-});
+});*/
+
+let a = [];
+let d = document.querySelector('.div')
+let e = document.querySelector('.div2')
+d.innerHTML = `<h3>my name is sparsh</h3>`
+e.innerHTML = '<h3>my name is rahil</h3>'
+a.push(d.innerHTML);
+a.push(e.innerHTML)
+console.log(a.length);
+

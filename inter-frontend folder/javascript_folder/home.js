@@ -6,6 +6,7 @@ let product_submit = document.querySelector('.submit')
 let width_changes = document.querySelectorAll('.itemss')
 let right = document.querySelector('.rightLst')
 let targets;
+let storage_blocks = []
 
 fetch('/html_folder/index.html')
 .then(res => {
@@ -71,6 +72,18 @@ function changing(event){
 
 window.onload = () => {
     image_tag.src = `${localStorage.getItem('user_pic')}`
+    let count = 6
+    let attack = document.querySelector('.slick-track')
+    if (JSON.parse(localStorage.getItem('storage')).length > 0) {
+        console.log(JSON.parse(localStorage.getItem('storage')).length);
+        for (let e of JSON.parse(localStorage.getItem('storage'))) {
+            /*attack.children[count].children[0].children[0].children[0].remove();*/
+           /*console.log(attack.children[count]);*/
+            attack.children[count].children[0].children[0].innerHTML = e;
+            attack.children[count].children[0].children[0].style.width = `${85}%`
+            count += 1;
+        }
+    }
 }
 
 function adding(event){
@@ -198,6 +211,13 @@ function storing(e){
         </div>
     </div>
  </div>`
+            console.log(remove_tag);
+            
+            if (JSON.parse(localStorage.getItem('storage')).length > 0) {
+                storage_blocks = JSON.parse(localStorage.getItem('storage'))
+            }
+            storage_blocks.push(`${remove_tag.innerHTML}`)
+            localStorage.setItem('storage',JSON.stringify(storage_blocks))
         })
         width_changes.forEach((ele) => {
             ele.style.width = `${11}vw`
@@ -205,6 +225,7 @@ function storing(e){
         
         removing();
         remove_tag.children[0].remove();
+        remove_tag.style.width = `${85}%`
     })
     .catch(e => {
         swal({
