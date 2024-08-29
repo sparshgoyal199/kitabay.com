@@ -74,16 +74,73 @@ window.onload = () => {
     image_tag.src = `${localStorage.getItem('user_pic')}`
     let count = 6
     let attack = document.querySelector('.slick-track')
-    if (JSON.parse(localStorage.getItem('storage')).length > 0) {
-        console.log(JSON.parse(localStorage.getItem('storage')).length);
+    /*if (JSON.parse(localStorage.getItem('storage'))) {
         for (let e of JSON.parse(localStorage.getItem('storage'))) {
-            /*attack.children[count].children[0].children[0].children[0].remove();*/
-           /*console.log(attack.children[count]);*/
-            attack.children[count].children[0].children[0].innerHTML = e;
-            attack.children[count].children[0].children[0].style.width = `${85}%`
-            count += 1;
         }
-    }
+    }*/
+    fetch('http://127.0.0.1:8011/card_details')
+    .then(res => {
+        if (!res.ok) {
+            if (res.status == 422){
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else{
+                throw new Error(res)
+            }
+        }
+        return res.json()
+    })
+    .then(data =>{  
+        for (let i in data) { 
+            let g = document.createElement('div')
+            g.innerHTML = localStorage.getItem('structure') 
+            g.children[0].children[0].children[0].children[0].children[0].innerHTML = data[i][7]
+            let inners = g.children[0].children[0].children[1]
+            console.log(data[i][1]);
+            
+            inners.children[2].innerHTML = data[i][1]
+            inners.children[3].innerHTML = data[i][2]
+            inners.children[4].children[0].innerHTML = data[i][4]
+            inners.children[4].children[1].innerHTML = data[i][5]
+            fetch(`http://127.0.0.1:8011/get_image/${data[i][0]}`)
+            .then(ress => {
+                if (!ress.ok) {
+                    if (ress.status == 422){
+                        return ress.text().then(response => {
+                            throw new Error(response.substring(11,response.length-2))
+                        })    
+                    }
+                    else{
+                        throw new Error(ress)
+                    }
+                }
+                return ress.blob()
+            })
+            .then(image =>{
+                let ready = URL.createObjectURL(image)
+                inners.children[0].src = ready
+                attack.children[count].children[0].children[0].innerHTML = g.innerHTML;
+                attack.children[count].children[0].children[0].style.width = `${85}%`
+                count += 1;
+                })
+            .catch(e => {
+                swal({
+                    icon:"error",
+                    text: `${e}`,
+                    className: "sweetBox"
+                  })
+            })
+        }
+})
+    .catch(e => {
+        swal({
+            icon:"error",
+            text: `${e}`,
+            className: "sweetBox"
+          })
+    })
 }
 
 function adding(event){
@@ -130,13 +187,12 @@ function removing(){
 
 function adds(event){
     let t = document.createElement('div')
-    t.className = 'item'
+    t.className = "slick-slide slick-cloned slick-active"
     t.innerHTML = `<div class="pad16" style="width:15vw;" >
                         <button onclick="adding(event)" ><img src="/image/plus.png" class="plus" ></button>
                         <button onclick="adding(event)">ADD PRODUCT</button>
                     </div>`
-    document.querySelector('.MultiCarousel-inner').appendChild(t)
-    document.querySelector('.MultiCarousel-inner').style.transform = 'translateX(-2500px)'
+    document.querySelector('.slick-track').appendChild(t)
 }
 
 
@@ -211,13 +267,33 @@ function storing(e){
         </div>
     </div>
  </div>`
-            console.log(remove_tag);
             
-            if (JSON.parse(localStorage.getItem('storage')).length > 0) {
+        localStorage.setItem("structure",`<div class="itemss" style="background-color: #fbf9f9; padding: 0px 7px;" >
+                <div class="pad15">
+                    <div class="discount">
+                        <div class="styling">
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="things">
+                       <img class="photos">
+                       <button class="updates">Update</button>
+                       <span class="book_name" >
+                           </span>
+                       <span class="author_name" ></span>
+                       <div class="prices">
+                           <span class="org">₹</span>
+                           <del class="slated">₹</del>
+                       </div>
+                    </div>
+                </div>
+             </div>`)
+            
+            /*if (JSON.parse(localStorage.getItem('storage'))) {
                 storage_blocks = JSON.parse(localStorage.getItem('storage'))
             }
             storage_blocks.push(`${remove_tag.innerHTML}`)
-            localStorage.setItem('storage',JSON.stringify(storage_blocks))
+            localStorage.setItem('storage',JSON.stringify(storage_blocks))*/
         })
         width_changes.forEach((ele) => {
             ele.style.width = `${11}vw`

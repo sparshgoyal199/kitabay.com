@@ -7,6 +7,8 @@ from fastapi import FastAPI, HTTPException, Request, status, Path, Form, UploadF
 from sqlalchemy.exc import IntegrityError
 import uvicorn
 import random
+from io import BytesIO
+from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from collections import defaultdict
@@ -18,7 +20,7 @@ from dotenv import load_dotenv
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from passlib.context import CryptContext
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse,Response
 load_dotenv()
 
 
@@ -118,6 +120,37 @@ async def uploading(name: str = Form(...), author: str = Form(...), star: str = 
         session.commit()
         session.refresh(products)
         return 'data added successfully'
+
+
+@app.get('/card_details')
+def card_details():
+    c = 1
+    details = {}
+    with Session(engine) as session:
+        a = session.exec(select(ProductInfo))
+        if a:
+            for i in a:
+                details[c] = []
+                details[c].append(i.product_id)
+                details[c].append(i.name)
+                details[c].append(i.author)
+                details[c].append(i.star)
+                details[c].append(i.price)
+                details[c].append(i.s_price)
+                details[c].append(i.quantity)
+                details[c].append(i.discount)
+                c += 1
+            return details
+
+
+@app.get('/get_image/{image_id}')
+def get_image(image_id: int):
+    with Session(engine) as session:
+        w = session.exec(select(ProductInfo).where(ProductInfo.product_id == image_id)).first()
+        '''image_stream = BytesIO(w.image)
+        pic = StreamingResponse(image_stream, media_type="image/png")'''
+        pic = Response(content=w.image, media_type="image/png")
+        return pic
 
 
 def start():

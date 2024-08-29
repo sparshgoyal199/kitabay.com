@@ -16,3 +16,64 @@
 </body>
 <script src="/javascript_folder/practice.js" ></script>
 </html>
+
+document.querySelector('.d-block').src = 
+        let g = document.createElement('div')
+        g.innerHTML = localStorage.getItem('structure')
+        /*for (let i in data) {
+            let a = data[i][7];
+            console.log(a);
+            
+            const init = { status: 200, statusText: "OK" };
+            let b = new Response(a,init)
+            let c = b.blob()
+            let d = URL.createObjectURL(c)
+            g.children[0].children[0].children[0].children[0].children[0].value = i[6]
+            g.children[0].children[0].children[1].children[0].src = 
+        }*/
+
+  /*for (let i in data) {
+    let a = data[i][7];
+    console.log(a);
+    const init = { status: 200, statusText: "OK" };
+    let b = new Response(a,init)
+    let c = b.blob()
+    let d = URL.createObjectURL(c)
+    g.children[0].children[0].children[0].children[0].children[0].value = i[6]
+    g.children[0].children[0].children[1].children[0].src = 
+}*/
+
+fetch(`http://127.0.0.1:8011/get_image/${data[5][0]}`)
+        .then(ress => {
+            if (!ress.ok) {
+                if (ress.status == 422){
+                    return ress.text().then(response => {
+                        throw new Error(response.substring(11,response.length-2))
+                    })    
+                }
+                else{
+                    throw new Error(ress)
+                }
+            }
+            return ress.blob()
+        })
+        .then(image =>{
+            let i = URL.createObjectURL(image)
+            let g = document.createElement('div')
+            g.innerHTML = localStorage.getItem('structure')
+            document.querySelector('.d-block').src = i
+            
+            })
+        .catch(e => {
+            swal({
+                icon:"error",
+                text: `${e}`,
+                className: "sweetBox"
+              })
+        })
+
+        let g = document.createElement('div')
+        g.innerHTML = localStorage.getItem('structure')
+        console.log(g.children[0].children[0].children[0].children[0].children[0]);
+        
+        g.children[0].children[0].children[1].children[0].src =
