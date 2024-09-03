@@ -153,6 +153,25 @@ def get_image(image_id: int):
         return pic
 
 
+@app.put('/updating')
+async def updating(name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...)):
+    image = await image.read()
+    with Session(engine) as session:
+        peices = session.exec(select(Form).where(ProductInfo.name == name)).first()
+        if not star:
+            star = peices.star
+        if not quantity:
+            quantity = peices.quantity
+        products = ProductInfo(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity,
+                               discount=discount, image=image)
+        form_data = products.model_dump(exclude_unset=True)
+        peices.sqlmodel_update(form_data)
+        session.commit()
+        session.refresh(peices)
+        print("unsure")
+        return 'data added successfully'
+
+
 def start():
     create_table()
     uvicorn.run('mains.main:app', host='127.0.0.1', port=8011, reload=True)

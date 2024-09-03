@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="switching()" ></button>
+    <script>
+        function switching(){
+            let script = document.createElement("script")
+            script.src = "/javascript_folder/home.js"
+            document.querySelector("body").appendChild("script")
+        }
+        setTimeout(()=>{
+            window.open("/html_folder/home.html","_parent")
+        },100)
+        document.querySelector("button").click()
+    </script>
+</body>
+</html>
