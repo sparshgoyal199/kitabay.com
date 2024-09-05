@@ -1,79 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  
-  <link href="/css_folder/practice.css" rel="stylesheet">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+<style>
+    .stars-outer{
+        position: relative;
+    }
+    .stars-inner{
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .stars-outer::before{
+        content: "\f005 \f005 \f005 \f005 \f005";
+        font-weight: 900;
+        font-family: "Font Awesome 5 FREE";
+        color: #ccc;
+    }
+    .stars-inner::before{
+        content: "\f005 \f005 \f005 \f005 \f005";
+        font-weight: 900;
+        font-family: "Font Awesome 5 FREE";
+        color: yellow
+    }
+</style>
 <body>
-  
-  <h1>hello</h1>
-  <div class="div" ></div>
-  <div class="div2"></div>
+    
+    <script>
+        let ratings = 2.3;
+        function filling(){
+            document.querySelector('.stars-inner').style.width = `${Math.round((ratings/5)*100)}%`
+        }
+        filling();
+    </script>
 </body>
-<script src="/javascript_folder/practice.js" ></script>
 </html>
-
-document.querySelector('.d-block').src = 
-        let g = document.createElement('div')
-        g.innerHTML = localStorage.getItem('structure')
-        /*for (let i in data) {
-            let a = data[i][7];
-            console.log(a);
-            
-            const init = { status: 200, statusText: "OK" };
-            let b = new Response(a,init)
-            let c = b.blob()
-            let d = URL.createObjectURL(c)
-            g.children[0].children[0].children[0].children[0].children[0].value = i[6]
-            g.children[0].children[0].children[1].children[0].src = 
-        }*/
-
-  /*for (let i in data) {
-    let a = data[i][7];
-    console.log(a);
-    const init = { status: 200, statusText: "OK" };
-    let b = new Response(a,init)
-    let c = b.blob()
-    let d = URL.createObjectURL(c)
-    g.children[0].children[0].children[0].children[0].children[0].value = i[6]
-    g.children[0].children[0].children[1].children[0].src = 
-}*/
-
-fetch(`http://127.0.0.1:8011/get_image/${data[5][0]}`)
-        .then(ress => {
-            if (!ress.ok) {
-                if (ress.status == 422){
-                    return ress.text().then(response => {
-                        throw new Error(response.substring(11,response.length-2))
-                    })    
-                }
-                else{
-                    throw new Error(ress)
-                }
-            }
-            return ress.blob()
-        })
-        .then(image =>{
-            let i = URL.createObjectURL(image)
-            let g = document.createElement('div')
-            g.innerHTML = localStorage.getItem('structure')
-            document.querySelector('.d-block').src = i
-            
-            })
-        .catch(e => {
-            swal({
-                icon:"error",
-                text: `${e}`,
-                className: "sweetBox"
-              })
-        })
-
-        let g = document.createElement('div')
-        g.innerHTML = localStorage.getItem('structure')
-        console.log(g.children[0].children[0].children[0].children[0].children[0]);
-        
-        g.children[0].children[0].children[1].children[0].src =

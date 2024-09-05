@@ -12,6 +12,7 @@ let data = {}
 let fileData
 let e
 
+localStorage.removeItem("structure")
 if (!localStorage.getItem("structure")) {
     localStorage.setItem("structure",`<div class="itemss group" style="background-color: #fbf9f9; padding: 0px 7px;" >
         <div class="pad15">
@@ -26,6 +27,10 @@ if (!localStorage.getItem("structure")) {
                <span class="book_name" >
                    </span>
                <span class="author_name" ></span>
+               <div class="stars-outer">
+                <div class="stars-inner"></div>
+                </div>
+               <div class="colorings"><span style="margin-top: 1.35px;" ></span><span>⭐</span></div> 
                <div class="prices">
                    <span class="org">₹</span>
                    <del class="slated">₹</del>
@@ -201,8 +206,12 @@ setTimeout(function onloading(){
                 let inners = g.children[0].children[0].children[1]
                 inners.children[2].innerHTML = data[i][1]
                 inners.children[3].innerHTML = data[i][2]
-                inners.children[4].children[0].innerHTML = `₹${data[i][4]}`
-                inners.children[4].children[1].innerHTML = `₹${data[i][5]}`
+                inners.children[5].children[0].innerHTML = `${parseFloat(data[i][3]).toFixed(1)}`
+                inners.children[6].children[0].innerHTML = `₹${data[i][4]}`
+                inners.children[6].children[1].innerHTML = `₹${data[i][5]}`
+                //console.log(inners.children[4].children[0]);
+                
+
                 fetch(`http://127.0.0.1:8011/get_image/${data[i][0]}`)
                 .then(ress => {
                     if (!ress.ok) {
@@ -218,6 +227,9 @@ setTimeout(function onloading(){
                     return ress.blob()
                 })
                 .then(image =>{
+                    (function filling(){
+                        inners.children[4].children[0].style.width = `${Math.round((parseFloat(data[i][3])/5)*100)}%`
+                    })();
                     let ready = URL.createObjectURL(image)
                     inners.children[0].src = ready
                     attacks.children[count].innerHTML = g.innerHTML
@@ -329,6 +341,7 @@ function storing(e){
         let image_page;
         filereader.onload = ((event) => {
             image_page = event.target.result
+            remove_tag.className = 'removes'
             remove_tag.innerHTML = `<div class="itemss group" style="background-color: #fbf9f9; padding: 0px 7px;" >
     <div class="pad15">
         <div class="discount">
@@ -342,16 +355,22 @@ function storing(e){
            <span class="book_name" >
                ${form_data['name'].value}</span>
            <span class="author_name" >${form_data['author'].value}</span>
+           <div class="stars-outer">
+                <div class="stars-inner"></div>
+            </div>
+            <div class="colorings"><span style="margin-top: 1.35px;" >${parseFloat(form_data['star'].value).toFixed(1)}</span><span>⭐</span></div> 
            <div class="prices">
                <span class="org">₹${form_data['price'].value}</span>
                <del class="slated">₹${form_data['s_price'].value}</del>
            </div>
         </div>
     </div>
- </div>`
-            
+ </div>`    
+            console.log(form_data['star']);
+            (function filling(){
+                document.querySelector('.removes  .stars-inner').style.width = `${Math.round((parseFloat(form_data['star'].value)/5)*100)}%`
+            })();
         
-            
             /*if (JSON.parse(localStorage.getItem('storage'))) {
                 storage_blocks = JSON.parse(localStorage.getItem('storage'))
             }
