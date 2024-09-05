@@ -154,10 +154,10 @@ def get_image(image_id: int):
 
 
 @app.put('/updating')
-async def updating(name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...)):
+async def updating(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...)):
     image = await image.read()
     with Session(engine) as session:
-        peices = session.exec(select(Form).where(ProductInfo.name == name)).first()
+        peices = session.exec(select(ProductInfo).where(ProductInfo.author == old)).first()
         if not star:
             star = peices.star
         if not quantity:

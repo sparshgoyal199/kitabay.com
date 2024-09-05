@@ -12,7 +12,6 @@ let data = {}
 let fileData
 let e
 
-localStorage.removeItem("structure")
 if (!localStorage.getItem("structure")) {
     localStorage.setItem("structure",`<div class="itemss group" style="background-color: #fbf9f9; padding: 0px 7px;" >
         <div class="pad15">
@@ -53,33 +52,6 @@ fetch('/html_folder/index.html')
     header.innerHTML = 'Some error occured'
 })
 
-$(document).ready(function(){
-    $('.centers').slick({
-      centerMode: true,
-      centerPadding: '60px',
-      slidesToShow: 5,
-      responsive: [
-        {
-          breakpoint: 768,
-          settings: {
-            arrows: false,
-            centerMode: true,
-            centerPadding: '40px',
-            slidesToShow: 4
-          }
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            arrows: false,
-            centerMode: true,
-            centerPadding: '40px',
-            slidesToShow: 1
-          }
-        }
-      ]
-    });
-});
 
 let change_target = document.querySelectorAll('.books')
 for (const i of change_target) {
@@ -164,6 +136,7 @@ function adding(event){
             document.querySelector('.submit').className = "posting"
         }
         posting = document.querySelector('.posting')
+        posting.addEventListener('click',updatings)
         formObject();
     }
     else{
@@ -171,11 +144,10 @@ function adding(event){
             document.querySelector('.posting').className = "submit"
         }
         product_submit = document.querySelector(".submit")
+        product_submit.addEventListener('click',storing)
         targets = event.target 
     }
 }
-
-
 
 
 function removing(){
@@ -198,33 +170,13 @@ function removing(){
     document.querySelector('.inp').disabled = false
 }
 
-/*function adds(event){
-    let t = document.createElement('div')
-    t.dataSlickIndex = '18'
-    t.style.width = '110px'
-    t.tabIndex = -1;
-    t.ariaHidden = true
-    t.className = "slick-slide slick-cloned slick-active"
-    t.innerHTML = `<div><div style="width:100%; display:inline-block;"><div class="pad16" style="width:15vw;" >
-                        <button onclick="adding(event)" ><img src="/image/plus.png" class="plus" ></button>
-                        <button onclick="adding(event)">ADD PRODUCT</button>
-                    </div></div></div>`
-    document.querySelector('.slick-track').appendChild(t)
-}*/
 
 setTimeout(function onloading(){
-    let childs = Array.from(document.querySelector('.slick-track').children)
-    childs.forEach((c) => {
-        c.ariaHidden = false
-        c.classList.add("slick-active")
-        c.className += " slick-active"
-    })
+    
     image_tag.src = `${localStorage.getItem('user_pic')}`
-    let attack = document.querySelector('.slick-track')
-    /*if (JSON.parse(localStorage.getItem('storage'))) {
-        for (let e of JSON.parse(localStorage.getItem('storage'))) {
-        }
-    }*/
+    //let attack = document.querySelector('.slick-track')
+    let attacks = document.querySelector('.centers')
+    
     fetch('http://127.0.0.1:8011/card_details')
     .then(res => {
         if (!res.ok) {
@@ -240,46 +192,48 @@ setTimeout(function onloading(){
         return res.json()
     })
     .then(data =>{  
-        let count = 3
-        for (let i in data) { 
-            let g = document.createElement('div')
-            g.innerHTML = localStorage.getItem('structure') 
-            g.children[0].children[0].children[0].children[0].children[0].innerHTML = data[i][7]
-            let inners = g.children[0].children[0].children[1]
-
-            inners.children[2].innerHTML = data[i][1]
-            inners.children[3].innerHTML = data[i][2]
-            inners.children[4].children[0].innerHTML = data[i][4]
-            inners.children[4].children[1].innerHTML = data[i][5]
-            fetch(`http://127.0.0.1:8011/get_image/${data[i][0]}`)
-            .then(ress => {
-                if (!ress.ok) {
-                    if (ress.status == 422){
-                        return ress.text().then(response => {
-                            throw new Error(response.substring(11,response.length-2))
-                        })    
+        let count = 0
+        if (data) {
+            for (let i in data) { 
+                let g = document.createElement('div')
+                g.innerHTML = localStorage.getItem('structure') 
+                g.children[0].children[0].children[0].children[0].children[0].innerHTML = `${data[i][7]}%`
+                let inners = g.children[0].children[0].children[1]
+                inners.children[2].innerHTML = data[i][1]
+                inners.children[3].innerHTML = data[i][2]
+                inners.children[4].children[0].innerHTML = `₹${data[i][4]}`
+                inners.children[4].children[1].innerHTML = `₹${data[i][5]}`
+                fetch(`http://127.0.0.1:8011/get_image/${data[i][0]}`)
+                .then(ress => {
+                    if (!ress.ok) {
+                        if (ress.status == 422){
+                            return ress.text().then(response => {
+                                throw new Error(response.substring(11,response.length-2))
+                            })    
+                        }
+                        else{
+                            throw new Error(ress)
+                        }
                     }
-                    else{
-                        throw new Error(ress)
-                    }
-                }
-                return ress.blob()
-            })
-            .then(image =>{
-                let ready = URL.createObjectURL(image)
-                inners.children[0].src = ready
-                attack.children[count].children[0].children[0].children[0].remove();
-                attack.children[count].children[0].children[0].innerHTML = g.innerHTML;
-                attack.children[count].children[0].children[0].style.width = `${85}%`
-                count += 1;
+                    return ress.blob()
                 })
-            .catch(e => {
-                swal({
-                    icon:"error",
-                    text: `${e}`,
-                    className: "sweetBox"
-                  })
-            })
+                .then(image =>{
+                    let ready = URL.createObjectURL(image)
+                    inners.children[0].src = ready
+                    attacks.children[count].innerHTML = g.innerHTML
+                    /*attack.children[count].children[0].children[0].children[0].remove();
+                    attack.children[count].children[0].children[0].innerHTML = g.innerHTML;*/
+                    //attack.children[count].children[0].children[0].style.width = `${85}%`
+                    count += 1;
+                    })
+                .catch(e => {
+                    swal({
+                        icon:"error",
+                        text: `${e}`,
+                        className: "sweetBox"
+                      })
+                })
+            }
         }
 })
     .catch(e => {
@@ -289,8 +243,40 @@ setTimeout(function onloading(){
             className: "sweetBox"
           })
     })
-},50)
+},100)
 
+
+$(document).ready(setTimeout(function(){
+    $('.centers').slick({
+        centerMode: true,
+        centerPadding: '60px',
+        slidesToShow: 5,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings: {
+              arrows: false,
+              centerMode: true,
+              centerPadding: '40px',
+              slidesToShow: 4
+            }
+          },
+          {
+            breakpoint: 480,
+            settings: {
+              arrows: false,
+              centerMode: true,
+              centerPadding: '40px',
+              slidesToShow: 1
+            }
+          }
+        ]
+      })
+      let r = document.querySelectorAll('.slick-slide')
+        r.forEach(e=>{
+          e.children[0].children[0].style.width = '85%'
+        })
+},500));
 
 
 function storing(e){
@@ -347,7 +333,7 @@ function storing(e){
     <div class="pad15">
         <div class="discount">
             <div class="styling">
-                <span>${form_data['discount'].value}</span>
+                <span>${form_data['discount'].value}%</span>
             </div>
         </div>
         <div class="things">
@@ -389,44 +375,45 @@ function storing(e){
     })
 }
 
-function updatings(){
-    let imageStore;
+function updatings(e){
     e.preventDefault();
+    let imageStore;
     let form_data = document.querySelector('.product_info').children
-    let forms = new FormData()
-    for (const i of form_data) {
+    let formss = new FormData()
+    for (let i of form_data) {
         if (i.name) {
             i.removeAttribute("required")
             if (i.name == 'image' && i.files[0]) {
-                forms.append(`${i.name}`,i.files[0])
+                formss.append(`${i.name}`,i.files[0])
                 }
         
             else{
                 if (i.name == "quantity" || i.name == "star") {
                     if (!i.value) {
-                    forms.append(`${i.name}`,0)
+                    formss.append(`${i.name}`,0)
                     }
                 }
                 if (i.value) {
-                forms.append(`${i.name}`,i.value)
+                formss.append(`${i.name}`,i.value)
                 }        
             }
         }
     }
-
-    for (let r in data) {
-        if (!forms[r]) {
-            forms.append(`${r}`,data[r])
+    formss.append('old',data['author'])
+    
+    /*for (let r in data) {
+        if (!formss[r]) {
+            console.log(formss[r]);
+            formss.append(`${r}`,data[r])
         }
-       /* if (!forms[r] && r == "image") {
+       if (!forms[r] && r == "image") {
             forms.append(`${r}`,data[r].files[0])
-        }*/
-    }
-        
+        }
+    }   */
     
     fetch('http://127.0.0.1:8011/updating',{
         method:'PUT',
-        body:forms
+        body:formss
     })
     .then(res => {
         if (!res.ok) {
@@ -442,49 +429,8 @@ function updatings(){
         return res.json()
     })
     .then(data =>{
-        /*let remove_tag
-        if (targets.nodeName == 'BUTTON') {
-            remove_tag = targets.parentNode.parentNode
-        }
-        else{
-            remove_tag = targets.parentNode.parentNode.parentNode
-        }
-
-        let image_raw = form_data['image'].files[0];      
-        let filereader = new FileReader()
-        filereader.readAsDataURL(image_raw)
-        let image_page;
-        filereader.onload = ((event) => {
-            image_page = event.target.result
-            remove_tag.innerHTML = `<div class="itemss group" style="background-color: #fbf9f9; padding: 0px 7px;" >
-    <div class="pad15">
-        <div class="discount">
-            <div class="styling">
-                <span>${form_data['discount'].value}</span>
-            </div>
-        </div>
-        <div class="things">
-           <img class="photos" src=${image_page} >
-           <button onclick=adding(event) class="updates group-hover:visible">Update</button>
-           <span class="book_name" >
-               ${form_data['name'].value}</span>
-           <span class="author_name" >${form_data['author'].value}</span>
-           <div class="prices">
-               <span class="org">₹${form_data['price'].value}</span>
-               <del class="slated">₹${form_data['s_price'].value}</del>
-           </div>
-        </div>
-    </div>
- </div>`
-        })
-        width_changes.forEach((ele) => {
-            ele.style.width = `${11}vw`
-        });
-        
         removing();
-        remove_tag.children[0].remove();
-        remove_tag.style.width = `${85}%`*/
-        alert("major tension released")
+        location.reload();
     })
     .catch(e => {
         swal({
@@ -496,10 +442,5 @@ function updatings(){
 }
 
 photo.addEventListener('change',changing)
-if (product_submit != undefined) {
-    product_submit.addEventListener('click',storing)
-}
-if (posting != undefined) {
-    posting.addEventListener('click',updatings)
-}
+
 
