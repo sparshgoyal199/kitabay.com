@@ -2,11 +2,12 @@
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: auto Arial, Helvetica, sans-serif;
+    /*font-family: Arial, Helvetica, sans-serif;*/
 }
 
 .body{
-    background-color: #e6e3e0;
+    background-color:#f1f1f1;
     height: 100%;
     width: 100%;
 }
@@ -18,7 +19,8 @@
     height: 16vh;
     align-items: center;
     margin: 2vh auto;
-    background-color: white;
+    background-color: #ffffff;
+    border-radius: 1vh;
 }
 
 .books{
@@ -50,8 +52,9 @@ a > img{
 }
 
 .slide{
-    margin-left: 3vw;
-    margin-right: 3vw;
+    /*margin-left: 3vw;
+    margin-right: 3vw;*/
+    margin-right: -0.2px;
 }
 .arrow{
     color: #000;
@@ -164,10 +167,11 @@ a:hover{
     margin: 0px auto;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-evenly;
     width: 30vw;
     height: 82vh;
     background-color: white;
+    border-radius: 2vh;
     position: relative;
     z-index: 9999;
     margin-top: -100vh;
@@ -189,8 +193,10 @@ a:hover{
 .adjust{
     width: 25vw;
     height: 4vh;
+    border: 1px solid black;
+    border-radius: 1vh;
     font-size: 2.1vh;
-    padding: 2px 4px;
+    padding: 2px 6px;
 }
 
 .product_image{
@@ -206,9 +212,21 @@ a:hover{
     width: 5vw;
     background-color: #e4e4e4;
 }
+
+.posting{
+    font-size: 2.1vh;
+    height: 5vh;
+    border: 1px solid black;
+    border-radius: 13px;
+    width: 5vw;
+    background-color: #e4e4e4;
+}
 .now{
-    font-size: 4.3vh;
-    font-family:'Conv_Cambria Italic' !important;
+    font-size: 4.5vh;
+    margin-top: 5vh;
+    font-style: italic;
+    font-family: 'ITALIC';
+    margin-bottom: -2vh;
     font-weight: 500;
 }
 
@@ -225,7 +243,7 @@ a:hover{
 }
 
 .photos{
-    width: 8.5vw;
+    width: 7vw;
 }
 .discount{
     display: flex;
@@ -251,7 +269,12 @@ a:hover{
     font-weight: 600;
 }
 .author_name{
-    font-size: 2.7vh;
+    font-size: 2.3vh;
+    width: 8vw;
+    height: 4vh;
+    text-align: center;
+    word-wrap: break-word;
+    margin-top: 2vh;
 }
 
 .things{
@@ -265,8 +288,11 @@ a:hover{
 .updates{
     color: #e42b26;
     border: 1px solid #e42b26;
-    padding: 1px 1.3vw;
+    padding: 0px 2px;
     visibility: hidden;
+    height: 4vh;
+    width: 5vw;
+    font-size: 2.3vh;
 }   
 
 .org{
@@ -281,7 +307,11 @@ a:hover{
 .book_name{
     color: #676767;
     font-weight: 600;
-    font-size: 2.5vh;
+    font-size: 2.2vh;
+    width: 8vw;
+    word-wrap: break-word;
+    height: 4vh;
+    text-align: center;
 }
 
 .itemss{
@@ -308,7 +338,7 @@ a:hover{
 }
 
 .centers{
-    width: 70vw;
+    width: 76vw;
     margin: 5vh auto;
 }
 .add_product{
@@ -351,6 +381,7 @@ a:hover{
 }
 .stars-outer{
     position: relative;
+    font-size: 2.3vh;
 }
 .stars-inner{
     position: absolute;
@@ -358,6 +389,7 @@ a:hover{
     left: 0;
     white-space: nowrap;
     overflow: hidden;
+    font-size: 2.3vh;
 }
 
 .stars-outer::before{
@@ -386,4 +418,34 @@ a:hover{
 .colorings > span{
     font-size: 2vh;
     color: #ffffff;
+}
+
+.logo{
+    margin-top: 4.3vh;
+}
+
+input::placeholder {
+    color: rgba(0, 0, 0, 0.709);
+}
+
+.sames{
+    display: flex;
+    flex-direction:column;
+    height: 5vh;
+}
+.fonts{
+    font-size: 2.2vh;
+    color: #ff6464;
+    margin-left: 1vw;
+}
+
+.redss{
+    color: #fb3d3d;
+}
+
+/* Hide the spin buttons */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

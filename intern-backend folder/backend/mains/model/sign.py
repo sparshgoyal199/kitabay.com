@@ -130,10 +130,10 @@ class ProductInfo(SQLModel, table=True):
     product_id: int | None = Field(default=None, primary_key=True)
     name: str
     author: str
-    star: str
-    price: str
-    s_price: str
-    quantity: str
-    discount: str
+    star: float
+    price: int
+    s_price: int
+    quantity: int
+    discount: int
     image: bytes = Field(sa_column=Column(LargeBinary(length=(2**32)-1)))
 

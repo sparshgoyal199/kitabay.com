@@ -11,6 +11,9 @@ let posting;
 let data = {}
 let fileData
 let e
+let checks = 0
+let valid = 1
+let inputting = document.querySelectorAll(".adjust")
 
 localStorage.removeItem("structure")
 if (!localStorage.getItem("structure")) {
@@ -24,9 +27,9 @@ if (!localStorage.getItem("structure")) {
             <div class="things">
                <img class="photos">
                <button onclick=adding(event) class="updates group-hover:visible">Update</button>
-               <span class="book_name" >
-                   </span>
-               <span class="author_name" ></span>
+               <div class="book_name" >
+                   </div>
+               <div class="author_name" ></div>
                <div class="stars-outer">
                 <div class="stars-inner"></div>
                 </div>
@@ -78,6 +81,68 @@ function changing(event){
 window.onload = () => {
 }
 
+function inputValidating(e){
+    if (e.target.name == "star") {
+        let i = e.target.value
+        let n = e.target.parentNode.nextElementSibling
+
+        if (0 <= parseFloat(i) && parseFloat(i) <= 5){
+            n.textContent = ""
+        }
+        else{
+            n.textContent = 'Ratings should be between 0 to 5'
+        }
+    }
+    if (e.target.name == "discount") {
+        let i = e.target.value
+        let n = e.target.parentNode.nextElementSibling
+
+        if (0 < parseFloat(i)){
+            n.textContent = ""
+        }
+        else{
+            n.textContent = 'Discount value should be valid number'
+        }
+    }
+    if (e.target.name == "quantity") {
+        let i = e.target.value
+        let n = e.target.parentNode.nextElementSibling
+
+        if (0 < parseFloat(i)){
+            n.textContent = ""
+        }
+        else{
+            n.textContent = 'Quantity value should be valid number'
+        }
+    }
+    if (e.target.name == "price") {
+        let i = e.target.value
+        let n = e.target.parentNode.nextElementSibling
+
+        if (0 < parseFloat(i)){
+            n.textContent = ""
+        }
+        else{
+            n.textContent = 'Price value should be valid number'
+        }
+    }
+    if (e.target.name == "s_price") {
+        let i = e.target.value
+        let n = e.target.parentNode.nextElementSibling
+
+        if (0 < parseFloat(i)){
+            n.textContent = ""
+        }
+        else{
+            n.textContent = 'Slated price value should be valid number'
+        }
+    }
+}
+
+inputting.forEach(e =>{
+    e.addEventListener('input',inputValidating)
+})
+
 
 function formObject(){
     //console.log(event.target.parentNode.children);
@@ -89,7 +154,6 @@ function formObject(){
       reader.onerror = reject
       reader.readAsDataURL(blob)
      }))
-
 
 //Here is code for converting "Base64" to javascript "File Object".***
 
@@ -107,11 +171,15 @@ function formObject(){
     toDataURL(e.parentNode.children[0].src)
     .then(dataUrl => {
        fileData = dataURLtoFile(dataUrl, "imageName.jpg");
-       data['discount'] = e.parentNode.previousElementSibling.children[0].children[0].textContent
+       let c = e.parentNode.previousElementSibling.children[0].children[0].textContent
+       data['discount'] = c.substring(0,c.length - 1)
        data['name'] = e.parentNode.children[2].textContent
        data['author'] = e.parentNode.children[3].textContent
-       data['price'] = e.parentNode.children[4].children[0].textContent
-       data['s_price'] = e.parentNode.children[4].children[1].textContent
+       data["star"] = e.parentNode.children[5].children[0].textContent
+       let y = e.parentNode.children[6].children[0].textContent
+       data['price'] = y.substring(1,y.length)
+       y = e.parentNode.children[6].children[0].textContent
+       data['s_price'] = y.substring(1,y.length)
      })
 }
 
@@ -143,6 +211,7 @@ function adding(event){
         posting = document.querySelector('.posting')
         posting.addEventListener('click',updatings)
         formObject();
+        removeAtrributes();
     }
     else{
         if (document.querySelector('.posting')) {
@@ -154,6 +223,14 @@ function adding(event){
     }
 }
 
+function removeAtrributes(){
+    let rem = document.querySelectorAll('.redss')
+    document.querySelector('.product_image').removeAttribute("required")
+    rem.forEach(e => {
+        e.nextElementSibling.removeAttribute("required")
+        e.style.visibility = "hidden"
+    })
+}
 
 function removing(){
     document.querySelector('.info_extract').style.display = 'none'
@@ -262,7 +339,7 @@ $(document).ready(setTimeout(function(){
     $('.centers').slick({
         centerMode: true,
         centerPadding: '60px',
-        slidesToShow: 5,
+        slidesToShow: 6,
         responsive: [
           {
             breakpoint: 768,
@@ -291,24 +368,76 @@ $(document).ready(setTimeout(function(){
 },500));
 
 
+function validating(a,b){
+    if (a == "star") {
+        if (isNaN(parseFloat(b)) || !(0 <= parseFloat(b) <= 5)) {
+            checks += 1;
+        }
+    }
+    if(a == "price"){
+        if (isNaN(parseFloat(b))  || !parseFloat(b) > 0) {
+            checks += 1;
+            
+        }
+    }
+    if(a == "s_price"){
+        if (isNaN(parseFloat(b))  || !parseFloat(b) > 0) {
+            checks += 1;
+            
+        }
+    }
+    if(a == "quantity"){
+        if (isNaN(parseFloat(b))  || !parseFloat(b) > 0) {
+            checks += 1;
+            
+        }
+    }
+    if(a == "discount"){
+        if (isNaN(parseFloat(b))  || !parseFloat(b) > 0) {
+            checks += 1;
+            
+        }
+    }
+    if (checks > 0) {
+        valid = 0;
+    }
+}
+/*function DisplayingErrors(check_errors,form_data){
+    for (let i in check_errors) {
+        form_data[i].nextElementSibling.textContent = check_errors[i]
+    }
+}*/
+
 function storing(e){
+    e.preventDefault();//it is used to stop the default action and it is not necessary that every event will have the default actionm
     let imageStore;
-    e.preventDefault();
-    let form_data = document.querySelector('.product_info').children
+    let fo = document.querySelector('.product_info')
+    if (!fo.reportValidity()) {
+        return ;
+    }
+
+    let form_data = document.querySelector('.product_info')
     let forms = new FormData()
     for (const i of form_data) {
         if (i.name) {
             if (i.name == 'image') {
+                validating(i.name,i.files[0])
                 forms.append(`${i.name}`,i.files[0])
-                }
-        
+                }  
             else{
-                forms.append(`${i.name}`,i.value)        
+                validating(i.name,i.value);
+                forms.append(`${i.name}`,i.value)   
             }
         }
-        }
-        
-    
+    }
+    if (valid == 0) {
+        valid = 1;
+        //DisplayingErrors(check_errors,form_data);
+        check_errors = {}
+        checks = 0;
+        return ;
+    }
+
     fetch('http://127.0.0.1:8011/uploading',{
         method:'POST',
         body:forms
@@ -334,6 +463,7 @@ function storing(e){
         else{
             remove_tag = targets.parentNode.parentNode.parentNode
         }
+        
 
         let image_raw = form_data['image'].files[0];      
         let filereader = new FileReader()
@@ -366,16 +496,10 @@ function storing(e){
         </div>
     </div>
  </div>`    
-            console.log(form_data['star']);
-            (function filling(){
-                document.querySelector('.removes  .stars-inner').style.width = `${Math.round((parseFloat(form_data['star'].value)/5)*100)}%`
-            })();
+            
+        document.querySelector('.removes  .stars-inner').style.width = `${Math.round((parseFloat(form_data['star'].value)/5)*100)}%`
+    
         
-            /*if (JSON.parse(localStorage.getItem('storage'))) {
-                storage_blocks = JSON.parse(localStorage.getItem('storage'))
-            }
-            storage_blocks.push(`${remove_tag.innerHTML}`)
-            localStorage.setItem('storage',JSON.stringify(storage_blocks))*/
         })
         width_changes.forEach((ele) => {
             ele.style.width = `${11}vw`
@@ -397,38 +521,31 @@ function storing(e){
 function updatings(e){
     e.preventDefault();
     let imageStore;
-    let form_data = document.querySelector('.product_info').children
+    let form_data = document.querySelector('.product_info')
     let formss = new FormData()
+    data["quantity"] = 0
+    
     for (let i of form_data) {
-        if (i.name) {
-            i.removeAttribute("required")
-            if (i.name == 'image' && i.files[0]) {
-                formss.append(`${i.name}`,i.files[0])
-                }
-        
-            else{
-                if (i.name == "quantity" || i.name == "star") {
-                    if (!i.value) {
-                    formss.append(`${i.name}`,0)
-                    }
-                }
-                if (i.value) {
-                formss.append(`${i.name}`,i.value)
-                }        
+       if(i.name){     
+        if (i.name != "image") {
+            if (i.value) {
+                formss.append(`${i.name}`,i.value);
+            }
+            else{                  
+                formss.append(`${i.name}`,data[i.name]);
             }
         }
+        else{
+            if (i.files[0]) {
+                formss.append(`${i.name}`,i.files[0])
+            }
+            else{
+                formss.append(`${i.name}`,data[i.name])   
+            }
+        }
+       }
     }
     formss.append('old',data['author'])
-    
-    /*for (let r in data) {
-        if (!formss[r]) {
-            console.log(formss[r]);
-            formss.append(`${r}`,data[r])
-        }
-       if (!forms[r] && r == "image") {
-            forms.append(`${r}`,data[r].files[0])
-        }
-    }   */
     
     fetch('http://127.0.0.1:8011/updating',{
         method:'PUT',
