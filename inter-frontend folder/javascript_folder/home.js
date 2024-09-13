@@ -155,7 +155,7 @@ function formObject(){
       reader.readAsDataURL(blob)
      }))
 
-//Here is code for converting "Base64" to javascript "File Object".***
+    //Here is code for converting "Base64" to javascript "File Object".***
 
     function dataURLtoFile(dataurl, filename) {
        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
@@ -166,7 +166,7 @@ function formObject(){
        let t = new File([u8arr], filename, {type:mime});
        data['image'] = t
      return t
-    }
+}
 
     toDataURL(e.parentNode.children[0].src)
     .then(dataUrl => {
@@ -498,7 +498,6 @@ function storing(e){
  </div>`    
             
         document.querySelector('.removes  .stars-inner').style.width = `${Math.round((parseFloat(form_data['star'].value)/5)*100)}%`
-    
         
         })
         width_changes.forEach((ele) => {

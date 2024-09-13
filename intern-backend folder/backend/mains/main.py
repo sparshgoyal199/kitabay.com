@@ -7,6 +7,9 @@ from fastapi import FastAPI, HTTPException, Request, status, Path, Form, UploadF
 from sqlalchemy.exc import IntegrityError
 import uvicorn
 import random
+import os
+import yaml
+import secrets
 from io import BytesIO
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.encoders import jsonable_encoder
@@ -20,6 +23,7 @@ from dotenv import load_dotenv
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from passlib.context import CryptContext
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse,Response
 load_dotenv()
 
@@ -27,6 +31,7 @@ load_dotenv()
 app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 otp = 0
+app.mount("/C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -111,16 +116,28 @@ def C_password(passwords: Passwords):
             return 'password has been change'
 
 
+
+
 @app.post('/uploading')
 async def uploading(name: str = Form(...), author: str = Form(...), star: float = Form(...), price: int = Form(...), s_price: int = Form(...), quantity: int = Form(...), discount: int = Form(...), image: UploadFile = Form(...)):
-    image = await image.read()
-    products = ProductInfo(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, image=image)
+    images = await image.read()
+    FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
+    filename = image.filename
+    extension = filename.split(".")[1]
+    if extension not in ["png","jpeg","jpg"]:
+        raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
+
+    token_name = secrets.token_hex(10)+"."+extension
+    generated_name = FILEPATH+token_name
+    with open(generated_name,"wb") as file:
+        file.write(images)
+    file.close()
+    products = ProductInfo(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, image=images)
     with Session(engine) as session:
         session.add(products)
         session.commit()
         session.refresh(products)
         return 'data added successfully'
-
 
 @app.get('/card_details')
 def card_details():
