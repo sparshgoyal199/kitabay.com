@@ -93,11 +93,28 @@ input::placeholder {
     }
 }
 
-.submit{
+.submitss{
     font-size: 2.1vh;
     height: 5vh;
     border: 1px solid black;
     border-radius: 13px;
     width: 5vw;
     background-color: #e4e4e4;
+}
+
+.truncating{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+table {
+    table-layout: fixed;
+}
+
+.dots{
+    font-size: larger;
+    font-weight: bolder;
+    color: black;
+    visibility: hidden;
 }

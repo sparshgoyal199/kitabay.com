@@ -137,3 +137,15 @@ class ProductInfo(SQLModel, table=True):
     discount: int
     image: bytes = Field(sa_column=Column(LargeBinary(length=(2**32)-1)))
 
+
+class ProductInfo2(SQLModel, table=True):
+    product_id: int | None = Field(default=None, primary_key=True)
+    name: str
+    author: str
+    star: float
+    price: int
+    s_price: int
+    quantity: int
+    discount: int
+    time:str
+    image: str

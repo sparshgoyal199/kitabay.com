@@ -1,4 +1,4 @@
-from .model.sign import Signs, Sign, Login, Forgot, Passwords, ProductInfo
+from .model.sign import Signs, Sign, Login, Forgot, Passwords, ProductInfo, ProductInfo2
 from .config.db import create_table, engine
 from sqlalchemy import text
 from typing_extensions import Annotated
@@ -138,6 +138,30 @@ async def uploading(name: str = Form(...), author: str = Form(...), star: float 
         session.commit()
         session.refresh(products)
         return 'data added successfully'
+
+
+@app.post('/uploading2')
+async def uploading2(name: str = Form(...), author: str = Form(...), star: float = Form(...), price: int = Form(...), s_price: int = Form(...), quantity: int = Form(...), discount: int = Form(...), time: str = Form(...), image: UploadFile = Form(...)):
+    images = await image.read()
+    '''C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/'''
+    FILEPATH = "static/"
+    filename = image.filename
+    extension = filename.split(".")[1]
+    if extension not in ["png", "jpeg", "jpg"]:
+        raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
+
+    token_name = secrets.token_hex(10)+"."+extension
+    generated_name = FILEPATH+token_name
+    with open(generated_name,"wb") as file:
+        file.write(images)
+    file.close()
+    products = ProductInfo2(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, time=time, image=generated_name)
+    with Session(engine) as session:
+        session.add(products)
+        session.commit()
+        session.refresh(products)
+        return generated_name
+
 
 @app.get('/card_details')
 def card_details():

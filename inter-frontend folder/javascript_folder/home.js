@@ -14,6 +14,7 @@ let e
 let checks = 0
 let valid = 1
 let inputting = document.querySelectorAll(".adjust")
+let f = document.querySelector('.product_info')
 
 localStorage.removeItem("structure")
 if (!localStorage.getItem("structure")) {
@@ -185,6 +186,7 @@ function formObject(){
 
 
 function adding(event){
+    let check_event = 0
     e = event.target
     document.querySelector('.info_extract').style.display = 'flex'
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
@@ -205,20 +207,15 @@ function adding(event){
     document.querySelector('.inp').disabled = true
     
     if (event.target.className == "updates group-hover:visible") {
-        if (document.querySelector('.submit')) {
-            document.querySelector('.submit').className = "posting"
-        }
-        posting = document.querySelector('.posting')
-        posting.addEventListener('click',updatings)
+        
+        //posting = document.querySelector('.submit')
+        f.addEventListener('submit',updatings)
         formObject();
         removeAtrributes();
     }
     else{
-        if (document.querySelector('.posting')) {
-            document.querySelector('.posting').className = "submit"
-        }
-        product_submit = document.querySelector(".submit")
-        product_submit.addEventListener('click',storing)
+        //product_submit = document.querySelector(".submit")
+        f.addEventListener('submit',storing)   
         targets = event.target 
     }
 }
@@ -409,13 +406,13 @@ function validating(a,b){
 }*/
 
 function storing(e){
-    e.preventDefault();//it is used to stop the default action and it is not necessary that every event will have the default actionm
-    let imageStore;
+    e.preventDefault();//it is used to stop the default action and it is not necessary that every event will have the default action
     let fo = document.querySelector('.product_info')
     if (!fo.reportValidity()) {
         return ;
     }
-
+    console.log('hi');
+    
     let form_data = document.querySelector('.product_info')
     let forms = new FormData()
     for (const i of form_data) {
@@ -498,7 +495,7 @@ function storing(e){
  </div>`    
             
         document.querySelector('.removes  .stars-inner').style.width = `${Math.round((parseFloat(form_data['star'].value)/5)*100)}%`
-        
+        f.removeEventListener('submit',storing)
         })
         width_changes.forEach((ele) => {
             ele.style.width = `${11}vw`
@@ -524,25 +521,24 @@ function updatings(e){
     let formss = new FormData()
     data["quantity"] = 0
     
-    for (let i of form_data) {
-       if(i.name){     
-        if (i.name != "image") {
-            if (i.value) {
-                formss.append(`${i.name}`,i.value);
-            }
-            else{                  
-                formss.append(`${i.name}`,data[i.name]);
-            }
-        }
-        else{
-            if (i.files[0]) {
+    for (const i of form_data) {
+        if (i.name) {
+            if (i.name == 'image') {
+                validating(i.name,i.files[0])
                 formss.append(`${i.name}`,i.files[0])
-            }
+                }  
             else{
-                formss.append(`${i.name}`,data[i.name])   
+                validating(i.name,i.value);
+                formss.append(`${i.name}`,i.value)   
             }
         }
-       }
+    }
+    if (valid == 0) {
+        valid = 1;
+        //DisplayingErrors(check_errors,form_data);
+        check_errors = {}
+        checks = 0;
+        return ;
     }
     formss.append('old',data['author'])
     
@@ -565,6 +561,7 @@ function updatings(e){
     })
     .then(data =>{
         removing();
+        f.removeEventListener('submit',updatings)
         location.reload();
     })
     .catch(e => {
