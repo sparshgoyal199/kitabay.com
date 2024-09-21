@@ -3,10 +3,11 @@ from .config.db import create_table, engine
 from sqlalchemy import text
 from typing_extensions import Annotated
 import requests
-from fastapi import FastAPI, HTTPException, Request, status, Path, Form, UploadFile
+from fastapi import FastAPI, HTTPException, Request, status, Path, Form, UploadFile, File
 from sqlalchemy.exc import IntegrityError
 import uvicorn
 import random
+from typing import Optional
 import os
 import yaml
 import secrets
@@ -32,6 +33,7 @@ app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 otp = 0
 app.mount("/C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static", StaticFiles(directory="static"), name="static")
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -161,7 +163,9 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
         session.commit()
         session.refresh(products)
         return generated_name
-
+'''Get-Process | Where-Object { $_.ProcessName -eq "python" } | Stop-Process -Force
+'''
+'''for killing the background process'''
 
 @app.get('/card_details')
 def card_details():
@@ -198,7 +202,7 @@ def get_image(image_id: int):
 async def updating(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...)):
     image = await image.read()
     with Session(engine) as session:
-        peices = session.exec(select(ProductInfo).where(ProductInfo.author == old)).first()
+        peices = session.exec(select(ProductInfo).where(ProductInfo.name == old)).first()
         if not star:
             star = peices.star
         if not quantity:
@@ -211,6 +215,76 @@ async def updating(old: str = Form(...), name: str = Form(...), author: str = Fo
         session.refresh(peices)
         print("unsure")
         return 'data added successfully'
+
+@app.put('/updating20')
+async def updating2(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...)):
+    with Session(engine) as session:
+        peices = session.exec(select(ProductInfo2).where(ProductInfo2.name == old)).first()
+        if not star:
+            star = peices.star
+        if not quantity:
+            quantity = peices.quantity
+        products = ProductInfo2(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity,
+                               discount=discount)
+        form_data = products.model_dump(exclude_unset=True)
+        peices.sqlmodel_update(form_data)
+        session.commit()
+        session.refresh(peices)
+        return "hello moto"
+
+
+@app.put('/updating21')
+async def updating2(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...)):
+    if image:
+        images = await image.read()
+        '''C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/'''
+        FILEPATH = "static/"
+        filename = image.filename
+        extension = filename.split(".")[1]
+        if extension not in ["png", "jpeg", "jpg"]:
+            raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
+
+        token_name = secrets.token_hex(10) + "." + extension
+        generated_name = FILEPATH + token_name
+        with open(generated_name, "wb") as file:
+            file.write(images)
+        file.close()
+    with Session(engine) as session:
+        peices = session.exec(select(ProductInfo2).where(ProductInfo2.name == old)).first()
+        if not star:
+            star = peices.star
+        if not quantity:
+            quantity = peices.quantity
+        products = ProductInfo2(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity,
+                               discount=discount, image=generated_name)
+        form_data = products.model_dump(exclude_unset=True)
+        peices.sqlmodel_update(form_data)
+        session.commit()
+        session.refresh(peices)
+        return generated_name
+
+
+@app.delete('/deleting/{name}')
+def deleting(name: str):
+    print("hello")
+    with Session(engine) as session:
+        peices = session.exec(select(ProductInfo2).where(ProductInfo2.name == name)).first()
+        session.delete(peices)
+        session.commit()
+        return "delete successfully"
+
+
+@app.get('/table_data')
+def table_data():
+    a = []
+    with Session(engine) as session:
+        y = session.exec(select(ProductInfo2))
+        for i in y:
+            b = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
+                 "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
+            a.append(b)
+    print(a)
+    return a
 
 
 def start():

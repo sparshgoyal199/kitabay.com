@@ -411,7 +411,6 @@ function storing(e){
     if (!fo.reportValidity()) {
         return ;
     }
-    console.log('hi');
     
     let form_data = document.querySelector('.product_info')
     let forms = new FormData()
