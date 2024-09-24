@@ -1,6 +1,6 @@
 from .model.sign import Signs, Sign, Login, Forgot, Passwords, ProductInfo, ProductInfo2, ProductInfo2Validations
 from .config.db import create_table, engine
-from sqlalchemy import text
+from sqlalchemy import text,func
 from typing_extensions import Annotated
 import requests
 from fastapi import FastAPI, HTTPException, Request, status, Path, Form, UploadFile, File
@@ -292,12 +292,25 @@ def table_data(n: int, m: int):
 def table_data(n: int, m: int):
     a = []
     with Session(engine) as session:
-        v = session.exec(select(ProductInfo2)).all()
-        for i in v[m:m+n]:
+        v = session.exec(select(ProductInfo2).offset(m).limit(n)).all()
+        y = session.exec(select(func.count(ProductInfo2.name))).one()
+        for i in v:
             b = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
                  "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
             a.append(b)
-    return [a,len(v)]
+    return [a, y]
+
+
+@app.get('/searching/{authors}')
+def searching(authors: str):
+    k = []
+    with Session(engine) as session:
+        filters1 = session.exec(select(ProductInfo2).where(ProductInfo2.author.startswith(authors) | ProductInfo2.name.startswith(authors))).all()
+        for i in filters1:
+            bb = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
+                 "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
+            k.append(bb)
+        return k
 
 
 def start():

@@ -5,22 +5,31 @@ let t = 0
 let e = document.querySelector('.selections')
 let forBack = 1
 
-fetch('/html_folder/index.html')
-.then(res => {
-    if (!res.ok) {
-        throw new Error(res)
-    }
-    return res.text()
-})
-.then((data) => 
-    {
-    header.innerHTML = data;  
-    }
-)
-.catch(error => {
-    console.log('some error occured');
-    header.innerHTML = 'Some error occured'
-})
+if (!navigator.onLine) {  
+    alert('You are offline. Please check your internet connection.');
+}
+
+(function automatic(){
+    fetch('/html_folder/index.html')
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(res)
+        }
+        return res.text()
+    })
+    .then((data) => 
+        {
+        header.innerHTML = data;  
+        document.querySelector('.inp').addEventListener('input',searching)
+        }
+    )
+    .catch(error => {
+        console.log('some error occured');
+        header.innerHTML = 'Some error occured'
+    })
+})();
+
+
 let checks = 0
 let valid = 1
 let inputting = document.querySelectorAll(".adjust")
@@ -78,10 +87,24 @@ function bringing(event){
 }
 
 function get_data(a,b){
+    if (!navigator.onLine) {  
+        alert('You are offline. Please check your internet connection.');
+        return;
+    }
     fetch(`http://127.0.0.1:8011/table_data/${a}/${b}`).
     then(res => {
         if (!res.ok) {
             if (res.status == 422) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else if(res.status == 404) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else if(res.status == 408) {
                 return res.text().then(response => {
                     throw new Error(response.substring(11,response.length-2))
                 })    
@@ -337,12 +360,21 @@ function deleting(event){
     let d = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
     let g = d.children[1].textContent
     d.remove();
+    if (!navigator.onLine) {
+        alert('You are offline. Please check your internet connection.');
+        return;
+    }
     fetch(`http://127.0.0.1:8011/deleting/${g}`,{
         method:'DELETE'
     })
     .then(res => {
         if (!res.ok) {
             if (res.status == 422) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else if(res.status == 404) {
                 return res.text().then(response => {
                     throw new Error(response.substring(11,response.length-2))
                 })    
@@ -429,6 +461,10 @@ function editing(event){
     }
     forms.append('old',struct.querySelector('[name=name]').textContent)
     
+    if (!navigator.onLine) {
+        alert('You are offline. Please check your internet connection.');
+        return;
+    }
     fetch(`http://127.0.0.1:8011/updating2${t}`,{
         method:'PUT',
         body:forms
@@ -440,7 +476,12 @@ function editing(event){
                     throw new Error(response.substring(11,response.length-2))
                 })    
             }
-            if (res.status == 423) {
+            else if (res.status == 423) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else if(res.status == 404) {
                 return res.text().then(response => {
                     throw new Error(response.substring(11,response.length-2))
                 })    
@@ -501,7 +542,10 @@ function submittings(e){
         checks = 0;
         return ;
     }
-
+    if (!navigator.onLine) {
+        alert('You are offline. Please check your internet connection.');
+        return;
+    }
     fetch('http://127.0.0.1:8011/uploading2',{
         method:'POST',
         body:forms
@@ -513,7 +557,12 @@ function submittings(e){
                     throw new Error(response.substring(11,response.length-2))
                 })    
             }
-            if (res.status == 423) {
+            else if (res.status == 423) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else if(res.status == 404) {
                 return res.text().then(response => {
                     throw new Error(response.substring(11,response.length-2))
                 })    
@@ -578,6 +627,93 @@ function submittings(e){
     })
 }
 
+function searching(event){    
+    let searched = event.target.value
+    if (!navigator.onLine) {
+        alert('You are offline. Please check your internet connection.');
+        return;
+    }
+    if (searched) {
+        fetch(`http://127.0.0.1:8011/searching/${event.target.value}`).
+    then(res => {
+        if (!res.ok) {
+            if (res.status == 422) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else if(res.status == 404) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else{
+                throw new Error(res)
+            }
+        }
+        return res.json()}
+)
+    .then(data =>{
+        let deletes = document.querySelector('.row_append')
+        let count2 = deletes.children.length - 1;
+        while (count2 != -1) {
+            deletes.children[count2].remove()
+            count2 -= 1;
+        }
+        let z = 0
+        for (const i of data) {
+        z += 1
+        let row = document.createElement('tr')
+        row.className = 'rows'
+        row.className += ' group'
+        row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
+                    <td class="text-[2.4vh]" name="name"></td>
+                    <td class="text-[2.4vh]" name="author"></td>
+                    <td class="text-[2.4vh]" name="price"></td>
+                    <td class="text-[2.4vh]" name="s_price"></td>
+                    <td class="text-[2.4vh]" name="star"></td>
+                    <td class="text-[2.4vh]" name="quantity"></td>
+                    <td class="text-[2.4vh]" name="discount"></td>
+                    <td name="image" class="truncate text-[2.4vh]"></td>
+                    <td class="text-[2.4vh]"></td>
+                    <td class="text-[2.4vh]">
+        
+                      <div class="btn-group dropstart">
+                        <button type="button" class="dots group-hover:visible" data-bs-toggle="dropdown" aria-expanded="false">
+                          ...
+                        </button>
+                        <ul class="dropdown-menu">
+                          <!-- Dropdown menu links -->
+                          <li><button class="dropdown-item text-[2.4vh]" onclick="uploads(event)">Edit Data</button></li>
+                          <li><button class="dropdown-item text-[2.4vh]" onclick="deleting(event)">Delete Data</button></li>
+                        </ul>
+                      </div>
+                    </td>`
+        /*let b = document.querySelector('.row_append').children  
+        let c = b.length*/
+        let d = row.children
+        d[0].textContent = z;
+        d[1].textContent = i['name']
+        d[2].textContent = i['author']
+        d[3].textContent = `₹${i['price']}`
+        d[4].textContent = `₹${i['s_price']}`
+        d[5].textContent = i['star']
+        d[6].textContent = i['quantity']
+        d[7].textContent = `${i['discount']}%`
+        d[8].textContent = i['image']
+        d[9].textContent = i['time']
+        document.querySelector('.row_append').appendChild(row)
+    }
+    })
+    .catch(e => {
+        swal({
+            icon:"error",
+            text: `${e}`,
+            className: "sweetBox"
+          })
+    })
+    }
+}
 
 inputting.forEach(e =>{
     e.addEventListener('input',inputValidating)
