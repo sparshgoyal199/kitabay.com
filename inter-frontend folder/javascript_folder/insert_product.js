@@ -2,6 +2,9 @@ let header = document.querySelector('.header')
 let f = document.querySelector('.submitss')
 let struct;
 let t = 0
+let e = document.querySelector('.selections')
+let forBack = 1
+
 fetch('/html_folder/index.html')
 .then(res => {
     if (!res.ok) {
@@ -22,18 +25,104 @@ let checks = 0
 let valid = 1
 let inputting = document.querySelectorAll(".adjust")
 let submits = document.querySelector(".submitss")
-localStorage.setItem("tableStruct",`
-    <th scope="row" name="id"></th>
-                    <td name="name"></td>
-                    <td name="author"></td>
-                    <td name="price"></td>
-                    <td name="s_price"></td>
-                    <td name="star"></td>
-                    <td name="quantity"></td>
-                    <td name="discount"></td>
-                    <td name="image" class="truncate"></td>
-                    <td></td>
-                    <td>
+
+function forward(event){
+    if (forBack != 50) {
+        forBack += 1
+        event.target.previousElementSibling.textContent = `${forBack} of 50`
+        let first_data = document.querySelector('.selections').value
+        let deletes = document.querySelector('.row_append')
+        let count2 = deletes.children.length - 1;
+        
+        while (count2 != -1) {
+            deletes.children[count2].remove()
+            count2 -= 1;
+        }
+        let main = (forBack - 1)*first_data
+        //main is telling how many first records we have to skip 
+        get_data(first_data,main)
+        }
+}
+
+function backward(event){
+    if (forBack != 1) {
+        forBack -= 1
+        event.target.nextElementSibling.textContent = `${forBack} of 50`
+        let first_data = document.querySelector('.selections').value
+        let deletes = document.querySelector('.row_append')
+        let count2 = deletes.children.length - 1;
+        
+        while (count2 != -1) {
+            deletes.children[count2].remove()
+            count2 -= 1;
+        }
+        let main = (forBack - 1)*first_data
+        //main is telling how many first records we have to skip 
+        get_data(first_data,main)
+    }
+}
+
+function bringing(event){
+    //this also deletes existing ui data
+    let first = event.target.value;
+    let deletes = event.target.parentNode.parentNode.parentNode.nextElementSibling.nextElementSibling
+    let count2 = deletes.children.length - 1;
+    
+    while (count2 != -1) {
+        deletes.children[count2].remove()
+        count2 -= 1;
+    }
+    let main = (forBack - 1)*first
+    //main is telling how many first records we have to skip 
+    get_data(first,main)
+}
+
+function get_data(a,b){
+    fetch(`http://127.0.0.1:8011/table_data/${a}/${b}`).
+    then(res => {
+        if (!res.ok) {
+            if (res.status == 422) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else{
+                throw new Error(res)
+            }
+        }
+        return res.json()}
+)
+    .then(data =>{
+        loadingFilling(data[0],data[1],b,a)      
+    })
+    .catch(e => {
+        swal({
+            icon:"error",
+            text: `${e}`,
+            className: "sweetBox"
+          })
+    })
+};
+
+//get the data from dbmns when page reloads
+function loadingFilling(data,records,specific,untill){
+    let z = 0
+    for (const i of data) {
+        z += 1
+        let row = document.createElement('tr')
+        row.className = 'rows'
+        row.className += ' group'
+        row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
+                    <td class="text-[2.4vh]" name="name"></td>
+                    <td class="text-[2.4vh]" name="author"></td>
+                    <td class="text-[2.4vh]" name="price"></td>
+                    <td class="text-[2.4vh]" name="s_price"></td>
+                    <td class="text-[2.4vh]" name="star"></td>
+                    <td class="text-[2.4vh]" name="quantity"></td>
+                    <td class="text-[2.4vh]" name="discount"></td>
+                    <td name="image" class="truncate text-[2.4vh]"></td>
+                    <td class="text-[2.4vh]"></td>
+                    <td class="text-[2.4vh]">
         
                       <div class="btn-group dropstart">
                         <button type="button" class="dots group-hover:visible" data-bs-toggle="dropdown" aria-expanded="false">
@@ -41,16 +130,35 @@ localStorage.setItem("tableStruct",`
                         </button>
                         <ul class="dropdown-menu">
                           <!-- Dropdown menu links -->
-                          <li><button class="dropdown-item" onclick="uploads(event)">Edit Data</button></li>
-                          <li><button class="dropdown-item" onclick="deleting(event)">Delete Data</button></li>
+                          <li><button class="dropdown-item text-[2.4vh]" onclick="uploads(event)">Edit Data</button></li>
+                          <li><button class="dropdown-item text-[2.4vh]" onclick="deleting(event)">Delete Data</button></li>
                         </ul>
                       </div>
-                    </td>`)
-(function get_data(){
-    
-})()
+                    </td>`
+        /*let b = document.querySelector('.row_append').children  
+        let c = b.length*/
+        let d = row.children
+        d[0].textContent = z;
+        d[1].textContent = i['name']
+        d[2].textContent = i['author']
+        d[3].textContent = `₹${i['price']}`
+        d[4].textContent = `₹${i['s_price']}`
+        d[5].textContent = i['star']
+        d[6].textContent = i['quantity']
+        d[7].textContent = `${i['discount']}%`
+        d[8].textContent = i['image']
+        d[9].textContent = i['time']
+        document.querySelector('.row_append').appendChild(row)
+    }
+    document.querySelector('.state').textContent = `Results:${specific+1} - ${parseInt(specific) + parseInt(untill)} of ${records}`
+}
 
-function uploads(event){
+
+window.onload = ()=>{
+    get_data(5,0);
+}
+
+function uploads(event){ 
     document.querySelector('.info_extract').style.display = 'flex'
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
     
@@ -68,12 +176,12 @@ function uploads(event){
         }
     })
     document.querySelector('.inp').disabled = true
-    if (event.target.className == 'uploads') {
+    if (event.target.className == 'w-[3vw] z-10 absolute top-11 right-3') {
         f.addEventListener('click',submittings)
     }
     else{
         struct = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
-        //pay attention on struct
+        //pay attention on struct catch the table row
         removeAtrributes(struct);     
         f.addEventListener('click',editing)
     }
@@ -247,6 +355,7 @@ function deleting(event){
 )
     .then(data =>{
         console.log("delete successfully");
+        location.reload();
     })
     .catch(e => {
         swal({
@@ -258,6 +367,21 @@ function deleting(event){
 }
 
 //this is for edit and delete the content of the row
+function emptyFeildFill(struct,i){
+    let a = struct.querySelector(`[name=${i.name}]`).textContent
+    console.log(a);
+    
+    if (i.name == "price" || i.name == "s_price") {
+        i.value = a.substring(1,a.length)
+    }
+    else if (i.name == "discount") {
+        i.value = a.substring(0,a.length-1)
+    }
+    else{
+        i.value = a
+    }
+}
+
 function editing(event){
     event.preventDefault();
     var today = new Date();
@@ -286,7 +410,8 @@ function editing(event){
                 }  
             else{
                 if (!i.value) {
-                    i.value = struct.querySelector(`[name=${i.name}]`).textContent
+                    emptyFeildFill(struct,i)
+                    //i.value = struct.querySelector(`[name=${i.name}]`).textContent
                 }
                 validating(i.name,i.value);
                 forms.append(`${i.name}`,i.value)   
@@ -299,7 +424,7 @@ function editing(event){
         //DisplayingErrors(check_errors,form_data);
         check_errors = {}
         checks = 0;
-        console.log("this should not be run");
+        alert("some internal error occured")
         return ;
     }
     forms.append('old',struct.querySelector('[name=name]').textContent)
@@ -331,6 +456,7 @@ function editing(event){
         f.removeEventListener('click',editing)
         removing();
         t = 0
+        location.reload()
     })
     .catch(e => {
         swal({
@@ -441,6 +567,7 @@ function submittings(e){
         document.querySelector('.row_append').appendChild(row)
         removing();
         f.removeEventListener('click',submittings)
+        location.reload()
     })
     .catch(e => {
         swal({
@@ -451,7 +578,9 @@ function submittings(e){
     })
 }
 
+
 inputting.forEach(e =>{
     e.addEventListener('input',inputValidating)
 })
+e.addEventListener('change',bringing)
 //submits.addEventListener('click',submittings)

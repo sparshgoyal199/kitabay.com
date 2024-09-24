@@ -14,9 +14,10 @@
     height: 82vh;
     background-color: white;
     border-radius: 2vh;
-    position: relative;
+    position: absolute;
     z-index: 9999;
-    margin-top: -100vh;
+    top: -600px;
+    left: 470px;
     animation: smooth-appear 0.8s ease forwards;
 }
 
@@ -89,7 +90,7 @@ input::placeholder {
 
 @keyframes smooth-appear {
     to{
-      margin-top: -50vh;
+      top: 70px;
     }
 }
 
@@ -117,4 +118,22 @@ table {
     font-weight: bolder;
     color: black;
     visibility: hidden;
+}
+
+.selections{
+    border: 2px solid #c4c2c2;
+}
+
+.prev{
+    border: 2px solid #c4c2c2;
+    background-color: #eeeded;
+}
+
+.next{
+    border: 2px solid #c4c2c2;
+    background-color: #eeeded;
+}
+
+.logo{
+    margin-top: 20px;
 }

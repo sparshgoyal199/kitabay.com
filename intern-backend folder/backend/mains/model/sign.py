@@ -4,7 +4,7 @@ from pydantic import StringConstraints, EmailStr, model_validator
 from sqlmodel import Field
 from typing_extensions import Annotated
 import requests
-from fastapi import HTTPException, UploadFile, File
+from fastapi import HTTPException, UploadFile, File, Path
 from sqlalchemy import LargeBinary,Column
 import phonenumbers
 all_codes = []
@@ -138,14 +138,24 @@ class ProductInfo(SQLModel, table=True):
     image: bytes = Field(sa_column=Column(LargeBinary(length=(2**32)-1)))
 
 
-class ProductInfo2(SQLModel, table=True):
+class ProductInfo2Validations(SQLModel):
     product_id: int | None = Field(default=None, primary_key=True)
-    name: str
-    author: str
-    star: float
-    price: int
-    s_price: int
-    quantity: int
-    discount: int
-    time:str
-    image: str
+    name: Annotated[str, StringConstraints(strip_whitespace=True),Field(unique=True)]
+    author: Annotated[str, StringConstraints(strip_whitespace=True)]
+    star: Annotated[float, Path(gt=0, le=5)]
+    price: Annotated[int, Path(gt=0)]
+    s_price: Annotated[int, Path(gt=0)]
+    quantity: Annotated[int, Path(gt=0)]
+    discount: Annotated[int, Path(gt=0)]
+    time: Annotated[str, StringConstraints(strip_whitespace=True)]
+    image: Annotated[str, StringConstraints(strip_whitespace=True)]
+
+    @model_validator(mode="after")
+    def validate_all_fields(self):
+        if self.s_price == self.price:
+            raise HTTPException(status_code=422, detail="Price and del price values cannot be same")
+        return self
+
+
+class ProductInfo2(ProductInfo2Validations, table=True):
+    pass

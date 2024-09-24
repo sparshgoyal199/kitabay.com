@@ -9,24 +9,41 @@
 </head>
 <body class="body">
     <header class="header"></header>
-    <main>
-        <button class="uploads" onclick="uploads(event)">Upload</button>
-        <div class="ml-[3.5vw] mr-[2vw]" >
-            <table class="table table-hover align-bottom table-sm table-light mt-[15vh] " width="65vw">
-                <caption>List of users</caption>
+    <main class="flex flex-column">
+        <button class="uploads" onclick="uploads(event)"><img src="/image/add.png" class="w-[3vw] z-10 absolute top-[6.5vh] right-[0.7vw]"></button>
+        <div class="ml-[3.5vw] mr-[2vw] relative z-1" >
+            <table class="table table-hover align-bottom table-sm table-light" width="65vw">
+                <caption>
+                  <div class="pagination flex justify-between" >
+                    <div class="status">
+                      <select name="options" class="selections rounded-2 w-[4vw] h-[4vh] pl-[0.5vw] hover:border-gray-400 text-[2.4vh]">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                      </select>
+                      <span class="state ml-[2vw] text-[2.4vh]">result are showing off</span>
+                    </div>
+                    <div class="switches flex w-[15vw] justify-between">
+                      <button class="prev rounded-2 w-[5vw] h-[4vh] hover:border-gray-400 text-[2.4vh]" onclick="backward(event)">← Prev</button>
+                      <span class="numbering text-[2.4vh]">1 of 50</span>
+                      <button class="next rounded-2 w-[5vw] h-[4vh] hover:border-gray-400 text-[2.4vh]" onclick="forward(event)">Next→</button>
+                    </div>
+                  </div>
+                </caption>
                 <thead>
                   <tr>
-                    <th scope="col" width="5%">Sr no.</th>
-                    <th scope="col" width="25%">Product name,Volume and Edition</th>
-                    <th scope="col" width="10%">Author</th>
-                    <th scope="col" width="7%">Price</th>
-                    <th scope="col" width="8%">Del price</th>
-                    <th scope="col" width="9%">Ratings</th>
-                    <th scope="col" width="8%">Quantity</th>
-                    <th scope="col" width="9%">Discount</th>
-                    <th scope="col" width="12%">Image</th>
-                    <th scope="col" width="15%">Last Updated On</th>
-                    <th scope="col" width="4%"></th>
+                    <th scope="col" class="text-[2.4vh]" width="5%">Sr no.</th>
+                    <th scope="col" class="text-[2.4vh]" width="25%">Product name,Volume and Edition</th>
+                    <th scope="col" class="text-[2.4vh]" width="10%">Author</th>
+                    <th scope="col" class="text-[2.4vh]" width="7%">Price</th>
+                    <th scope="col" class="text-[2.4vh]" width="8%">Del price</th>
+                    <th scope="col" class="text-[2.4vh]" width="9%">Ratings</th>
+                    <th scope="col" class="text-[2.4vh]" width="8%">Quantity</th>
+                    <th scope="col" class="text-[2.4vh]" width="9%">Discount</th>
+                    <th scope="col" class="text-[2.4vh]" width="12%">Image</th>
+                    <th scope="col" class="text-[2.4vh]" width="15%">Last Updated On</th>
+                    <th scope="col" class="text-[2.4vh]" width="4%"></th>
                   </tr>
                 </thead>
                 <tbody class="table-group-divider row_append">

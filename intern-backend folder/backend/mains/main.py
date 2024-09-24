@@ -1,4 +1,4 @@
-from .model.sign import Signs, Sign, Login, Forgot, Passwords, ProductInfo, ProductInfo2
+from .model.sign import Signs, Sign, Login, Forgot, Passwords, ProductInfo, ProductInfo2, ProductInfo2Validations
 from .config.db import create_table, engine
 from sqlalchemy import text
 from typing_extensions import Annotated
@@ -58,7 +58,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 async def validations_exception_handler(request: Request, exc: IntegrityError):
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=jsonable_encoder({"detail": exc.orig.diag.message_detail[exc.orig.diag.message_detail.rfind('=')+1:len(exc.orig.diag.message_detail)]})
+        content=jsonable_encoder({"detail": str(exc.orig)[8:len(str(exc.orig))-2]})
     )
 
 
@@ -154,14 +154,15 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
 
     token_name = secrets.token_hex(10)+"."+extension
     generated_name = FILEPATH+token_name
-    with open(generated_name,"wb") as file:
+    with open(generated_name, "wb") as file:
         file.write(images)
     file.close()
-    products = ProductInfo2(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, time=time, image=generated_name)
+    products = ProductInfo2Validations(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, time=time, image=generated_name)
+    validate = ProductInfo2.model_validate(products)
     with Session(engine) as session:
-        session.add(products)
+        session.add(validate)
         session.commit()
-        session.refresh(products)
+        session.refresh(validate)
         return generated_name
 '''Get-Process | Where-Object { $_.ProcessName -eq "python" } | Stop-Process -Force
 '''
@@ -274,17 +275,29 @@ def deleting(name: str):
         return "delete successfully"
 
 
-@app.get('/table_data')
-def table_data():
+'''@app.get('/table_data/{n}/{m}')
+def table_data(n: int, m: int):
     a = []
+    count = m + 1
     with Session(engine) as session:
-        y = session.exec(select(ProductInfo2))
+        y = session.exec(select(ProductInfo2).offset(m).limit(n)).all()
         for i in y:
             b = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
                  "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
             a.append(b)
-    print(a)
-    return a
+    return a'''
+
+
+@app.get('/table_data/{n}/{m}')
+def table_data(n: int, m: int):
+    a = []
+    with Session(engine) as session:
+        v = session.exec(select(ProductInfo2)).all()
+        for i in v[m:m+n]:
+            b = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
+                 "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
+            a.append(b)
+    return [a,len(v)]
 
 
 def start():
