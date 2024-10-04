@@ -137,3 +137,12 @@ table {
 .logo{
     margin-top: 20px;
 }
+
+.uploads{
+    border: 2px solid white;
+    background-color: #f3be92;
+    font-weight: 600;
+}
+
+
+

@@ -9,8 +9,8 @@
 </head>
 <body class="body">
     <header class="header"></header>
-    <main class="flex flex-column">
-        <button class="uploads" onclick="uploads(event)"><img src="/image/add.png" class="w-[3vw] z-10 absolute top-[6.5vh] right-[0.7vw]"></button>
+    <main class="flex flex-column items-center">
+        <button class="uploads text-[2.7vh] w-[5.3vw] h-[5.2vh] rounded-[2vh] mb-[2.7vh]"onclick="uploads(event)">upload</button>
         <div class="ml-[3.5vw] mr-[2vw] relative z-1" >
             <table class="table table-hover align-bottom table-sm table-light" width="65vw">
                 <caption>
@@ -37,70 +37,17 @@
                     <th scope="col" class="text-[2.4vh]" width="25%">Product name,Volume and Edition</th>
                     <th scope="col" class="text-[2.4vh]" width="17%">Author</th>
                     <th scope="col" class="text-[2.4vh]" width="9%">Price</th>
-                    <th scope="col" class="text-[2.4vh]" width="11%">Del price</th>
+                    <th scope="col" class="text-[2.4vh]" width="9%">Del price</th>
                     <th scope="col" class="text-[2.4vh]" width="9%">Ratings</th>
-                    <th scope="col" class="text-[2.4vh]" width="8%">Quantity</th>
+                    <th scope="col" class="text-[2.4vh]" width="9%">Quantity</th>
                     <th scope="col" class="text-[2.4vh]" width="9%">Discount</th>
-                    <th scope="col" class="text-[2.4vh]" width="8%">Image</th>
-                    <th scope="col" class="text-[2.4vh]" width="15%">Last Updated On</th>
+                    <th scope="col" class="text-[2.4vh] hidden" width="0%">Image</th>
+                    <th scope="col" class="text-[2.4vh]" width="20%">Last Updated On</th>
                     <th scope="col" class="text-[2.4vh]" width="4%"></th>
                   </tr>
                 </thead>
                 <tbody class="table-group-divider row_append">
-                  <!--<tr class="group">
-                    <th scope="row" name="id">1</th>
-                    <td name="name">Mark</td>
-                    <td name="author">Otto</td>
-                    <td name="price">₹5000</td>
-                    <td name="s_price">₹7000</td>
-                    <td name="star">4</td>
-                    <td name="quantity">500</td>
-                    <td name="discount">6%</td>
-                    <td name="image">Otto.png</td>
-                    <td>@mdo</td>
-                    <td>
-                      <!--<div class="flex flex-column">
-                        <button class="dots group-hover:visible" onclick="editing(event)">...</button>
-                        <div class="edit_delete bg-white flex flex-column h-[8vh] w-[8vw]">
-                        <button>Edit Data</button>
-                        <button>Delete Data</button>
-                      </div>
-                      </div>
-                      <div class="btn-group ">
-                        <button type="button" class="dots group-hover:visible" data-bs-toggle="dropdown" aria-expanded="false">
-                          ...
-                        </button>
-                        <ul class="dropdown-menu">
-                          <!-- Dropdown menu links 
-                          <li><button class="dropdown-item" onclick="uploads(event)">Edit Data</button></li>
-                          <li><button class="dropdown-item" onclick="deleting(event)">Delete Data</button></li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">3</th>
-                    <td>Larry the Bird</td>
-                    <td>@twitter</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                  </tr>-->
+                  
                 </tbody>
               </table>
         </div>
@@ -170,6 +117,13 @@
               </div>
               <button class="submitss">Submit</button>
             </form>
+         </div>
+         <div class="cross_image flex absolute top-[130px] z-1 flex-column items-end">
+          <button class="closed material-symbols-outlined text-red-600 mb-[-1.7vh] mr-[-1vh] z-2 invisible" onclick="closes(event)">
+            cancel
+          </button>
+    
+          <img class="static_image h-[60vh]" src="" alt="">
          </div>
     </main>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

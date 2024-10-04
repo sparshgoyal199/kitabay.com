@@ -146,7 +146,7 @@ async def uploading(name: str = Form(...), author: str = Form(...), star: float 
 async def uploading2(name: str = Form(...), author: str = Form(...), star: float = Form(...), price: int = Form(...), s_price: int = Form(...), quantity: int = Form(...), discount: int = Form(...), time: str = Form(...), image: UploadFile = Form(...)):
     images = await image.read()
     '''C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/'''
-    FILEPATH = "static/"
+    FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
     filename = image.filename
     extension = filename.split(".")[1]
     if extension not in ["png", "jpeg", "jpg"]:
@@ -154,6 +154,17 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
 
     token_name = secrets.token_hex(10)+"."+extension
     generated_name = FILEPATH+token_name
+    with open(generated_name, "wb") as file:
+        file.write(images)
+    file.close()
+    FILEPATH = "static/"
+    # filename = image.filename
+    # extension = filename.split(".")[1]
+    # if extension not in ["png", "jpeg", "jpg"]:
+    #     raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
+    #
+    #token_name = secrets.token_hex(10) + "." + extension
+    generated_name = FILEPATH + token_name
     with open(generated_name, "wb") as file:
         file.write(images)
     file.close()
@@ -218,7 +229,7 @@ async def updating(old: str = Form(...), name: str = Form(...), author: str = Fo
         return 'data added successfully'
 
 @app.put('/updating20')
-async def updating2(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...)):
+async def updating2(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), time: str = Form(...)):
     with Session(engine) as session:
         peices = session.exec(select(ProductInfo2).where(ProductInfo2.name == old)).first()
         if not star:
@@ -226,7 +237,7 @@ async def updating2(old: str = Form(...), name: str = Form(...), author: str = F
         if not quantity:
             quantity = peices.quantity
         products = ProductInfo2(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity,
-                               discount=discount)
+                               discount=discount, time=time)
         form_data = products.model_dump(exclude_unset=True)
         peices.sqlmodel_update(form_data)
         session.commit()
@@ -235,17 +246,28 @@ async def updating2(old: str = Form(...), name: str = Form(...), author: str = F
 
 
 @app.put('/updating21')
-async def updating2(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...)):
+async def updating2(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...), time: str = Form(...)):
     if image:
         images = await image.read()
         '''C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/'''
-        FILEPATH = "static/"
+        FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
         filename = image.filename
         extension = filename.split(".")[1]
         if extension not in ["png", "jpeg", "jpg"]:
             raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
 
         token_name = secrets.token_hex(10) + "." + extension
+        generated_name = FILEPATH + token_name
+        with open(generated_name, "wb") as file:
+            file.write(images)
+        file.close()
+        FILEPATH = "static/"
+        # filename = image.filename
+        # extension = filename.split(".")[1]
+        # if extension not in ["png", "jpeg", "jpg"]:
+        #     raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
+        #
+        # token_name = secrets.token_hex(10) + "." + extension
         generated_name = FILEPATH + token_name
         with open(generated_name, "wb") as file:
             file.write(images)
@@ -257,7 +279,7 @@ async def updating2(old: str = Form(...), name: str = Form(...), author: str = F
         if not quantity:
             quantity = peices.quantity
         products = ProductInfo2(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity,
-                               discount=discount, image=generated_name)
+                               discount=discount, image=generated_name, time=time)
         form_data = products.model_dump(exclude_unset=True)
         peices.sqlmodel_update(form_data)
         session.commit()
@@ -267,7 +289,6 @@ async def updating2(old: str = Form(...), name: str = Form(...), author: str = F
 
 @app.delete('/deleting/{name}')
 def deleting(name: str):
-    print("hello")
     with Session(engine) as session:
         peices = session.exec(select(ProductInfo2).where(ProductInfo2.name == name)).first()
         session.delete(peices)

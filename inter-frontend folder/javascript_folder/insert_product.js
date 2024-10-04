@@ -19,7 +19,8 @@ if (!navigator.onLine) {
     })
     .then((data) => 
         {
-        header.innerHTML = data;  
+        header.innerHTML = data; 
+        document.querySelector('.logo').parentNode.style.pointerEvents = 'none'
         document.querySelector('.inp').addEventListener('input',searching)
         }
     )
@@ -139,11 +140,11 @@ function loadingFilling(data,records,specific,untill){
                     <td class="text-[2.4vh]" name="name"></td>
                     <td class="text-[2.4vh]" name="author"></td>
                     <td class="text-[2.4vh]" name="price"></td>
-                    <td class="text-[2.4vh]" name="s_price"></td>
+                    <td class="text-[2.4vh] line-through" name="s_price"></td>
                     <td class="text-[2.4vh]" name="star"></td>
                     <td class="text-[2.4vh]" name="quantity"></td>
                     <td class="text-[2.4vh]" name="discount"></td>
-                    <td name="image" class="truncate text-[2.4vh]"></td>
+                    <td name="image" class="truncate text-[2.4vh] hidden"></td>
                     <td class="text-[2.4vh]"></td>
                     <td class="text-[2.4vh]">
         
@@ -155,6 +156,7 @@ function loadingFilling(data,records,specific,untill){
                           <!-- Dropdown menu links -->
                           <li><button class="dropdown-item text-[2.4vh]" onclick="uploads(event)">Edit Data</button></li>
                           <li><button class="dropdown-item text-[2.4vh]" onclick="deleting(event)">Delete Data</button></li>
+                          <li><button class="dropdown-item text-[2.5vh]" onclick="viewing(event)">view image</button></li>
                         </ul>
                       </div>
                     </td>`
@@ -181,6 +183,7 @@ window.onload = ()=>{
     get_data(5,0);
 }
 
+
 function uploads(event){ 
     document.querySelector('.info_extract').style.display = 'flex'
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
@@ -192,14 +195,13 @@ function uploads(event){
     });
 
     let magic = document.querySelectorAll('main > *,header');
-
     magic.forEach(e => {
         if (e.className != 'info_extract') {
             e.style.opacity = '0.6'
         }
     })
     document.querySelector('.inp').disabled = true
-    if (event.target.className == 'w-[3vw] z-10 absolute top-11 right-3') {
+    if (event.target.className == 'uploads text-[2.7vh] w-[5.3vw] h-[5.2vh] rounded-[2vh] mb-[2.7vh]') {
         f.addEventListener('click',submittings)
     }
     else{
@@ -450,6 +452,7 @@ function editing(event){
             }
         }
     }
+    
     forms.append("time",dateTime)
     if (valid == 0) {
         valid = 1;
@@ -577,17 +580,17 @@ function submittings(e){
         let row = document.createElement('tr')
         row.className = 'rows'
         row.className += ' group'
-        row.innerHTML = `<th scope="row" name="id"></th>
-                    <td name="name"></td>
-                    <td name="author"></td>
-                    <td name="price"></td>
-                    <td name="s_price"></td>
-                    <td name="star"></td>
-                    <td name="quantity"></td>
-                    <td name="discount"></td>
-                    <td name="image" class="truncate"></td>
-                    <td></td>
-                    <td>
+        row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
+                    <td class="text-[2.4vh]" name="name"></td>
+                    <td class="text-[2.4vh]" name="author"></td>
+                    <td class="text-[2.4vh]" name="price"></td>
+                    <td class="text-[2.4vh] line-through" name="s_price"></td>
+                    <td class="text-[2.4vh]" name="star"></td>
+                    <td class="text-[2.4vh]" name="quantity"></td>
+                    <td class="text-[2.4vh]" name="discount"></td>
+                    <td name="image" class="truncate text-[2.4vh] hidden"></td>
+                    <td class="text-[2.4vh]"></td>
+                    <td class="text-[2.4vh]">
         
                       <div class="btn-group dropstart">
                         <button type="button" class="dots group-hover:visible" data-bs-toggle="dropdown" aria-expanded="false">
@@ -597,6 +600,7 @@ function submittings(e){
                           <!-- Dropdown menu links -->
                           <li><button class="dropdown-item" onclick="uploads(event)">Edit Data</button></li>
                           <li><button class="dropdown-item" onclick="deleting(event)">Delete Data</button></li>
+                          <li><button class="dropdown-item" onclick="viewing(event)">view image</button></li>
                         </ul>
                       </div>
                     </td>`
@@ -616,7 +620,8 @@ function submittings(e){
         document.querySelector('.row_append').appendChild(row)
         removing();
         f.removeEventListener('click',submittings)
-        location.reload()
+        alert("Data added successfully")
+        //here we cant write swal function as it is asynchr code and our page is loading automatically page loading prevent running of async code that's why simple alert here
     })
     .catch(e => {
         swal({
@@ -670,11 +675,11 @@ function searching(event){
                     <td class="text-[2.4vh]" name="name"></td>
                     <td class="text-[2.4vh]" name="author"></td>
                     <td class="text-[2.4vh]" name="price"></td>
-                    <td class="text-[2.4vh]" name="s_price"></td>
+                    <td class="text-[2.4vh] line-through" name="s_price"></td>
                     <td class="text-[2.4vh]" name="star"></td>
                     <td class="text-[2.4vh]" name="quantity"></td>
                     <td class="text-[2.4vh]" name="discount"></td>
-                    <td name="image" class="truncate text-[2.4vh]"></td>
+                    <td name="image" class="truncate text-[2.4vh] hidden"></td>
                     <td class="text-[2.4vh]"></td>
                     <td class="text-[2.4vh]">
         
@@ -715,6 +720,32 @@ function searching(event){
     }
 }
 
+function viewing(event){
+    let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
+    
+    buttons.forEach(e => {
+        if (e.className != 'closed material-symbols-outlined text-red-600 mb-[-1.7vh] mr-[-1vh] z-2 invisible' && e.className != 'submitss') {
+            e.style.pointerEvents = 'none'
+        }
+    });
+
+    let magic = document.querySelectorAll('main > *,header');
+
+    magic.forEach(e => {
+        if (e.className != 'cross_image flex absolute top-[130px] z-1 flex-column items-end' && e.className != 'info_extract') {
+            e.style.opacity = '0.6'
+        }
+    })
+    document.querySelector('.inp').disabled = true
+    document.querySelector('.closed').classList.remove('invisible')
+    document.querySelector('.static_image').src =  `/${event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.previousElementSibling.textContent}`
+}
+
+function closes(event){
+    document.querySelector('.static_image').src = ""
+    document.querySelector('.closed').className += " invisible"
+    removing();
+}
 inputting.forEach(e =>{
     e.addEventListener('input',inputValidating)
 })
