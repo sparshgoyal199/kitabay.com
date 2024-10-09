@@ -1,7 +1,6 @@
 let header = document.querySelector('.header')
 let f = document.querySelector('.submitss')
 let struct;
-let t = 0
 let e = document.querySelector('.selections')
 let forBack = 1
 
@@ -134,9 +133,9 @@ function loadingFilling(data,records,specific,untill){
     for (const i of data) {
         z += 1
         let row = document.createElement('tr')
-        row.className = 'rows'
-        row.className += ' group'
+        row.className = 'rows group'
         row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
+                    <td class="text-[2.4vh] hidden" name="products_id"></td>
                     <td class="text-[2.4vh]" name="name"></td>
                     <td class="text-[2.4vh]" name="author"></td>
                     <td class="text-[2.4vh]" name="price"></td>
@@ -144,7 +143,7 @@ function loadingFilling(data,records,specific,untill){
                     <td class="text-[2.4vh]" name="star"></td>
                     <td class="text-[2.4vh]" name="quantity"></td>
                     <td class="text-[2.4vh]" name="discount"></td>
-                    <td name="image" class="truncate text-[2.4vh] hidden"></td>
+                    
                     <td class="text-[2.4vh]"></td>
                     <td class="text-[2.4vh]">
         
@@ -164,14 +163,14 @@ function loadingFilling(data,records,specific,untill){
         let c = b.length*/
         let d = row.children
         d[0].textContent = z;
-        d[1].textContent = i['name']
-        d[2].textContent = i['author']
-        d[3].textContent = `₹${i['price']}`
-        d[4].textContent = `₹${i['s_price']}`
-        d[5].textContent = i['star']
-        d[6].textContent = i['quantity']
-        d[7].textContent = `${i['discount']}%`
-        d[8].textContent = i['image']
+        d[1].textContent = i['product_id']
+        d[2].textContent = i['name']
+        d[3].textContent = i['author']
+        d[4].textContent = `₹${i['price']}`
+        d[5].textContent = `₹${i['s_price']}`
+        d[6].textContent = i['star']
+        d[7].textContent = i['quantity']
+        d[8].textContent = `${i['discount']}%`
         d[9].textContent = i['time']
         document.querySelector('.row_append').appendChild(row)
     }
@@ -206,6 +205,7 @@ function uploads(event){
     }
     else{
         struct = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
+        console.log(struct);
         //pay attention on struct catch the table row
         removeAtrributes(struct);     
         f.addEventListener('click',editing)
@@ -323,8 +323,9 @@ function removing(){
 }
 
 function removeAtrributes(struct){
+    //struct representing the existing table row data which we are editing it includes all the tr tags
     let rem = document.querySelectorAll('.redss')
-    document.querySelector('.product_image').value = null
+    //document.querySelector('.product_image').value = null
     document.querySelector('.product_image').removeAttribute("required")
     rem.forEach(e => {
         e.nextElementSibling.removeAttribute("required")
@@ -337,8 +338,10 @@ function removeAtrributes(struct){
         }
         e.nextElementSibling.value = a
         e.style.visibility = "hidden"
+        //so that 'red star' can be hide'
     })
 }
+//above function is removing the 'required attribute of html and along with this it is filling the value in input field of the form when the edit option in frontend is clicked
 
 function value_setting(struct,form_data,dateTime,data){
     let d = struct.children
@@ -346,6 +349,7 @@ function value_setting(struct,form_data,dateTime,data){
         data = d[8].textContent
     }
     //d[0].textContent = c + 1;
+    /*d[1].textContent = form_data['name'].value
     d[1].textContent = form_data['name'].value
     d[2].textContent = form_data['author'].value
     d[3].textContent = `₹${form_data['price'].value}`
@@ -354,6 +358,15 @@ function value_setting(struct,form_data,dateTime,data){
     d[6].textContent = form_data['quantity'].value
     d[7].textContent = `${form_data['discount'].value}%`
     d[8].textContent = data
+    d[9].textContent = dateTime*/
+    d[1].textContent = data[1]; 
+    d[2].textContent = form_data['name'].value
+    d[3].textContent = form_data['author'].value
+    d[4].textContent = `₹${form_data['price'].value}`
+    d[5].textContent = `₹${form_data['s_price'].value}`
+    d[6].textContent = form_data['star'].value
+    d[7].textContent = form_data['quantity'].value
+    d[8].textContent = `${form_data['discount'].value}%`
     d[9].textContent = dateTime
 }
 
@@ -403,7 +416,6 @@ function deleting(event){
 //this is for edit and delete the content of the row
 function emptyFeildFill(struct,i){
     let a = struct.querySelector(`[name=${i.name}]`).textContent
-    console.log(a);
     
     if (i.name == "price" || i.name == "s_price") {
         i.value = a.substring(1,a.length)
@@ -417,12 +429,13 @@ function emptyFeildFill(struct,i){
 }
 
 function editing(event){
+    let t = 0
     event.preventDefault();
+    //it is used to stop the default action and it is not necessary that every event will have the default actionm
     var today = new Date();
     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
     var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     var dateTime = date+' '+time;
-//it is used to stop the default action and it is not necessary that every event will have the default actionm
     let fo = document.querySelector('.product_info')
     //this above is very important as it does not implement the required attribute in input tag as we have run the remove_attribute function dont take it as that it simplies pick up the html input tags
     //but the same story would be different in upload button because it is not in the flow
@@ -445,7 +458,7 @@ function editing(event){
             else{
                 if (!i.value) {
                     emptyFeildFill(struct,i)
-                    //i.value = struct.querySelector(`[name=${i.name}]`).textContent
+                    //above func is filling the feild if the feild value is empty btw field value will be always filled but if the user empties the field then this will ensure no empty value
                 }
                 validating(i.name,i.value);
                 forms.append(`${i.name}`,i.value)   
@@ -462,7 +475,7 @@ function editing(event){
         alert("some internal error occured")
         return ;
     }
-    forms.append('old',struct.querySelector('[name=name]').textContent)
+    forms.append('old',struct.querySelector('[name=products_id]').textContent)
     
     if (!navigator.onLine) {
         alert('You are offline. Please check your internet connection.');
@@ -497,6 +510,7 @@ function editing(event){
     })
     .then(data =>{  
         value_setting(struct,form_data,dateTime,data)
+        //above func is used to setting the edited value in the frontend table row
         f.removeEventListener('click',editing)
         removing();
         t = 0
@@ -578,17 +592,17 @@ function submittings(e){
     })
     .then(data =>{  
         let row = document.createElement('tr')
-        row.className = 'rows'
-        row.className += ' group'
-        row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
+        row.className = 'rows group'
+        //row.className += ' group'
+        row.innerHTML=`<th class="text-[2.4vh]" scope="row" name="id"></th>
+                    <td class="text-[2.4vh] hidden" name="products_id"></td>
                     <td class="text-[2.4vh]" name="name"></td>
                     <td class="text-[2.4vh]" name="author"></td>
                     <td class="text-[2.4vh]" name="price"></td>
                     <td class="text-[2.4vh] line-through" name="s_price"></td>
                     <td class="text-[2.4vh]" name="star"></td>
                     <td class="text-[2.4vh]" name="quantity"></td>
-                    <td class="text-[2.4vh]" name="discount"></td>
-                    <td name="image" class="truncate text-[2.4vh] hidden"></td>
+                    <td class="text-[2.4vh]" name="discount"></td>      
                     <td class="text-[2.4vh]"></td>
                     <td class="text-[2.4vh]">
         
@@ -604,23 +618,25 @@ function submittings(e){
                         </ul>
                       </div>
                     </td>`
-        let b = document.querySelector('.row_append').children  
+        let b = document.querySelector('.row_append').children 
         let c = b.length
+        //c is telling how many table rows are already there 
         let d = row.children
-        d[0].textContent = c + 1;
-        d[1].textContent = form_data['name'].value
-        d[2].textContent = form_data['author'].value
-        d[3].textContent = `₹${form_data['price'].value}`
-        d[4].textContent = `₹${form_data['s_price'].value}`
-        d[5].textContent = form_data['star'].value
-        d[6].textContent = form_data['quantity'].value
-        d[7].textContent = `${form_data['discount'].value}%`
-        d[8].textContent = data
+        d[0].textContent = c + 1
+        d[1].textContent = data[1]; 
+        d[2].textContent = form_data['name'].value
+        d[3].textContent = form_data['author'].value
+        d[4].textContent = `₹${form_data['price'].value}`
+        d[5].textContent = `₹${form_data['s_price'].value}`
+        d[6].textContent = form_data['star'].value
+        d[7].textContent = form_data['quantity'].value
+        d[8].textContent = `${form_data['discount'].value}%`
         d[9].textContent = dateTime
         document.querySelector('.row_append').appendChild(row)
         removing();
         f.removeEventListener('click',submittings)
         alert("Data added successfully")
+        location.reload();
         //here we cant write swal function as it is asynchr code and our page is loading automatically page loading prevent running of async code that's why simple alert here
     })
     .catch(e => {
@@ -738,7 +754,41 @@ function viewing(event){
     })
     document.querySelector('.inp').disabled = true
     document.querySelector('.closed').classList.remove('invisible')
-    document.querySelector('.static_image').src =  `/${event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.previousElementSibling.textContent}`
+    let i = event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.textContent
+    
+    fetch(`http://127.0.0.1:8011/gettingImage/${i}`).
+    then(res => {
+        if (!res.ok) {
+            if (res.status == 422) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else if(res.status == 404) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })    
+            }
+            else{
+                throw new Error(res)
+            }
+        }
+        return res.json()}
+).then(data => {
+    if (data) {
+        document.querySelector('.static_image').src = `/${data}`
+    }
+    else{
+        document.querySelector('.static_image').src = "https://via.placeholder.com/150?text=Image+Not+Found"
+    }
+}).catch(e => {
+    swal({
+        icon:"error",
+        text: `${e}`,
+        className: "sweetBox"
+      })
+})
+    
 }
 
 function closes(event){

@@ -140,7 +140,7 @@ class ProductInfo(SQLModel, table=True):
 
 class ProductInfo2Validations(SQLModel):
     product_id: int | None = Field(default=None, primary_key=True)
-    name: Annotated[str, StringConstraints(strip_whitespace=True),Field(unique=True)]
+    name: Annotated[str, StringConstraints(strip_whitespace=True)]
     author: Annotated[str, StringConstraints(strip_whitespace=True)]
     star: Annotated[float, Path(gt=0, le=5)]
     price: Annotated[int, Path(gt=0)]

@@ -146,7 +146,7 @@ async def uploading(name: str = Form(...), author: str = Form(...), star: float 
 async def uploading2(name: str = Form(...), author: str = Form(...), star: float = Form(...), price: int = Form(...), s_price: int = Form(...), quantity: int = Form(...), discount: int = Form(...), time: str = Form(...), image: UploadFile = Form(...)):
     images = await image.read()
     '''C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/'''
-    FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
+    FILEPATH = "static/"
     filename = image.filename
     extension = filename.split(".")[1]
     if extension not in ["png", "jpeg", "jpg"]:
@@ -154,27 +154,31 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
 
     token_name = secrets.token_hex(10)+"."+extension
     generated_name = FILEPATH+token_name
-    with open(generated_name, "wb") as file:
-        file.write(images)
-    file.close()
-    FILEPATH = "static/"
-    # filename = image.filename
-    # extension = filename.split(".")[1]
-    # if extension not in ["png", "jpeg", "jpg"]:
-    #     raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
-    #
-    #token_name = secrets.token_hex(10) + "." + extension
-    generated_name = FILEPATH + token_name
-    with open(generated_name, "wb") as file:
-        file.write(images)
-    file.close()
+    '''token_name describing the new file name'''
+    '''generated_name describing also the filepath'''
     products = ProductInfo2Validations(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, time=time, image=generated_name)
     validate = ProductInfo2.model_validate(products)
     with Session(engine) as session:
+        with open(generated_name, "wb") as file:
+            file.write(images)
+        file.close()
+        '''we write above three line of code in database code because we want that basic validation(validate productInfo2.model_validate) is done before when the file is uploading in directory'''
+        '''if we does not do this image will always be upload in directory irrespective of record is stored in database or nto'''
+        FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
+        # filename = image.filename
+        # extension = filename.split(".")[1]
+        # if extension not in ["png", "jpeg", "jpg"]:
+        #     raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
+        #
+        # token_name = secrets.token_hex(10) + "." + extension
+        generated_name = FILEPATH + token_name
+        with open(generated_name, "wb") as file:
+            file.write(images)
+        file.close()
         session.add(validate)
         session.commit()
         session.refresh(validate)
-        return generated_name
+        return [generated_name, validate.product_id]
 '''Get-Process | Where-Object { $_.ProcessName -eq "python" } | Stop-Process -Force
 '''
 '''for killing the background process'''
@@ -229,15 +233,16 @@ async def updating(old: str = Form(...), name: str = Form(...), author: str = Fo
         return 'data added successfully'
 
 @app.put('/updating20')
-async def updating2(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), time: str = Form(...)):
+async def updating2(old: int = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), time: str = Form(...)):
     with Session(engine) as session:
-        peices = session.exec(select(ProductInfo2).where(ProductInfo2.name == old)).first()
+        peices = session.exec(select(ProductInfo2).where(ProductInfo2.product_id == old)).first()
         if not star:
             star = peices.star
         if not quantity:
             quantity = peices.quantity
-        products = ProductInfo2(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity,
-                               discount=discount, time=time)
+        products = ProductInfo2(product_id=peices.product_id, name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity,discount=discount, time=time, image=peices.image)
+        products = ProductInfo2.model_validate(products)
+        '''this is basically for the validation purpose that's why create the whole object of class so that it can validate'''
         form_data = products.model_dump(exclude_unset=True)
         peices.sqlmodel_update(form_data)
         session.commit()
@@ -246,11 +251,11 @@ async def updating2(old: str = Form(...), name: str = Form(...), author: str = F
 
 
 @app.put('/updating21')
-async def updating2(old: str = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...), time: str = Form(...)):
-    if image:
-        images = await image.read()
-        '''C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/'''
-        FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
+async def updating2(old: int = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...), price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...), discount: str = Form(...), image: UploadFile = Form(...), time: str = Form(...)):
+    with Session(engine) as session:
+        if image:
+            images = await image.read()
+        FILEPATH = "static/"
         filename = image.filename
         extension = filename.split(".")[1]
         if extension not in ["png", "jpeg", "jpg"]:
@@ -258,10 +263,21 @@ async def updating2(old: str = Form(...), name: str = Form(...), author: str = F
 
         token_name = secrets.token_hex(10) + "." + extension
         generated_name = FILEPATH + token_name
+        peices = session.exec(select(ProductInfo2).where(ProductInfo2.product_id == old)).first()
+        if not star:
+            star = peices.star
+        if not quantity:
+            quantity = peices.quantity
+        products = ProductInfo2Validations(product_id=peices.product_id, name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, image=generated_name, time=time)
+        products = ProductInfo2.model_validate(products)
+        form_data = products.model_dump(exclude_unset=True)
+        peices.sqlmodel_update(form_data)
+        session.commit()
+        session.refresh(peices)
         with open(generated_name, "wb") as file:
             file.write(images)
         file.close()
-        FILEPATH = "static/"
+        FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
         # filename = image.filename
         # extension = filename.split(".")[1]
         # if extension not in ["png", "jpeg", "jpg"]:
@@ -272,25 +288,13 @@ async def updating2(old: str = Form(...), name: str = Form(...), author: str = F
         with open(generated_name, "wb") as file:
             file.write(images)
         file.close()
-    with Session(engine) as session:
-        peices = session.exec(select(ProductInfo2).where(ProductInfo2.name == old)).first()
-        if not star:
-            star = peices.star
-        if not quantity:
-            quantity = peices.quantity
-        products = ProductInfo2(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity,
-                               discount=discount, image=generated_name, time=time)
-        form_data = products.model_dump(exclude_unset=True)
-        peices.sqlmodel_update(form_data)
-        session.commit()
-        session.refresh(peices)
         return generated_name
 
 
-@app.delete('/deleting/{name}')
-def deleting(name: str):
+@app.delete('/deleting/{product_id}')
+def deleting(product_id: str):
     with Session(engine) as session:
-        peices = session.exec(select(ProductInfo2).where(ProductInfo2.name == name)).first()
+        peices = session.exec(select(ProductInfo2).where(ProductInfo2.product_id == product_id)).first()
         session.delete(peices)
         session.commit()
         return "delete successfully"
@@ -333,6 +337,13 @@ def searching(authors: str):
             k.append(bb)
         return k
 
+
+@app.get('/gettingImage/{product_id}')
+def gettingImage(product_id: int):
+    with Session(engine) as session:
+        image = session.exec(select(ProductInfo2.image).where(ProductInfo2.product_id == product_id)).first()
+        print(image)
+        return image
 
 def start():
     create_table()
