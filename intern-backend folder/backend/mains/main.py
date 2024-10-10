@@ -32,8 +32,8 @@ load_dotenv()
 app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 otp = 0
-app.mount("/C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static", StaticFiles(directory="static"), name="static")
-'''app.mount("/static", StaticFiles(directory="C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static"), name="static")'''
+'''app.mount("/C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static", StaticFiles(directory="static"), name="static")'''
+app.mount("/static", StaticFiles(directory="C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
