@@ -33,7 +33,7 @@
       },
       {
         "src": "/(.*)",
-        "dest": "/inter-frontend folder/html_folder/index.css"
+        "dest": "/inter-frontend folder/css_folder/index.css"
       }
     ]
 }
