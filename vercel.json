@@ -20,10 +20,6 @@
         "dest": "/inter-frontend folder/css_folder/$1"
       },
       {
-        "src": "/html/(.*)",
-        "dest": "/inter-frontend folder/html_folder/$1"
-      },
-      {
         "src": "/js/(.*)",
         "dest": "/inter-frontend folder/javascript_folder/$1"
       },
