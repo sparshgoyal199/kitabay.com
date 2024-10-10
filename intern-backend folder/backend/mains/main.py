@@ -33,7 +33,10 @@ app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 otp = 0
 '''app.mount("/C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static", StaticFiles(directory="static"), name="static")'''
-app.mount("/static", StaticFiles(directory="C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder"), name="static")
+app.mount("/static", StaticFiles(directory="inter-frontend folder/css_folder"), name="css")
+app.mount("/static", StaticFiles(directory="inter-frontend folder/html_folder"), name="html")
+app.mount("/static", StaticFiles(directory="inter-frontend folder/javascript_folder"), name="js")
+app.mount("/static", StaticFiles(directory="inter-frontend folder/image"), name="image")
 
 app.add_middleware(
     CORSMiddleware,
