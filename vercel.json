@@ -17,15 +17,15 @@
       },
       {
         "src": "/css/(.*)",
-        "dest": "/inter-frontend folder/css_folder/$1"
+        "dest": "/inter-frontend folder/css_folder"
       },
       {
         "src": "/js/(.*)",
-        "dest": "/inter-frontend folder/javascript_folder/$1"
+        "dest": "/inter-frontend folder/javascript_folder"
       },
       {
         "src": "/images/(.*)",
-        "dest": "/inter-frontend folder/image/$1"
+        "dest": "/inter-frontend folder/image"
       },
       {
         "src": "/(.*)",
