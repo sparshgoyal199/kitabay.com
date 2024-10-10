@@ -7,7 +7,7 @@
       },
       {
         "src": "inter-frontend folder/**/*",
-        "use": "@vercel/inter-frontend folder"
+        "use": "@vercel/static"
       }
     ],
     "routes": [
