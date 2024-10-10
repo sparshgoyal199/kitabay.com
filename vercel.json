@@ -7,7 +7,7 @@
       },
       {
         "src": "inter-frontend folder/**/*",
-        "use": "@vercel/static"
+        "use": "@vercel/inter-frontend folder"
       }
     ],
     "routes": [
@@ -32,5 +32,5 @@
         "dest": "/inter-frontend folder/html_folder/index.html"
       }
     ]
-  }
+}
   
