@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "intern-backend folder/backend/mains/main.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/backend/(.*)",
+        "dest": "intern-backend folder/backend/mains/main.py"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/inter-frontend folder/html_folder/index.html"
+      }
+    ]
+  }
+  
