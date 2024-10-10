@@ -30,14 +30,6 @@
       {
         "src": "/(.*)",
         "dest": "/inter-frontend folder/html_folder/index.html"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/inter-frontend folder/css_folder/index.css"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/inter-frontend folder/javascript_folder/index.js"
       }
     ]
 }
