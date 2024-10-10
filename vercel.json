@@ -6,29 +6,29 @@
         "use": "@vercel/python"
       },
       {
-        "src": "inter-frontend/**/*",
+        "src": "inter-frontend folder/**/*",
         "use": "@vercel/static"
       }
     ],
     "routes": [
       {
-        "src": "/intern-backend folder/mains/(.*)",
-        "dest": "intern-backend folder/backend/mains/main.py"
+        "src": "/api/(.*)",
+        "dest": "/intern-backend folder/backend/mains/main.py"
       },
       {
-        "src": "/(.*).html_folder",
-        "dest": "/inter-frontend folder/html_folder/$1.html"
-      },
-      {
-        "src": "/css_folder/(.*)",
+        "src": "/css/(.*)",
         "dest": "/inter-frontend folder/css_folder/$1"
       },
       {
-        "src": "/javascript_folder/(.*)",
+        "src": "/html/(.*)",
+        "dest": "/inter-frontend folder/html_folder/$1"
+      },
+      {
+        "src": "/js/(.*)",
         "dest": "/inter-frontend folder/javascript_folder/$1"
       },
       {
-        "src": "/image/(.*)",
+        "src": "/images/(.*)",
         "dest": "/inter-frontend folder/image/$1"
       },
       {
