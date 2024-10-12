@@ -16,28 +16,20 @@
         "dest": "/intern-backend folder/backend/mains/main.py"
       },
       {
-        "src": "/css/(.*)",
+        "src": "/css_folder/(.*)",
         "dest": "/inter-frontend folder/css_folder/$1"
       },
       {
-        "src": "/js/(.*)",
+        "src": "/javascript_folder/(.*)",
         "dest": "/inter-frontend folder/javascript_folder/$1"
       },
       {
-        "src": "/images/(.*)",
+        "src": "/image/(.*)",
         "dest": "/inter-frontend folder/image/$1"
       },
       {
         "src": "/(.*)",
         "dest": "/inter-frontend folder/html_folder/index.html"
-      },
-      {
-        "src": "/css/(.*)",
-        "dest": "/inter-frontend folder/css_folder/index.css"
-      },
-      {
-        "src": "/css/(.*)",
-        "dest": "/inter-frontend folder/javascript_folder/index.js"
       }
     ]
 }
