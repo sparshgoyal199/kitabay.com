@@ -35,7 +35,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 otp = 0
 
 frontend_path = Path(__file__).resolve().parent.parent.parent.parent / 'inter-frontend folder'
-print(frontend_path)
 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 @app.get("/")
@@ -362,4 +361,4 @@ def gettingImage(product_id: int):
 
 def start():
     create_table()
-    uvicorn.run('mains.main:app', host='127.0.0.1', port=8011, reload=True)
+    uvicorn.run('mains.main:app', host='127.0.0.1', port=8000, reload=True)
