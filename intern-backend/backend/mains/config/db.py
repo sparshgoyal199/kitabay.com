@@ -3,9 +3,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 connection_str = os.getenv('DB_URI')
-
 engine = create_engine(connection_str)
-
 
 
 def create_table():
