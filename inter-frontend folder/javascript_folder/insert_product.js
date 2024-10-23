@@ -47,9 +47,9 @@ function forward(event){
             deletes.children[count2].remove()
             count2 -= 1;
         }
-        let main = (forBack - 1)*first_data
+        //let main = (forBack - 1)*first_data
         //main is telling how many first records we have to skip 
-        get_data(first_data,main)
+        get_data(first_data,forBack)
         }
 }
 
@@ -65,9 +65,9 @@ function backward(event){
             deletes.children[count2].remove()
             count2 -= 1;
         }
-        let main = (forBack - 1)*first_data
+        //let main = (forBack - 1)*first_data
         //main is telling how many first records we have to skip 
-        get_data(first_data,main)
+        get_data(first_data,forBack)
     }
 }
 
@@ -81,17 +81,17 @@ function bringing(event){
         deletes.children[count2].remove()
         count2 -= 1;
     }
-    let main = (forBack - 1)*first
+    //let main = (forBack - 1)*first
     //main is telling how many first records we have to skip 
-    get_data(first,main)
+    get_data(first,forBack)
 }
 
-function get_data(a,b){
+function get_data(limit,page){
     if (!navigator.onLine) {  
         alert('You are offline. Please check your internet connection.');
         return;
     }
-    fetch(`http://127.0.0.1:8011/table_data/${a}/${b}`).
+    fetch(`http://127.0.0.1:8011/table_data/${limit}/${page}`).
     then(res => {
         if (!res.ok) {
             if (res.status == 422) {
@@ -116,7 +116,7 @@ function get_data(a,b){
         return res.json()}
 )
     .then(data =>{
-        loadingFilling(data[0],data[1],b,a)      
+        loadingFilling(data[0],data[1],limit,page)      
     })
     .catch(e => {
         swal({
@@ -128,7 +128,7 @@ function get_data(a,b){
 };
 
 //get the data from dbmns when page reloads
-function loadingFilling(data,records,specific,untill){
+function loadingFilling(data,records,limit,page){
     let z = 0
     for (const i of data) {
         z += 1
@@ -174,12 +174,12 @@ function loadingFilling(data,records,specific,untill){
         d[9].textContent = i['time']
         document.querySelector('.row_append').appendChild(row)
     }
-    document.querySelector('.state').textContent = `Results:${specific+1} - ${parseInt(specific) + parseInt(untill)} of ${records}`
+    document.querySelector('.state').textContent = `Results:${limit*(page-1) + 1} - ${parseInt(limit*page)} of ${records}`
 }
 
 
 window.onload = ()=>{
-    get_data(5,0);
+    get_data(5,1);
 }
 
 
@@ -205,7 +205,6 @@ function uploads(event){
     }
     else{
         struct = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
-        console.log(struct);
         //pay attention on struct catch the table row
         removeAtrributes(struct);     
         f.addEventListener('click',editing)
@@ -654,7 +653,14 @@ function searching(event){
         alert('You are offline. Please check your internet connection.');
         return;
     }
-    if (searched) {
+    let deletes = document.querySelector('.row_append')
+        //to delete the exisiting data
+        let count2 = deletes.children.length - 1;
+        while (count2 != -1) {
+            deletes.children[count2].remove()
+            count2 -= 1;
+    }
+    if (searched.length > 2) {
         fetch(`http://127.0.0.1:8011/searching/${event.target.value}`).
     then(res => {
         if (!res.ok) {
@@ -675,27 +681,21 @@ function searching(event){
         return res.json()}
 )
     .then(data =>{
-        let deletes = document.querySelector('.row_append')
-        let count2 = deletes.children.length - 1;
-        while (count2 != -1) {
-            deletes.children[count2].remove()
-            count2 -= 1;
-        }
         let z = 0
-        for (const i of data) {
+        for (let i of data) {
         z += 1
         let row = document.createElement('tr')
         row.className = 'rows'
         row.className += ' group'
         row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
+                    <td class="text-[2.4vh] hidden" name="products_id"></td>
                     <td class="text-[2.4vh]" name="name"></td>
                     <td class="text-[2.4vh]" name="author"></td>
                     <td class="text-[2.4vh]" name="price"></td>
                     <td class="text-[2.4vh] line-through" name="s_price"></td>
                     <td class="text-[2.4vh]" name="star"></td>
                     <td class="text-[2.4vh]" name="quantity"></td>
-                    <td class="text-[2.4vh]" name="discount"></td>
-                    <td name="image" class="truncate text-[2.4vh] hidden"></td>
+                    <td class="text-[2.4vh]" name="discount"></td>      
                     <td class="text-[2.4vh]"></td>
                     <td class="text-[2.4vh]">
         
@@ -705,8 +705,9 @@ function searching(event){
                         </button>
                         <ul class="dropdown-menu">
                           <!-- Dropdown menu links -->
-                          <li><button class="dropdown-item text-[2.4vh]" onclick="uploads(event)">Edit Data</button></li>
-                          <li><button class="dropdown-item text-[2.4vh]" onclick="deleting(event)">Delete Data</button></li>
+                          <li><button class="dropdown-item" onclick="uploads(event)">Edit Data</button></li>
+                          <li><button class="dropdown-item" onclick="deleting(event)">Delete Data</button></li>
+                          <li><button class="dropdown-item" onclick="viewing(event)">view image</button></li>
                         </ul>
                       </div>
                     </td>`
@@ -714,14 +715,14 @@ function searching(event){
         let c = b.length*/
         let d = row.children
         d[0].textContent = z;
-        d[1].textContent = i['name']
-        d[2].textContent = i['author']
-        d[3].textContent = `₹${i['price']}`
-        d[4].textContent = `₹${i['s_price']}`
-        d[5].textContent = i['star']
-        d[6].textContent = i['quantity']
-        d[7].textContent = `${i['discount']}%`
-        d[8].textContent = i['image']
+        d[1].textContent = i['product_id']
+        d[2].textContent = i['name']
+        d[3].textContent = i['author']
+        d[4].textContent = `₹${i['price']}`
+        d[5].textContent = `₹${i['s_price']}`
+        d[6].textContent = i['star']
+        d[7].textContent = i['quantity']
+        d[8].textContent = `${i['discount']}%`
         d[9].textContent = i['time']
         document.querySelector('.row_append').appendChild(row)
     }
@@ -734,9 +735,14 @@ function searching(event){
           })
     })
     }
+    else{
+        get_data(document.querySelector('.selections').value,forBack);
+    }
 }
 
+
 function viewing(event){
+    document.querySelector('.static_image').addEventListener('error',ErrorImage)
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
     
     buttons.forEach(e => {
@@ -775,12 +781,7 @@ function viewing(event){
         }
         return res.json()}
 ).then(data => {
-    if (data) {
-        document.querySelector('.static_image').src = `/${data}`
-    }
-    else{
-        document.querySelector('.static_image').src = "https://via.placeholder.com/150?text=Image+Not+Found"
-    }
+     document.querySelector('.static_image').src = `/${data}`
 }).catch(e => {
     swal({
         icon:"error",
@@ -791,8 +792,13 @@ function viewing(event){
     
 }
 
+function ErrorImage(event){
+    event.target.src = '/image/image_error.webp'
+}
+
 function closes(event){
     document.querySelector('.static_image').src = ""
+    document.querySelector('.static_image').removeEventListener('error',ErrorImage)
     document.querySelector('.closed').className += " invisible"
     removing();
 }

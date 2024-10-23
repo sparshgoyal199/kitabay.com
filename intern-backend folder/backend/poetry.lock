@@ -1156,6 +1156,17 @@ build-docs = ["cloud-sptheme (>=1.10.1)", "sphinx (>=1.6)", "sphinxcontrib-fullt
 totp = ["cryptography"]
 
 [[package]]
+name = "pathlib"
+version = "1.0.1"
+description = "Object-oriented filesystem paths"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pathlib-1.0.1-py3-none-any.whl", hash = "sha256:f35f95ab8b0f59e6d354090350b44a80a80635d22efdedfa84c7ad1cf0a74147"},
+    {file = "pathlib-1.0.1.tar.gz", hash = "sha256:6940718dfc3eff4258203ad5021090933e5c04707d5ca8cc9e73c94a7894ea9f"},
+]
+
+[[package]]
 name = "phonenumbers"
 version = "8.13.40"
 description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
@@ -2081,4 +2092,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f8702e14af0e1020d0f83650fe09cc0e16e7e66dc4397dec6572e90475a5df64"
+content-hash = "dccb0761f1076348c8167d571e569a18c6b5dd636fe94876cb675a9810cf7b6c"

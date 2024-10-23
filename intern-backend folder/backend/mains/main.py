@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, Request, status, Path, Form, UploadF
 from sqlalchemy.exc import IntegrityError
 import uvicorn
 import random
+from pathlib import Path
 from typing import Optional
 import os
 import yaml
@@ -14,7 +15,7 @@ import secrets
 from io import BytesIO
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse,HTMLResponse
 from collections import defaultdict
 from pydantic import BaseModel, StringConstraints, EmailStr, model_validator
 from sqlmodel import Field, Session, select
@@ -32,16 +33,25 @@ load_dotenv()
 app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 otp = 0
-'''app.mount("/C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static", StaticFiles(directory="static"), name="static")'''
 
-#app.mount("/static", StaticFiles(directory="inter-frontend folder/css_folder"), name="css")
-#app.mount("/static", StaticFiles(directory="inter-frontend folder/html_folder"), name="html")
-#app.mount("/static", StaticFiles(directory="inter-frontend folder/javascript_folder"), name="js")
-#app.mount("/static", StaticFiles(directory="inter-frontend folder/image"), name="image")
+frontend_path = Path(__file__).resolve().parent.parent.parent.parent / 'inter-frontend folder'
+print(frontend_path)
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+@app.get("/")
+def read_index():
+    # Access your HTML file
+    with open(frontend_path / 'html_folder/index.html', 'r') as file:
+        html_content = file.read()
+    return HTMLResponse(content=html_content)
+
+# app.mount("/static/css", StaticFiles(directory="inter-frontend folder/css_folder"), name="css")
+# app.mount("/static/js", StaticFiles(directory="inter-frontend folder/javascript_folder"), name="js")
+# app.mount("/static/image", StaticFiles(directory="inter-frontend folder/image"), name="image")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500"],  # Update this with your frontend origin
+    allow_origins=["http://127.0.0.1:5501"],  # Update this with your frontend origin
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
@@ -317,11 +327,13 @@ def table_data(n: int, m: int):
     return a'''
 
 
-@app.get('/table_data/{n}/{m}')
-def table_data(n: int, m: int):
+@app.get('/table_data/{limits}/{skip}')
+def table_data(limits: int, skip: int):
     a = []
+    skip = (skip-1)*limits
+    print(skip)
     with Session(engine) as session:
-        v = session.exec(select(ProductInfo2).offset(m).limit(n)).all()
+        v = session.exec(select(ProductInfo2).offset(skip).limit(limits)).all()
         y = session.exec(select(func.count(ProductInfo2.name))).one()
         for i in v:
             b = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
@@ -330,11 +342,11 @@ def table_data(n: int, m: int):
     return [a, y]
 
 
-@app.get('/searching/{authors}')
-def searching(authors: str):
+@app.get('/searching/{keyword}')
+def searching(keyword: str):
     k = []
     with Session(engine) as session:
-        filters1 = session.exec(select(ProductInfo2).where(ProductInfo2.author.startswith(authors) | ProductInfo2.name.startswith(authors))).all()
+        filters1 = session.exec(select(ProductInfo2).where(ProductInfo2.author.like('%'+keyword+'%') | ProductInfo2.name.like('%'+keyword+'%'))).all()
         for i in filters1:
             bb = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
                  "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
@@ -346,7 +358,6 @@ def searching(authors: str):
 def gettingImage(product_id: int):
     with Session(engine) as session:
         image = session.exec(select(ProductInfo2.image).where(ProductInfo2.product_id == product_id)).first()
-        print(image)
         return image
 
 def start():
