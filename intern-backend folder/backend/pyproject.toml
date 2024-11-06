@@ -23,6 +23,8 @@ cryptography = "^43.0.0"
 python-multipart = "^0.0.9"
 alembic = "^1.13.2"
 pathlib = "^1.0.1"
+fuzzywuzzy = "^0.18.0"
+python-levenshtein = "^0.26.1"
 
 [tool.poetry.scripts]
 dev="mains.main:start"

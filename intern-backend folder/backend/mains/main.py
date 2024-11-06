@@ -26,7 +26,9 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from passlib.context import CryptContext
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse,Response
+from fastapi.responses import JSONResponse, Response
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 load_dotenv()
 
 
@@ -330,7 +332,6 @@ def table_data(n: int, m: int):
 def table_data(limits: int, skip: int):
     a = []
     skip = (skip-1)*limits
-    print(skip)
     with Session(engine) as session:
         v = session.exec(select(ProductInfo2).offset(skip).limit(limits)).all()
         y = session.exec(select(func.count(ProductInfo2.name))).one()
@@ -346,10 +347,23 @@ def searching(keyword: str):
     k = []
     with Session(engine) as session:
         filters1 = session.exec(select(ProductInfo2).where(ProductInfo2.author.like('%'+keyword+'%') | ProductInfo2.name.like('%'+keyword+'%'))).all()
+        '''above lines are for fuzzy-wuzzy'''
+        '''choices_name = session.exec(select(ProductInfo2.name)).all()
+        choices_author = session.exec(select(ProductInfo2.author)).all()
+        selects_name = process.extract(keyword, choices_name, limit=5)
+        selects_author = process.extract(keyword, choices_author, limit=5)
+        selected = []
+        for i in range(5):
+            selected.append(selects_name[i][0])
+            selected.append(selects_author[i][0])
+
+        filters1 = session.exec(select(ProductInfo2).where(ProductInfo2.name.in_(selected) | ProductInfo2.author.in_(selected))).all()'''
+
         for i in filters1:
             bb = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
                  "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
-            k.append(bb)
+            if bb not in k:
+                k.append(bb)
         return k
 
 
@@ -361,4 +375,4 @@ def gettingImage(product_id: int):
 
 def start():
     create_table()
-    uvicorn.run('mains.main:app', host='127.0.0.1', port=8000, reload=True)
+    uvicorn.run('mains.main:app', host='127.0.0.1', port=8011, reload=True)

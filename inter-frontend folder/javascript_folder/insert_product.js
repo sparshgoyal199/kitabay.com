@@ -129,20 +129,23 @@ function get_data(limit,page){
 
 //get the data from dbmns when page reloads
 function loadingFilling(data,records,limit,page){
-    let z = 0
+    let z = limit*(page-1) + 1
     for (const i of data) {
-        z += 1
         let row = document.createElement('tr')
         row.className = 'rows group'
         row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
                     <td class="text-[2.4vh] hidden" name="products_id"></td>
                     <td class="text-[2.4vh]" name="name"></td>
                     <td class="text-[2.4vh]" name="author"></td>
-                    <td class="text-[2.4vh]" name="price"></td>
-                    <td class="text-[2.4vh] line-through" name="s_price"></td>
-                    <td class="text-[2.4vh]" name="star"></td>
-                    <td class="text-[2.4vh]" name="quantity"></td>
-                    <td class="text-[2.4vh]" name="discount"></td>
+                    <td class="text-[2.4vh]" name="price" >
+                        <span></span>
+                        <sub class="text-[2.1vh] font-medium subscript"></sub>
+                    </td>
+                    <td class="text-[2.4vh]" name="s_price" style="padding-left:15px;"></td>
+                    <td name="star">
+                        <div class="colorings"><span style="margin-top: 1.35px;" >${parseFloat(i['star']).toFixed(1)}</span><span>⭐</span></div> 
+                    </td>
+                    <td class="text-[2.4vh]" style="padding-left:19px;" name="quantity"></td>
                     
                     <td class="text-[2.4vh]"></td>
                     <td class="text-[2.4vh]">
@@ -166,13 +169,16 @@ function loadingFilling(data,records,limit,page){
         d[1].textContent = i['product_id']
         d[2].textContent = i['name']
         d[3].textContent = i['author']
-        d[4].textContent = `₹${i['price']}`
+        d[4].children[0].textContent = `₹${i['price']}`
+        d[4].children[1].textContent = `(${i['discount']}%)`
         d[5].textContent = `₹${i['s_price']}`
-        d[6].textContent = i['star']
+        //** when html is written inside js file and has to select that written tag in js and specifically this tag is child of another tag then for that js mai html jis bhi tag ki innerhtml hai uski class ko select krke queryselector se jis tag mai jaana chate ho document.querySelector('.removes  .stars-inner')*/
+        //d[6].textContent = i['star']
         d[7].textContent = i['quantity']
-        d[8].textContent = `${i['discount']}%`
-        d[9].textContent = i['time']
+        //d[8].textContent = `${i['discount']}%`
+        d[8].textContent = i['time']
         document.querySelector('.row_append').appendChild(row)
+        z += 1
     }
     document.querySelector('.state').textContent = `Results:${limit*(page-1) + 1} - ${parseInt(limit*page)} of ${records}`
 }
@@ -327,14 +333,29 @@ function removeAtrributes(struct){
     //document.querySelector('.product_image').value = null
     document.querySelector('.product_image').removeAttribute("required")
     rem.forEach(e => {
+        let a
         e.nextElementSibling.removeAttribute("required")
-        let a = struct.querySelector(`[name=${e.nextElementSibling.name}]`).textContent
-        if (e.nextElementSibling.name == 'price' || e.nextElementSibling.name == 's_price') {
+
+        if (e.nextElementSibling.name == 'star') {
+            a = struct.querySelector(`[name=${e.nextElementSibling.name}]`).children[0].children[0].textContent
+        }
+        if (e.nextElementSibling.name == 'author' || e.nextElementSibling.name == 'name' || e.nextElementSibling.name == 'quantity') {
+            a = struct.querySelector(`[name=${e.nextElementSibling.name}]`).textContent
+        }
+        if (e.nextElementSibling.name == 'price') {
+            a = struct.querySelector(`[name=${e.nextElementSibling.name}]`).children[0].textContent
+            a = a.substring(1,a.length)
+        }
+        
+        if (e.nextElementSibling.name == 's_price') {
+            a = struct.querySelector(`[name=${e.nextElementSibling.name}]`).textContent
             a = a.substring(1,a.length)
         }
         if (e.nextElementSibling.name == 'discount') {
-            a = a.substring(0,a.length-1)
+            a = struct.querySelector(`[name=price]`).children[1].textContent
+            a = a.substring(1,a.length-2)
         }
+        
         e.nextElementSibling.value = a
         e.style.visibility = "hidden"
         //so that 'red star' can be hide'
@@ -597,11 +618,12 @@ function submittings(e){
                     <td class="text-[2.4vh] hidden" name="products_id"></td>
                     <td class="text-[2.4vh]" name="name"></td>
                     <td class="text-[2.4vh]" name="author"></td>
-                    <td class="text-[2.4vh]" name="price"></td>
-                    <td class="text-[2.4vh] line-through" name="s_price"></td>
-                    <td class="text-[2.4vh]" name="star"></td>
-                    <td class="text-[2.4vh]" name="quantity"></td>
-                    <td class="text-[2.4vh]" name="discount"></td>      
+                    <td class="text-[2.4vh]" name="price" style="padding-left:17px;"></td>
+                    <td class="text-[2.4vh]" name="s_price" style="padding-left:15px;"></td>
+                    <td name="star">
+                        <div class="colorings"><span style="margin-top: 1.35px;" >${parseFloat(form_data['star']).toFixed(1)}</span><span>⭐</span></div> 
+                    </td>
+                    <td class="text-[2.4vh]" style="padding-left:19px; name="quantity"></td>
                     <td class="text-[2.4vh]"></td>
                     <td class="text-[2.4vh]">
         
@@ -627,15 +649,15 @@ function submittings(e){
         d[3].textContent = form_data['author'].value
         d[4].textContent = `₹${form_data['price'].value}`
         d[5].textContent = `₹${form_data['s_price'].value}`
-        d[6].textContent = form_data['star'].value
+        //d[6].textContent = form_data['star'].value
         d[7].textContent = form_data['quantity'].value
-        d[8].textContent = `${form_data['discount'].value}%`
-        d[9].textContent = dateTime
+        //d[8].textContent = `${form_data['discount'].value}%`
+        d[8].textContent = dateTime
         document.querySelector('.row_append').appendChild(row)
         removing();
         f.removeEventListener('click',submittings)
         alert("Data added successfully")
-        location.reload();
+        //location.reload();
         //here we cant write swal function as it is asynchr code and our page is loading automatically page loading prevent running of async code that's why simple alert here
     })
     .catch(e => {
@@ -682,6 +704,7 @@ function searching(event){
 )
     .then(data =>{
         let z = 0
+        console.log(data);
         for (let i of data) {
         z += 1
         let row = document.createElement('tr')
@@ -691,11 +714,12 @@ function searching(event){
                     <td class="text-[2.4vh] hidden" name="products_id"></td>
                     <td class="text-[2.4vh]" name="name"></td>
                     <td class="text-[2.4vh]" name="author"></td>
-                    <td class="text-[2.4vh]" name="price"></td>
-                    <td class="text-[2.4vh] line-through" name="s_price"></td>
-                    <td class="text-[2.4vh]" name="star"></td>
-                    <td class="text-[2.4vh]" name="quantity"></td>
-                    <td class="text-[2.4vh]" name="discount"></td>      
+                    <td class="text-[2.4vh]" name="price" style="padding-left:17px;"></td>
+                    <td class="text-[2.4vh]" name="s_price" style="padding-left:15px;"></td>
+                    <td class="text-[2.4vh]" name="star">
+                        <div class="colorings"><span style="margin-top: 1.35px;" >${parseFloat(i['star']).toFixed(1)}</span><span>⭐</span></div> 
+                    </td>
+                    <td class="text-[2.4vh]" style="padding-left:19px; name="quantity"></td>
                     <td class="text-[2.4vh]"></td>
                     <td class="text-[2.4vh]">
         
@@ -720,10 +744,10 @@ function searching(event){
         d[3].textContent = i['author']
         d[4].textContent = `₹${i['price']}`
         d[5].textContent = `₹${i['s_price']}`
-        d[6].textContent = i['star']
+        //d[6].textContent = i['star']
         d[7].textContent = i['quantity']
-        d[8].textContent = `${i['discount']}%`
-        d[9].textContent = i['time']
+        //d[8].textContent = `${i['discount']}%`
+        d[8].textContent = i['time']
         document.querySelector('.row_append').appendChild(row)
     }
     })
@@ -736,6 +760,13 @@ function searching(event){
     })
     }
     else{
+        let deletes = document.querySelector('.row_append')
+        let count2 = deletes.children.length - 1;
+        
+        while (count2 != -1) {
+            deletes.children[count2].remove()
+            count2 -= 1;
+        }
         get_data(document.querySelector('.selections').value,forBack);
     }
 }
@@ -801,6 +832,31 @@ function closes(event){
     document.querySelector('.static_image').removeEventListener('error',ErrorImage)
     document.querySelector('.closed').className += " invisible"
     removing();
+}
+
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+  
+  // Close the dropdown menu if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+}
+
+function addition(event){
+    let parTag = event.target.parentNode.previousElementSibling
+    parTag.textContent = `sort by: ${event.target.textContent}`
 }
 inputting.forEach(e =>{
     e.addEventListener('input',inputValidating)
