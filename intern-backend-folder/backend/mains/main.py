@@ -46,9 +46,9 @@ def read_index():
         html_content = file.read()
     return HTMLResponse(content=html_content)
 
-app.mount("/static/css", StaticFiles(directory="inter-frontend folder/css_folder"), name="css")
-app.mount("/static/js", StaticFiles(directory="inter-frontend folder/javascript_folder"), name="js")
-app.mount("/static/image", StaticFiles(directory="inter-frontend folder/image"), name="image")
+app.mount("/static/css", StaticFiles(directory="inter-frontend-folder/css_folder"), name="css")
+app.mount("/static/js", StaticFiles(directory="inter-frontend-folder/javascript_folder"), name="js")
+app.mount("/static/image", StaticFiles(directory="inter-frontend-folder/image"), name="image")
 
 app.add_middleware(
     CORSMiddleware,
