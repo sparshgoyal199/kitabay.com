@@ -1,6 +1,6 @@
 from .model.sign import Signs, Sign, Login, Forgot, Passwords, ProductInfo, ProductInfo2, ProductInfo2Validations
 from .config.db import create_table, engine
-from sqlalchemy import text,func
+from sqlalchemy import text, func, desc
 from typing_extensions import Annotated
 import requests
 from fastapi import FastAPI, HTTPException, Request, status, Path, Form, UploadFile, File
@@ -27,8 +27,8 @@ from fastapi.exceptions import RequestValidationError
 from passlib.context import CryptContext
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, Response
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+'''from fuzzywuzzy import fuzz
+from fuzzywuzzy import process'''
 load_dotenv()
 
 
@@ -36,7 +36,7 @@ app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 otp = 0
 
-frontend_path = Path(__file__).resolve().parent.parent.parent.parent / 'inter-frontend folder'
+frontend_path = Path(__file__).resolve().parent.parent.parent.parent / 'inter-frontend-folder'
 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 @app.get("/")
@@ -328,12 +328,25 @@ def table_data(n: int, m: int):
     return a'''
 
 
-@app.get('/table_data/{limits}/{skip}')
-def table_data(limits: int, skip: int):
+@app.get('/table_data/{limits}/{skip}/{filters}')
+def table_data(limits: int, skip: int, filters: str):
     a = []
+    v = 0
     skip = (skip-1)*limits
     with Session(engine) as session:
-        v = session.exec(select(ProductInfo2).offset(skip).limit(limits)).all()
+        if filters == "sort by":
+            v = session.exec(select(ProductInfo2).offset(skip).limit(limits)).all()
+        elif filters == "sort by: Featured":
+            v = session.exec(select(ProductInfo2).offset(skip).limit(limits)).all()
+        elif filters == "sort by: Prices: Low to High":
+            v = session.exec(select(ProductInfo2).offset(skip).limit(limits).order_by(ProductInfo2.price)).all()
+        elif filters == "sort by: Prices: High to Low":
+            v = session.exec(select(ProductInfo2).offset(skip).limit(limits).order_by(desc(ProductInfo2.price))).all()
+        elif filters == "sort by: Ratings":
+            v = session.exec(select(ProductInfo2).offset(skip).limit(limits).order_by(desc(ProductInfo2.star))).all()
+        else:
+            v = session.exec(select(ProductInfo2).offset(skip).limit(limits).order_by(desc(ProductInfo2.quantity))).all()
+
         y = session.exec(select(func.count(ProductInfo2.name))).one()
         for i in v:
             b = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price, "s_price": i.s_price,
@@ -341,7 +354,7 @@ def table_data(limits: int, skip: int):
             a.append(b)
     return [a, y]
 
-
+'''Get-Process | Where-Object { $_.ProcessName -eq "python" } | Stop-Process -Force'''
 @app.get('/searching/{keyword}')
 def searching(keyword: str):
     k = []

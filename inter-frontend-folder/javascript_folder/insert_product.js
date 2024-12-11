@@ -3,6 +3,7 @@ let f = document.querySelector('.submitss')
 let struct;
 let e = document.querySelector('.selections')
 let forBack = 1
+let first_data = document.querySelector('.selections').value
 
 if (!navigator.onLine) {  
     alert('You are offline. Please check your internet connection.');
@@ -39,7 +40,7 @@ function forward(event){
     if (forBack != 50) {
         forBack += 1
         event.target.previousElementSibling.textContent = `${forBack} of 50`
-        let first_data = document.querySelector('.selections').value
+        first_data = document.querySelector('.selections').value
         let deletes = document.querySelector('.row_append')
         let count2 = deletes.children.length - 1;
         
@@ -49,7 +50,8 @@ function forward(event){
         }
         //let main = (forBack - 1)*first_data
         //main is telling how many first records we have to skip 
-        get_data(first_data,forBack)
+        let filter = document.querySelector('.hoverFocus').textContent
+        get_data(first_data,forBack,filter)
         }
 }
 
@@ -57,7 +59,7 @@ function backward(event){
     if (forBack != 1) {
         forBack -= 1
         event.target.nextElementSibling.textContent = `${forBack} of 50`
-        let first_data = document.querySelector('.selections').value
+        first_data = document.querySelector('.selections').value
         let deletes = document.querySelector('.row_append')
         let count2 = deletes.children.length - 1;
         
@@ -65,9 +67,10 @@ function backward(event){
             deletes.children[count2].remove()
             count2 -= 1;
         }
+        let filter = document.querySelector('.hoverFocus').textContent
         //let main = (forBack - 1)*first_data
         //main is telling how many first records we have to skip 
-        get_data(first_data,forBack)
+        get_data(first_data,forBack,filter)
     }
 }
 
@@ -86,12 +89,12 @@ function bringing(event){
     get_data(first,forBack)
 }
 
-function get_data(limit,page){
+function get_data(limit,page,filter){
     if (!navigator.onLine) {  
         alert('You are offline. Please check your internet connection.');
         return;
     }
-    fetch(`http://127.0.0.1:8011/table_data/${limit}/${page}`).
+    fetch(`http://127.0.0.1:8011/table_data/${limit}/${page}/${filter}`).
     then(res => {
         if (!res.ok) {
             if (res.status == 422) {
@@ -185,7 +188,7 @@ function loadingFilling(data,records,limit,page){
 
 
 window.onload = ()=>{
-    get_data(5,1);
+    get_data(5,1,"sort by");
 }
 
 
@@ -206,7 +209,7 @@ function uploads(event){
         }
     })
     document.querySelector('.inp').disabled = true
-    if (event.target.className == 'uploads text-[2.7vh] w-[5.3vw] h-[5.2vh] rounded-[2vh] mb-[2.7vh]') {
+    if (event.target.className == 'uploads text-[2.4vh] w-[5.3vw] h-[5.2vh] rounded-[2vh]') {
         f.addEventListener('click',submittings)
     }
     else{
@@ -670,6 +673,8 @@ function submittings(e){
 }
 
 function searching(event){    
+    let f = document.querySelector('.hoverFocus').textContent
+    
     let searched = event.target.value
     if (!navigator.onLine) {
         alert('You are offline. Please check your internet connection.');
@@ -704,7 +709,6 @@ function searching(event){
 )
     .then(data =>{
         let z = 0
-        console.log(data);
         for (let i of data) {
         z += 1
         let row = document.createElement('tr')
@@ -767,7 +771,7 @@ function searching(event){
             deletes.children[count2].remove()
             count2 -= 1;
         }
-        get_data(document.querySelector('.selections').value,forBack);
+        get_data(document.querySelector('.selections').value,forBack,f);
     }
 }
 
@@ -857,6 +861,16 @@ function myFunction() {
 function addition(event){
     let parTag = event.target.parentNode.previousElementSibling
     parTag.textContent = `sort by: ${event.target.textContent}`
+    
+    let deletes = document.querySelector('.row_append')
+        let count2 = deletes.children.length - 1;
+        
+        while (count2 != -1) {
+            deletes.children[count2].remove()
+            count2 -= 1;
+    }
+    first_data = document.querySelector('.selections').value
+    get_data(first_data,forBack,parTag.textContent)
 }
 inputting.forEach(e =>{
     e.addEventListener('input',inputValidating)

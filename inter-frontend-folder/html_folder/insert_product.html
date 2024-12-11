@@ -12,10 +12,10 @@
 <body class="body">
     <header class="header"></header>
     <main class="flex flex-column items-center">
-        <div class="flex w-[60vw] justify-between mt-[2vh]">
-          <button class="uploads text-[2.4vh] w-[5.3vw] h-[5.2vh] rounded-[2vh] mb-[2.7vh]"onclick="uploads(event)">upload</button>
+        <div class="flex w-[60vw] justify-between mt-[2vh] h-[6vh]">
+          <button class="uploads text-[2.4vh] w-[5.3vw] h-[5.2vh] rounded-[2vh]"onclick="uploads(event)">upload</button>
           <div class="dropdown">
-            <button onclick="myFunction()" class="dropbtn">sort by</button>
+            <button onclick="myFunction()" class="dropbtn hoverFocus">sort by</button>
             <div id="myDropdown" class="dropdown-content">
               <a href="#" class="text-[2.2vh]"  onclick="addition(event)">Featured</a>
               <a href="#" class="text-[2.2vh]" onclick="addition(event)">Prices: Low to High</a>
@@ -25,7 +25,7 @@
             </div>
           </div>
         </div>
-        <div class="ml-[3.5vw] mr-[2vw] relative z-1" >
+        <div class="ml-[3.5vw] mr-[2vw] relative z-1 mt-[2.7vh]" >
             <table class="table table-hover align-bottom table-sm table-light" width="65vw">
                 <caption>
                   <div class="pagination flex justify-between" >
