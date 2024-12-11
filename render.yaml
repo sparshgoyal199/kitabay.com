@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: fastapi-app
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn intern-backend-folder.backend.mains.main:app --host 127.0.0.1 --port 8011"
-
