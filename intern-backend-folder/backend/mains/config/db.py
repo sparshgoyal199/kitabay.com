@@ -5,6 +5,7 @@ import os
 load_dotenv()
 S = os.getenv('DB_URI')
 connection_str = S
+print(S)
 engine = create_engine(connection_str)
 
 
