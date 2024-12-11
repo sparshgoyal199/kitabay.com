@@ -1,9 +1,13 @@
 [tool.poetry]
-name = "mains"
+name = "intern-backend-folder"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
+
+packages = [
+    { include = "backend/mains", from = "intern-backend-folder" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -27,7 +31,7 @@ fuzzywuzzy = "^0.18.0"
 python-levenshtein = "^0.26.1"
 
 [tool.poetry.scripts]
-dev="mains.main:start"
+dev="intern-backend-folder.backend.mains.main:start"
 
 [build-system]
 requires = ["poetry-core"]

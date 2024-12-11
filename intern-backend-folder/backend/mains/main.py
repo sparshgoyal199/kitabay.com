@@ -138,7 +138,7 @@ def C_password(passwords: Passwords):
 @app.post('/uploading')
 async def uploading(name: str = Form(...), author: str = Form(...), star: float = Form(...), price: int = Form(...), s_price: int = Form(...), quantity: int = Form(...), discount: int = Form(...), image: UploadFile = Form(...)):
     images = await image.read()
-    FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
+    FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend-folder/static/"
     filename = image.filename
     extension = filename.split(".")[1]
     if extension not in ["png","jpeg","jpg"]:
@@ -179,7 +179,7 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
         file.close()
         '''we write above three line of code in database code because we want that basic validation(validate productInfo2.model_validate) is done before when the file is uploading in directory'''
         '''if we does not do this image will always be upload in directory irrespective of record is stored in database or nto'''
-        FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend folder/static/"
+        FILEPATH = "C:/Users/spars/OneDrive/Desktop/Internship_project/inter-frontend-folder/static/"
         # filename = image.filename
         # extension = filename.split(".")[1]
         # if extension not in ["png", "jpeg", "jpg"]:
@@ -388,4 +388,4 @@ def gettingImage(product_id: int):
 
 def start():
     create_table()
-    uvicorn.run('mains.main:app', host='127.0.0.1', port=8011, reload=True)
+    uvicorn.run('intern-backend-folder.backend.mains.main:app', host='127.0.0.1', port=8011, reload=True)
