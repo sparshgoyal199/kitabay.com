@@ -42,7 +42,7 @@ app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 @app.get("/")
 def read_index():
     # Access your HTML file
-    with open(frontend_path / 'html_folder/index.html', 'r') as file:
+    with open(frontend_path / 'html_folder/sign.html', 'r') as file:
         html_content = file.read()
     return HTMLResponse(content=html_content)
 
