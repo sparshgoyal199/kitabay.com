@@ -37,8 +37,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 otp = 0
 
 frontend_path = Path(__file__).resolve().parent.parent.parent.parent / 'inter-frontend-folder'
-print(frontend_path)
-# app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 @app.get("/")
 def read_index():
