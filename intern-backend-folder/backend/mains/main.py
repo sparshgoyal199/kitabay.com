@@ -38,18 +38,18 @@ otp = 0
 
 frontend_path = Path(__file__).resolve().parent.parent.parent.parent / 'inter-frontend-folder'
 print(frontend_path)
-app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+# app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 @app.get("/")
 def read_index():
     # Access your HTML file
-    with open('/static/html_folder/sign.html', 'r') as file:
+    with open(frontend_path / 'html_folder/sign.html', 'r') as file:
         html_content = file.read()
     return HTMLResponse(content=html_content)
 
-app.mount("/static/css", StaticFiles(directory="inter-frontend-folder/css_folder"), name="css")
-app.mount("/static/js", StaticFiles(directory="inter-frontend-folder/javascript_folder"), name="js")
-app.mount("/static/image", StaticFiles(directory="inter-frontend-folder/image"), name="image")
+# app.mount("/static/css", StaticFiles(directory="inter-frontend-folder/css_folder"), name="css")
+# app.mount("/static/js", StaticFiles(directory="inter-frontend-folder/javascript_folder"), name="js")
+# app.mount("/static/image", StaticFiles(directory="inter-frontend-folder/image"), name="image")
 
 app.add_middleware(
     CORSMiddleware,
