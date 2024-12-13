@@ -1,5 +1,5 @@
 let header = document.querySelector('.header')
-fetch('/html_folder/index.html')
+fetch('/static/html_folder/index.html')
 .then(res => {
     if (!res.ok) {
         throw new Error(res)
@@ -33,7 +33,7 @@ function checking(e){
             text: "OTP verified",
             className: "sweetBox"
           }).then(() =>{
-            window.open('/html_folder/password.html')
+            window.open('/static/html_folder/password.html')
           })
     }
     else{

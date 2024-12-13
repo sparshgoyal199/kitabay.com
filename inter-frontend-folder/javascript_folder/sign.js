@@ -1,5 +1,5 @@
 let header = document.querySelector('.header')
-fetch('/html_folder/index.html')
+fetch('/static/html_folder/index.html')
 .then(res => {
     if (!res.ok) {
         throw new Error(res)
@@ -158,7 +158,7 @@ async function submitting(e){
             text: "Sign in successfully",
             className: "sweetBox"
           }).then(() =>{
-            window.location.href = '/html_folder/log_in.html'
+            window.location.href = '/static/html_folder/log_in.html'
           })
     })
     .catch(e => {

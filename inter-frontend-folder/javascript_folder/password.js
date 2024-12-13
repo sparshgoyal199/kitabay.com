@@ -1,5 +1,5 @@
 let header = document.querySelector('.header')
-fetch('/html_folder/index.html')
+fetch('/static/html_folder/index.html')
 .then(res => {
     res.text().then(data => {
         header.innerHTML = data

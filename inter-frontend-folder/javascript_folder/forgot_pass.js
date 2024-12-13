@@ -1,6 +1,6 @@
 
 let header = document.querySelector('.header')
-fetch('/html_folder/index.html')
+fetch('/static/html_folder/index.html')
 .then(res => {
     if (!res.ok) {
         throw new Error(res)
@@ -71,7 +71,7 @@ function forgotting(e){
             otp_data = data
             localStorage.setItem('mobile',formData['Mobile_no'])
             localStorage.setItem('otp',otp_data)
-            window.open('/html_folder/verify_otp.html')
+            window.open('/static/html_folder/verify_otp.html')
           });
 
     })
