@@ -53,7 +53,7 @@ def read_index():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5501"],  # Update this with your frontend origin
+    allow_origins=["http://0.0.0.0:8000"],  # Update this with your frontend origin
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
