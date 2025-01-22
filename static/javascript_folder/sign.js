@@ -110,7 +110,7 @@ async function submitting(e){
     }
 
     e.preventDefault()
-    fetch('http://0.0.0.0:8000/posting',{
+    fetch('http://0.0.0.0:8011/posting',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
