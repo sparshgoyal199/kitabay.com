@@ -1,7 +1,10 @@
 from sqlmodel import SQLModel, AutoString
 import requests
 from pydantic import StringConstraints, EmailStr, model_validator
+'''stringconostranint is used for validation purpose'''
 from sqlmodel import Field
+'''field is majorly used for defining database schema'''
+'''defines additional metadata for the field.'''
 from typing_extensions import Annotated
 import requests
 from fastapi import HTTPException, UploadFile, File, Path
@@ -9,7 +12,8 @@ from sqlalchemy import LargeBinary,Column
 import phonenumbers
 all_codes = []
 
-
+'''this class is created for the validation purpose,we cant write here table = true 
+and for reflecting the class into the database it is necessary to write table = true which we done through another class'''
 class Signs(SQLModel):
     Username: Annotated[str, StringConstraints(min_length=5, max_length=20, strip_whitespace=True), Field(primary_key=True)]
     Email_Address: EmailStr = Field(unique=True, sa_type=AutoString)
@@ -20,6 +24,7 @@ class Signs(SQLModel):
 
     @model_validator(mode="after")
     def validate_all_fields(self):
+        '''self is representig whole object'''
         count = [0, 0, 0, 0]
 
         b = "QWERTYUIOPASDFGHJKLZXCVBNM"
@@ -48,13 +53,18 @@ class Signs(SQLModel):
 
         aa = ",".join(e)
         if sum(count) != 4:
-            raise (HTTPException(status_code=422, detail=f"Password must contain atleast one {aa}"))
+            '''we use httpException as generating custom error message when client made the mistake while contacting to the backend server'''
+            '''or mistakes while validating the data into backend'''
+            raise(HTTPException(status_code=422, detail=f"Password must contain atleast one {aa}"))
 
         if len(all_codes) == 0:
             resp = requests.get("https://restcountries.com/v3.1/independent?status=true")
+            '''api used as the to talk to the servers '''
+            '''we use request to bring the third party data'''
             for i in resp.json():
                 a = i["idd"]["root"][:]
                 b = i["idd"]["suffixes"][0]
+                '''a and b both representing the phone code of that country as a string format'''
                 all_codes.append(f"{a}{b}")
 
         if self.Code not in all_codes:
@@ -71,12 +81,12 @@ class Signs(SQLModel):
 
 class Sign(Signs, table=True):
     pass
-
-
+'''we create(class sign) this additionally because it creates the actual table in our database(table= true is necessary)'''
+'''we cant define the attribute in the class then in t hat validation will not be occur because of line (table = true)'''
 class Login(SQLModel):
     Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
     Password: Annotated[str, StringConstraints(strip_whitespace=True, min_length=5, max_length=15), Field()]
-
+'''this table is created only for the purpose of validation'''
 
 class Forgot(SQLModel):
     Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
@@ -137,18 +147,22 @@ class ProductInfo(SQLModel, table=True):
     discount: int
     image: bytes = Field(sa_column=Column(LargeBinary(length=(2**32)-1)))
 
-
+'''when the vendor uploading its products to the page'''
 class ProductInfo2Validations(SQLModel):
-    product_id: int | None = Field(default=None, primary_key=True)
+    '''You can let the database automatically generate a value for product_id (if its set up as an auto-incrementing column)'''
+    product_id: int|None = Field(default=None, primary_key=True)
+    '''if we remove the default = NONE then this will not remain the autoincrement key,default = None this should be autoincrement key'''
     name: Annotated[str, StringConstraints(strip_whitespace=True)]
     author: Annotated[str, StringConstraints(strip_whitespace=True)]
     star: Annotated[float, Path(gt=0, le=5)]
+    '''like stringconstraint for string validation path is for integer validation'''
     price: Annotated[int, Path(gt=0)]
     s_price: Annotated[int, Path(gt=0)]
     quantity: Annotated[int, Path(gt=0)]
     discount: Annotated[int, Path(gt=0)]
     time: Annotated[str, StringConstraints(strip_whitespace=True)]
     image: Annotated[str, StringConstraints(strip_whitespace=True)]
+    '''as we are only storing the path of that image'''
 
     @model_validator(mode="after")
     def validate_all_fields(self):
