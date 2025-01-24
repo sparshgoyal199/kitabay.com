@@ -40,7 +40,7 @@ function forgotting(e){
     }
 
     e.preventDefault()
-    fetch('http://0.0.0.0:8011/forgot',{
+    fetch('http://127.0.0.1:8011/forgot',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -71,7 +71,6 @@ function forgotting(e){
             otp_data = data
             localStorage.setItem('mobile',formData['Mobile_no'])
             localStorage.setItem('otp',otp_data)
-            window.open('/static/html_folder/verify_otp.html')
           });
 
     })

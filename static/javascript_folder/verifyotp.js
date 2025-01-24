@@ -50,7 +50,7 @@ function checking(e){
 }
 
 function resending(e){
-    fetch('http://0.0.0.0:8011/forgot',{
+    fetch('http://127.0.0.1:8011/forgot',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',

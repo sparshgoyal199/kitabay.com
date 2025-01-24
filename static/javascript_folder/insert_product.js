@@ -104,7 +104,7 @@ function bringing(event){
 //this funtiion is running when we click on how many records to bring
 
 function get_data(limit,page,filter){
-    fetch(`http://0.0.0.0:8011/table_data/${limit}/${page}/${filter}`).
+    fetch(`http://127.0.0.1:8011/table_data/${limit}/${page}/${filter}`).
     then(res => {
         if (!res.ok) {
             return res.text().then(response => {
@@ -388,7 +388,7 @@ function deleting(event){
     let g = d.children[1].textContent
     //g is representing the product id
     d.remove();
-    fetch(`http://0.0.0.0:8011/deleting/${g}`,{
+    fetch(`http://127.0.0.1:8011/deleting/${g}`,{
         method:'DELETE'
     })
     .then(res => {
@@ -492,7 +492,7 @@ function editing(event){
         alert('You are offline. Please check your internet connection.');
         return;
     }
-    fetch(`http://0.0.0.0:8011/updating2${t}`,{
+    fetch(`http://127.0.0.1:8011/updating2${t}`,{
         method:'PUT',
         body:forms
     })
@@ -569,7 +569,7 @@ function submittings(e){
     //     alert('You are offline. Please check your internet connection.');
     //     return;
     // }
-    fetch('http://0.0.0.0:8011/uploading2',{
+    fetch('http://127.0.0.1:8011/uploading2',{
         method:'POST',
         body:forms
     })
@@ -664,7 +664,7 @@ function searching(event){
     }
     //these line will always remain common because we need to when the user is cutting down the word to less than 3 then we need to remove the existing ui data and then show the existing ui data which is first 5 records
     if (searched.length > 2) {
-        fetch(`http://0.0.0.0:8011/searching/${event.target.value}`).
+        fetch(`http://127.0.0.1:8011/searching/${event.target.value}`).
     then(res => {
         if (!res.ok) {
             return res.text().then(response => {
@@ -713,7 +713,7 @@ function viewing(event){
     let i = event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.textContent
     //i represents the product id
     
-    fetch(`http://0.0.0.0:8011/gettingImage/${i}`).
+    fetch(`http://127.0.0.1:8011/gettingImage/${i}`).
     then(res => {
         if (!res.ok) {
             return res.text().then(response => {

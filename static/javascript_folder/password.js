@@ -45,7 +45,7 @@ function submittings(e){
         return ;
     }
 
-    fetch('http://0.0.0.0:8011/C_password',{
+    fetch('http://127.0.0.1:8011/C_password',{
         method:'PUT',
         headers:{
             'Content-Type':'application/json',

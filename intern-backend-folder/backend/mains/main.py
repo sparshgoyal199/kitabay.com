@@ -104,6 +104,9 @@ def logging(login: Login):
 def forgot(forgots:Forgot):
     global otp
     '''that means use the global otp variable'''
+    if forgots.Mobile_no[0] == '0':
+        forgots.Mobile_no = forgots.Mobile_no[1:]
+        print(forgots.Mobile_no)
     with Session(engine) as session:
         data = session.exec(select(Sign).where(Sign.Mobile_no == forgots.Mobile_no)).first()
         if data:
@@ -115,6 +118,8 @@ def forgot(forgots:Forgot):
 
 @app.put('/C_password')
 def C_password(passwords: Passwords):
+    if passwords.Mobile_no[0] == '0':
+        passwords.Mobile_no = passwords.Mobile_no[1:]
     '''in javascript of forgotpassword with use of localstorage stored the user enter mobile number,so that we can use it in password.js page'''
     with Session(engine) as session:
         data = session.exec(select(Sign).where(Sign.Mobile_no == passwords.Mobile_no)).first()
@@ -372,7 +377,6 @@ def searching(keyword: str):
 def gettingImage(product_id: int):
     with Session(engine) as session:
         image = session.exec(select(ProductInfo2.image).where(ProductInfo2.product_id == product_id)).first()
-
         return image
 
 def start():

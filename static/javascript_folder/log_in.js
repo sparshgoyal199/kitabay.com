@@ -51,7 +51,7 @@ function submitting(e){
     }
 
     e.preventDefault()
-    fetch('http://0.0.0.0:8011/logging',{
+    fetch('http://127.0.0.1:8011/logging',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',

@@ -73,6 +73,9 @@ class Signs(SQLModel):
         if self.Password != self.Confirm_password:
             raise HTTPException(status_code=422, detail="Please enter same password in both the field")
 
+        if self.Mobile_no[0] == '0':
+            self.Mobile_no = self.Mobile_no[1:]
+        
         is_valid = phonenumbers.parse(self.Code+self.Mobile_no)
         if not phonenumbers.is_valid_number(is_valid):
             raise(HTTPException(status_code=402, detail='Please provide the valid phone number'))
@@ -90,7 +93,7 @@ class Login(SQLModel):
 
 class Forgot(SQLModel):
     Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
-
+    
 
 class Passwords(SQLModel):
     Password: Annotated[str, StringConstraints(strip_whitespace=True, min_length=5, max_length=15), Field()]
