@@ -157,8 +157,6 @@ async function submitting(e){
             icon:"success",
             text: "Sign in successfully",
             className: "sweetBox"
-          }).then(() =>{
-            window.location.href = '/static/html_folder/log_in.html'
           })
     })
     .catch(e => {

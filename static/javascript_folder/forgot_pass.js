@@ -71,6 +71,7 @@ function forgotting(e){
             otp_data = data
             localStorage.setItem('mobile',formData['Mobile_no'])
             localStorage.setItem('otp',otp_data)
+            window.open('/static/html_folder/verify_otp.html','_parent')
           });
 
     })

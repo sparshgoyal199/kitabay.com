@@ -70,6 +70,8 @@ function submittings(e){
             icon:"success",
             text: "Password changed successfully",
             className: "sweetBox"
+          }).then(()=>{
+            window.open("/static/html_folder/insert_product.html")
           })
     })
     .catch(e => {

@@ -76,7 +76,10 @@ function submitting(e){
             icon:"success",
             text: "Log in successfully",
             className: "sweetBox"
-          })
+          }).then(() => {
+            // Open a new page after the SweetAlert box is closed
+            window.open("/static/html_folder/insert_product.html", "_parent");
+        });
     })
     .catch(e => {
         swal({
