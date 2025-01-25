@@ -157,15 +157,15 @@ async function submitting(e){
             icon:"success",
             text: "Sign in successfully",
             className: "sweetBox"
-          })
+          }).then(()=>{
+            window.open("/static/html_folder/log_in.html","_parent")
+        })
     })
     .catch(e => {
         swal({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
-          }).then(()=>{
-            window.open("/static/html_folder/log_in.html","_parent")
           })
     })
 }

@@ -164,32 +164,30 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
     '''C:/Users/spars/OneDrive/Desktop/Internship_project/intern-backend-folder/backend/static/'''
     '''FILEPATH = Path(__file__).resolve().parent.parent / "static/"'''
     '''above filepath will also give you the absolute path but with backwad slash'''
-    FILEPATH = Path(Path(__file__).resolve().parent.parent.parent.parent/"static/static/")
-    print(FILEPATH)
     filename = image.filename
     extension = filename.split(".")[1]
     if extension not in ["png", "jpeg", "jpg"]:
         raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
     '''token_name represents name of the image'''
     token_name = secrets.token_hex(10)+"."+extension
+    FILEPATH = Path(Path(__file__).resolve().parent.parent / "static/")
     generated_name = os.path.join(FILEPATH,token_name)
+    with open(generated_name, "wb") as file:
+        file.write(images)
+    file.close()
+    FILEPATH = Path(Path(__file__).resolve().parent.parent.parent.parent/"static/static/")
+    generated_name = os.path.join(FILEPATH,token_name)
+    with open(generated_name, "wb") as file:
+        file.write(images)
+        file.close()
     '''FILEPATH + token_name'''
     '''token_name describing the new file name'''
     '''generated_name describing also the filepath'''
     products = ProductInfo2Validations(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, time=time, image=generated_name)
     validate = ProductInfo2.model_validate(products)
     with Session(engine) as session:
-        with open(generated_name, "wb") as file:
-            file.write(images)
-        file.close()
         '''we are first adding the file backend directory folder'''
         '''if we does not do this image will always be upload in directory irrespective of record is stored in database or nto'''
-        FILEPATH = Path(Path(__file__).resolve().parent.parent / "static/")
-        print(FILEPATH)
-        generated_name = os.path.join(FILEPATH,token_name)
-        with open(generated_name, "wb") as file:
-            file.write(images)
-        file.close()
         '''then adding the file in frontend directory folder'''
         session.add(validate)
         session.commit()
@@ -274,14 +272,22 @@ async def updating2(old: int = Form(...), name: str = Form(...), author: str = F
     with Session(engine) as session:
         if image:
             images = await image.read()
-        FILEPATH = Path(Path(__file__).resolve().parent.parent/"static/")
         filename = image.filename
         extension = filename.split(".")[1]
         if extension not in ["png", "jpeg", "jpg"]:
             raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
 
         token_name = secrets.token_hex(10) + "." + extension
+        FILEPATH = Path(Path(__file__).resolve().parent.parent/"static/")
         generated_name = os.path.join(FILEPATH,token_name)
+        with open(generated_name, "wb") as file:
+            file.write(images)
+        file.close()
+        FILEPATH = Path(Path(__file__).resolve().parent.parent.parent.parent/"static/static/")
+        generated_name = os.path.join(FILEPATH,token_name)
+        with open(generated_name, "wb") as file:
+            file.write(images)
+        file.close()
         peices = session.exec(select(ProductInfo2).where(ProductInfo2.product_id == old)).first()
         if not star:
             star = peices.star
@@ -293,20 +299,12 @@ async def updating2(old: int = Form(...), name: str = Form(...), author: str = F
         peices.sqlmodel_update(form_data)
         session.commit()
         session.refresh(peices)
-        with open(generated_name, "wb") as file:
-            file.write(images)
-        file.close()
-        FILEPATH = Path(Path(__file__).resolve().parent.parent.parent.parent/"static/static/")
         # filename = image.filename
         # extension = filename.split(".")[1]
         # if extension not in ["png", "jpeg", "jpg"]:
         #     raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
         #
         # token_name = secrets.token_hex(10) + "." + extension
-        generated_name = os.path.join(FILEPATH,token_name)
-        with open(generated_name, "wb") as file:
-            file.write(images)
-        file.close()
         return generated_name
 
 
