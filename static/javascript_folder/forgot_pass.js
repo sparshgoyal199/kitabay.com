@@ -40,7 +40,7 @@ function forgotting(e){
     }
 
     e.preventDefault()
-    fetch('http://127.0.0.1:8011/forgot',{
+    fetch('http://127.0.0.1:3000/forgot',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',

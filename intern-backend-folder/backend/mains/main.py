@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse, Response
 from pathlib import Path
 
 load_dotenv()
-
+PORT = os.getenv('PORT')
 
 app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -379,4 +379,4 @@ def gettingImage(product_id: int):
 
 def start():
     create_table()
-    uvicorn.run('intern-backend-folder.backend.mains.main:app', host='0.0.0.0', port=8011, reload=True)
+    uvicorn.run('intern-backend-folder.backend.mains.main:app', host='0.0.0.0', port=int(PORT), reload=True)

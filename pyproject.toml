@@ -29,6 +29,7 @@ alembic = "^1.13.2"
 pathlib = "^1.0.1"
 fuzzywuzzy = "^0.18.0"
 python-levenshtein = "^0.26.1"
+gunicorn = "^23.0.0"
 
 [tool.poetry.scripts]
 dev="intern-backend-folder.backend.mains.main:start"
