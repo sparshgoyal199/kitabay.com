@@ -20,8 +20,8 @@ from fastapi.responses import JSONResponse, Response
 from pathlib import Path
 
 load_dotenv()
-PORT = os.getenv('PORT')
-
+PORT = os.getenv("PORT" , 3000)
+ 
 app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 '''that means creating the object of CryptContext class and then use .hash to hash passwords'''
