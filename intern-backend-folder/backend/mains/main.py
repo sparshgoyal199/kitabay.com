@@ -378,4 +378,4 @@ def gettingImage(product_id: int):
 
 def start():
     create_table()
-    uvicorn.run('intern-backend-folder.backend.mains.main:app', host='0.0.0.0', port=80, reload=True)
+    uvicorn.run('intern-backend-folder.backend.mains.main:app', host='0.0.0.0', port=8000, reload=True)

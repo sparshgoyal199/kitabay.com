@@ -110,7 +110,7 @@ async function submitting(e){
     }
 
     e.preventDefault()
-    fetch('/posting',{
+    fetch('https://my-fastapi-app.onrender.com/posting',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
