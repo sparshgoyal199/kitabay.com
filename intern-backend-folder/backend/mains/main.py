@@ -41,9 +41,13 @@ def read_index():
 # app.mount("/static/js", StaticFiles(directory="inter-frontend-folder/javascript_folder"), name="js")
 # app.mount("/static/image", StaticFiles(directory="inter-frontend-folder/image"), name="image")
 
+origins = [
+    "https://intership-project-2-2mq2.onrender.com",
+    # Add other origins if needed
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  #http://0.0.0.0:8000
+    allow_origins=origins,  #http://0.0.0.0:8000
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
