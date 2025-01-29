@@ -110,7 +110,7 @@ async function submitting(e){
     }
 
     e.preventDefault()
-    fetch('https://my-fastapi-app.onrender.com/posting',{
+    fetch('https://intership-project-2-uz4y.onrender.com/posting',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
