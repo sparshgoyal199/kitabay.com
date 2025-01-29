@@ -2,4 +2,4 @@
 build:
   web:
     # Command to start FastAPI server
-    cmd: uvicorn intern-backend-folder.backend.mains.main:app --host 0.0.0.0 --port $PORT
+    cmd: uvicorn intern-backend-folder.backend.mains.main:app --host 0.0.0.0 --port 3000
