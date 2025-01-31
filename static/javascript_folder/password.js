@@ -45,7 +45,7 @@ function submittings(e){
         return ;
     }
 
-    fetch('http://127.0.0.1:3000/C_password',{
+    fetch('/C_password',{
         method:'PUT',
         headers:{
             'Content-Type':'application/json',

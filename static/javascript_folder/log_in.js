@@ -51,7 +51,7 @@ function submitting(e){
     }
 
     e.preventDefault()
-    fetch('http://127.0.0.1:3000/logging',{
+    fetch('/logging',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
