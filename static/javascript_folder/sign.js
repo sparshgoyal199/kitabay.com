@@ -110,7 +110,7 @@ async function submitting(e){
     }
 
     e.preventDefault()
-    fetch('https://intership-project-2-uz4y.onrender.com/posting',{
+    fetch('/posting',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
