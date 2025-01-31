@@ -90,6 +90,8 @@ def posting(signs: Signs):
 
 @app.post('/logging')
 def logging(login: Login):
+    if Login.Mobile_no[0] == '0':
+        Login.Mobile_no = Login.Mobile_no[1:]
     with Session(engine) as session:
         data = session.exec(select(Sign).where(Sign.Mobile_no == login.Mobile_no)).first()
         if data:
