@@ -460,18 +460,39 @@ function editing(event){
     let forms = new FormData()
     forms.append("time",dateTime)
     forms.append('old',struct.querySelector('[name=products_id]').textContent)
-    for (const i of form_data) {
+    for (const i of form_data) { 
         //we are validating that whole form it is happenig when users click the submit button of that form
-        if (i.name) {
-            if (i.name == 'image') {
+        if(i.name == "image"){
+            if(i.files[0]){
                 validating(i.name,i.files[0])
+                forms.append(`${i.name}`,i.files[0])
+                t = 1
+            }
+        }
+        else if(i.className != 'submitss'){ 
+            if (!i.value) {
+                emptyFeildFill(struct,i)
+                //above func is filling the feild if the feild value is empty btw field value will be always filled but if the user empties the field then this will ensure no empty value
+            }
+            validating(i.name,i.value);
+            forms.append(`${i.name}`,i.value)  
+        }
+        if (valid == 0) {
+            valid = 1;
+            //DisplayingErrors(check_errors,form_data);
+            check_errors = {}
+            checks = 0;
+            return ;
+        }
+        /*if (i.name) {
+            if (i.name == 'image' && i.files[0]) {
                 if (i.files[0]) {
                     forms.append(`${i.name}`,i.files[0])
                     t = 1
                 }
             }  
             else{
-                if (!i.value) {
+                if (!i.value && !i.name == "image") {
                     emptyFeildFill(struct,i)
                     //above func is filling the feild if the feild value is empty btw field value will be always filled but if the user empties the field then this will ensure no empty value
                 }
@@ -485,7 +506,7 @@ function editing(event){
                 checks = 0;
                 return ;
             }
-        }
+        }*/
     }
     
     if (!navigator.onLine) {
@@ -586,7 +607,7 @@ function submittings(e){
         //first of all convert the content of backend into json format
     })
     .then(data =>{  
-        let row = document.createElement('tr')
+        /*let row = document.createElement('tr')
         row.className = 'rows group'
         //because of the bold value we used th
         //use td to fill the column value
@@ -635,11 +656,10 @@ function submittings(e){
         //d[8].textContent = `${form_data['discount'].value}%`
         d[8].textContent = dateTime
         document.querySelector('.row_append').appendChild(row)
-        removing();
+        removing();*/
         //because to normal the things we use removing function
         f.removeEventListener('click',submittings)
-        alert("Data added successfully")
-        //location.reload();
+        location.reload();
         //here we cant write swal function as it is asynchr code(which runs always in last) and our page is loading automatically page loading prevent running of async code that's why simple alert here
     })
     .catch(e => {
@@ -722,7 +742,8 @@ function viewing(event){
         }
         return res.json()}
 ).then(data => {
-    data = data.substring(51,data.length);
+    start_index = data.indexOf("/static")
+    data = data.substring(start_index,data.length);
     document.querySelector('.static_image').src = `/${data}`
 }).catch(e => {
     swal({
