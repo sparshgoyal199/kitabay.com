@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse, Response
 from pathlib import Path
 
 load_dotenv()
- 
+'''mysql+pymysql://root:Rahilgoyal%401@127.0.0.1:3306/MY_DATABASE'''
 app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 '''that means creating the object of CryptContext class and then use .hash to hash passwords'''
@@ -382,4 +382,4 @@ def gettingImage(product_id: int):
 
 def start():
     create_table()
-    uvicorn.run('intern-backend-folder.backend.mains.main:app', host='0.0.0.0', port=80, reload=True)
+    uvicorn.run('intern-backend-folder.backend.mains.main:app', host='0.0.0.0', port=5502, reload=True)
