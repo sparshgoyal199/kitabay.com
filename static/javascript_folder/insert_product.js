@@ -742,8 +742,11 @@ function viewing(event){
         }
         return res.json()}
 ).then(data => {
+    print(data)
     start_index = data.indexOf("/static")
+    print(start_index)
     data = data.substring(start_index,data.length);
+    print(data)
     document.querySelector('.static_image').src = `/${data}`
 }).catch(e => {
     swal({
