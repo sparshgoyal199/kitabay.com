@@ -69,7 +69,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 async def validations_exception_handler(request: Request, exc: IntegrityError):
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=jsonable_encoder({"detail": str(exc.orig)[8:len(str(exc.orig))-2]})
+        content=jsonable_encoder({"detail": str(exc.orig)[82:len(str(exc.orig))-2]})
     )
 '''customise the message and format of the error'''
 

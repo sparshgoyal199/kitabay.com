@@ -119,36 +119,9 @@ async function submitting(e){
     })
     .then(res => {
         if (!res.ok) {
-            if (res.status == 422) {
-                return res.text().then(response => {
-                    throw new Error(response.substring(11,response.length-2))
-                })    
-            }
-            if (res.status == 421) {
-                return res.text().then(response => {
-                    throw new Error(response.substring(11,response.length-2))
-                })    
-            }
-            if (res.status == 400) {
-                return res.text().then(response => {
-                    throw new Error(response.substring(11,response.length-2))
-                })    
-            }
-            if (res.status == 402) {
-                return res.text().then(response => {
-                    throw new Error(response.substring(11,response.length-2))
-                })
-            }
-            if (res.status == 403) {
-                return res.text().then(response => {
-                    throw new Error(response.substring(11,response.length-2))
-                })
-            }
-            if (res.status == 405) {
-                return res.text().then(response => {
-                    throw new Error(response.substring(11,response.length-2))
-                })
-            }
+            return res.text().then(response => {
+                throw new Error(response.substring(11,response.length-2))
+            })
         }
         return res.json()
     })

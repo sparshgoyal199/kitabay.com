@@ -19,7 +19,8 @@
 }
 .logo{
     width: 17vh;
-    padding: 8px 8px
+    padding: 10px 8px;
+    margin-top: 4vh;
 }
 button{
     border: none;

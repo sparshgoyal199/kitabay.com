@@ -9,7 +9,6 @@ S = os.getenv('DB_URI')
 connection_str = S
 ''''''
 engine = create_engine(connection_str)
-print(engine)
 ''' engine acts as a source of connectivity to the database'''
 '''when we need to conect with database then use engine variable'''
 
