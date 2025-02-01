@@ -78,7 +78,7 @@ function submitting(e){
             className: "sweetBox"
           }).then(() => {
             // Open a new page after the SweetAlert box is closed
-            window.open("/static/html_folder/sign.html", "_parent");
+            window.open("/static/html_folder/insert_product.html", "_parent");
         });
     })
     .catch(e => {
