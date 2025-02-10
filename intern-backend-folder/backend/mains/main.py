@@ -1,5 +1,5 @@
 from .model.sign import Signs, Sign, Login, Forgot, Passwords, ProductInfo, ProductInfo2, ProductInfo2Validations
-from .config.db import create_table, engine
+from .config.db import create_table, engine,supabase,SUPABASE_URL
 from sqlalchemy import func, desc
 from fastapi import FastAPI, HTTPException, Request, status, Path, Form, UploadFile
 from sqlalchemy.exc import IntegrityError
@@ -25,6 +25,7 @@ app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 '''that means creating the object of CryptContext class and then use .hash to hash passwords'''
 otp = 0
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 
 frontend_path = Path(__file__).resolve().parent.parent.parent.parent / 'static'
 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
@@ -175,7 +176,12 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
         raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
     '''token_name represents name of the image'''
     token_name = secrets.token_hex(10)+"."+extension
-    FILEPATH = Path(Path(__file__).resolve().parent.parent / "static/")
+    response = supabase.storage.from_(BUCKET_NAME).upload(token_name, images, file_options={"content-type": image.content_type})
+        
+        # Get the public URL (if bucket is public)
+    generated_name = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{token_name}"
+    
+    '''FILEPATH = Path(Path(__file__).resolve().parent.parent / "static/")
     generated_name = os.path.join(FILEPATH,token_name)
     with open(generated_name, "wb") as file:
         file.write(images)
@@ -184,12 +190,13 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
     generated_name = os.path.join(FILEPATH,token_name)
     with open(generated_name, "wb") as file:
         file.write(images)
-        file.close()
+        file.close()'''
     '''FILEPATH + token_name'''
     '''token_name describing the new file name'''
     '''generated_name describing also the filepath'''
     products = ProductInfo2Validations(name=name, author=author, star=star, price=price, s_price=s_price, quantity=quantity, discount=discount, time=time, image=generated_name)
     validate = ProductInfo2.model_validate(products)
+    print(generated_name)
     with Session(engine) as session:
         '''we are first adding the file backend directory folder'''
         '''if we does not do this image will always be upload in directory irrespective of record is stored in database or nto'''
@@ -283,7 +290,11 @@ async def updating2(old: int = Form(...), name: str = Form(...), author: str = F
             raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
 
         token_name = secrets.token_hex(10) + "." + extension
-        FILEPATH = Path(Path(__file__).resolve().parent.parent/"static/")
+        response = supabase.storage.from_(BUCKET_NAME).upload(token_name, images, file_options={"content-type": image.content_type})
+        
+        # Get the public URL (if bucket is public)
+        generated_name = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{token_name}"
+        '''FILEPATH = Path(Path(__file__).resolve().parent.parent/"static/")
         generated_name = os.path.join(FILEPATH,token_name)
         with open(generated_name, "wb") as file:
             file.write(images)
@@ -292,7 +303,7 @@ async def updating2(old: int = Form(...), name: str = Form(...), author: str = F
         generated_name = os.path.join(FILEPATH,token_name)
         with open(generated_name, "wb") as file:
             file.write(images)
-        file.close()
+        file.close()'''
         peices = session.exec(select(ProductInfo2).where(ProductInfo2.product_id == old)).first()
         if not star:
             star = peices.star

@@ -741,13 +741,8 @@ function viewing(event){
             })   
         }
         return res.json()}
-).then(data => {
-    console.log(data);  
-    start_index = data.indexOf("/static")
-    console.log(start_index);
-    data = data.substring(start_index,data.length);
-    console.log(data);
-    document.querySelector('.static_image').src = `/${data}`
+).then(data => { 
+    document.querySelector('.static_image').src = `${data}`
 }).catch(e => {
     swal({
         icon:"error",
