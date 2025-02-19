@@ -1,12 +1,14 @@
 let header = document.querySelector('.header')
-let f = document.querySelector('.submitss')
 let struct;
+let f = document.querySelector('.submitss')
 let e = document.querySelector('.selections')
 let forBack = 1
 let first_data = document.querySelector('.selections').value
 let checks = 0
 let valid = 1
 let inputting = document.querySelectorAll(".adjust")
+let complete = false;
+
 //for validating hand-to-hand input field
 let submits = document.querySelector(".submitss")
 let totalRecords = 0;
@@ -103,7 +105,7 @@ function bringing(event){
 }
 //this funtiion is running when we click on how many records to bring
 
-function get_data(limit,page,filter){
+function get_data(limit,page,filter,isearch=1){
     fetch(`/table_data/${limit}/${page}/${filter}`).
     then(res => {
         if (!res.ok) {
@@ -128,8 +130,22 @@ function get_data(limit,page,filter){
 //get_data bringing the data from the backend then this data is being shown to ui through loadinfilling
 
 //get the data from dbmns when page reloads
-function loadingFilling(data,records,limit,page){
-    let z = limit*(page-1) + 1
+function loadingFilling(data,records,limit,page,search = 1){
+    let deletes = document.querySelector('.row_append')
+        //to delete the exisiting data
+    let count2 = deletes.children.length - 1;
+    while (count2 != -1) {
+        deletes.children[count2].remove()
+        count2 -= 1;
+    }
+    let z
+    
+    if(search == 1){
+        z = limit*(page-1) + 1 
+    }
+    else{
+        z = 1;
+    }
     for (const i of data) {
         let row = document.createElement('tr')
         row.className = 'rows group'
@@ -675,37 +691,28 @@ function searching(event){
     let f = document.querySelector('.hoverFocus').textContent
     //f representing the filter value which filter is going on
     let searched = event.target.value
-    let deletes = document.querySelector('.row_append')
-        //to delete the exisiting data
-        let count2 = deletes.children.length - 1;
-        while (count2 != -1) {
-            deletes.children[count2].remove()
-            count2 -= 1;
-    }
     //these line will always remain common because we need to when the user is cutting down the word to less than 3 then we need to remove the existing ui data and then show the existing ui data which is first 5 records
-    if (searched.length > 2) {
-        fetch(`/searching/${event.target.value}`).
-    then(res => {
-        if (!res.ok) {
-            return res.text().then(response => {
-                throw new Error(response.substring(11,response.length-2))
-            })
-        }
-        return res.json()}
-)
-    .then(data =>{
-        loadingFilling(data,totalRecords,document.querySelector('.selections').value,forBack)
-    })
-    .catch(e => {
-        swal({
-            icon:"error",
-            text: `${e}`,
-            className: "sweetBox"
-          })
-    })
+    if (searched.length < 3) {
+        get_data(document.querySelector('.selections').value,forBack,f,0);
     }
     else{
-        get_data(document.querySelector('.selections').value,forBack,f);
+        setTimeout(()=>{fetch(`/searching/${searched}`)
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })
+            }
+            return res.json()
+        }).then(data =>{   
+            loadingFilling(data,totalRecords,document.querySelector('.selections').value,forBack,0)
+        }).catch(e => {
+            swal({
+                icon:"error",
+                text: `${e}`,
+                className: "sweetBox"
+              })
+        })},800)
     }
 }
 
