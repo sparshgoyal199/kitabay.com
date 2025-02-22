@@ -2,7 +2,7 @@ let header = document.querySelector('.header')
 let login = document.querySelector('.submit')
 let form = document.querySelector('.form')
 let formData = {
-    "Mobile_no":"",
+    "Email_Address":"",
     "Password":""
 }
 

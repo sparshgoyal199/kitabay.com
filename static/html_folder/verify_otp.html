@@ -29,10 +29,11 @@
                         <input type="text" maxlength="1" class="otpNumber common" id="one" onkeyup="restricting(event)" autocomplete="off">
                     </div>
                     <span class="common number">
-                        Not your number? / Didn't receive the code?
+                        Not your Gmail? / Didn't receive the code?
                     </span>
                     <div>
-                        <a href="/static/html_folder/forgot_pass.html" class='links'>Try again</a>
+                        <!--<a href="/static/html_folder/forgot_pass.html" class='links'>Try again</a>-->
+                        <button class='links' onclick="window.history.back()">Try again</button>
                         <span class='links'>/</span>
                         <button class='links' id="resend">Resend code</button>
                     </div>

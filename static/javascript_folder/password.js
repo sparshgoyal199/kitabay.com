@@ -10,7 +10,8 @@ let submit = document.querySelector('.submit')
 let formData = {
     'Password':'',
     "Confirm_password":"",
-    "Mobile_no":`${localStorage.getItem('mobile')}`
+    //"Mobile_no":`${localStorage.getItem('mobile')}`
+    'Email_Address':`${localStorage.getItem('forgot_gmail')}`
 }
 
 function togging(event){
@@ -41,7 +42,6 @@ function submittings(e){
         }
     }
     if (!form.reportValidity()) {
-        console.log('validation occurring...');
         return ;
     }
 
@@ -71,6 +71,7 @@ function submittings(e){
             text: "Password changed successfully",
             className: "sweetBox"
           }).then(()=>{
+            localStorage.removeItem('forgot_gmail')
             window.open("/static/html_folder/insert_product.html")
           })
     })

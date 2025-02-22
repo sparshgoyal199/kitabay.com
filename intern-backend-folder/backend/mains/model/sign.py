@@ -87,18 +87,20 @@ class Sign(Signs, table=True):
 '''we create(class sign) this additionally because it creates the actual table in our database(table= true is necessary)'''
 '''we cant define the attribute in the class then in t hat validation will not be occur because of line (table = true)'''
 class Login(SQLModel):
-    Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
+    #Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
+    Email_Address: EmailStr = Field(unique=True, sa_type=AutoString)
     Password: Annotated[str, StringConstraints(strip_whitespace=True, min_length=5, max_length=15), Field()]
 '''this table is created only for the purpose of validation'''
 
 class Forgot(SQLModel):
-    Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
-    
+    #Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
+    Email_Address: EmailStr = Field(unique=True, sa_type=AutoString)
 
 class Passwords(SQLModel):
     Password: Annotated[str, StringConstraints(strip_whitespace=True, min_length=5, max_length=15), Field()]
     Confirm_password: Annotated[str, StringConstraints(strip_whitespace=True), Field()]
-    Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
+    Email_Address: EmailStr = Field(unique=True, sa_type=AutoString)
+    #Mobile_no: Annotated[str, Field(min_length=5, max_length=15), StringConstraints(strip_whitespace=True)]
 
     @model_validator(mode="after")
     def validate_all_fields(self):

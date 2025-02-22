@@ -7,6 +7,7 @@ import os
 import uvicorn
 import random
 import secrets
+import smtplib
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse,HTMLResponse
 from sqlmodel import Session, select
@@ -18,6 +19,7 @@ from passlib.context import CryptContext
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, Response
 from pathlib import Path
+from email.message import EmailMessage
 
 load_dotenv()
 '''mysql+pymysql://root:Rahilgoyal%401@127.0.0.1:3306/MY_DATABASE'''
@@ -73,62 +75,104 @@ async def validations_exception_handler(request: Request, exc: IntegrityError):
         content=jsonable_encoder({"detail": str(exc.orig)[82:len(str(exc.orig))-2]})
     )
 '''customise the message and format of the error'''
-
-
+def sendingOtp(email,signup_otp):
+    FROM_EMAIL = 'sparshgoyal199@gmail.com'
+    TO_EMAIL = email
+    server = smtplib.SMTP('smtp.gmail.com',587)
+    server.starttls()
+    
+    server.login(FROM_EMAIL,'eugz tsxr alge hzyb')
+    msg = EmailMessage()
+    msg['Subject'] = 'OTP Verification'
+    msg['From'] = FROM_EMAIL
+    msg['To'] = TO_EMAIL
+    msg.set_content('YOUR OTP is: ' + signup_otp)
+    server.send_message(msg)
+#@app.post('/posting')
 @app.post('/posting')
 def posting(signs: Signs):
     validate = Sign.model_validate(signs)
     '''vaidate representing the instance of class Sign,which is being converted of the signs class'''
     validate.Password = pwd_context.hash(validate.Password)
     validate.Confirm_password = validate.Password
+    signup_otp = ""
+    for i in range(6):
+        signup_otp += str(random.randint(0,9))
+    sendingOtp(validate.Email_Address,signup_otp)
+    '''with Session(engine) as session:
+        session.add(validate)
+        it matches automatically - instance/object of which table
+        session.commit()
+        session.refresh(validate)'''
+    # FROM_EMAIL = 'sparshgoyal199@gmail.com'
+    # TO_EMAIL = signs.Email_Address
+    # server = smtplib.SMTP('smtp.gmail.com',587)
+    # server.starttls()
+    
+    # server.login(FROM_EMAIL,'eugz tsxr alge hzyb')
+    # msg = EmailMessage()
+    # msg['Subject'] = 'OTP Verification'
+    # msg['From'] = FROM_EMAIL
+    # msg['To'] = TO_EMAIL
+    # msg.set_content('YOUR OTP is: ' + signup_otp)
+    # server.send_message(msg)
+    return [validate,signup_otp]
+    #return 'data added successfully'
+
+@app.post('/postingData')
+def postingData(validate:Sign):
+    print(validate)
     with Session(engine) as session:
         session.add(validate)
-        '''it matches automatically - instance/object of which table'''
+        #it matches automatically - instance/object of which table
         session.commit()
         session.refresh(validate)
-    return 'data added successfully'
-
+    return 'sign up successfully'
 
 @app.post('/logging')
 def logging(login: Login):
-    if login.Mobile_no[0] == '0':
-        login.Mobile_no = login.Mobile_no[1:]
+    '''if login.Mobile_no[0] == '0':
+        login.Mobile_no = login.Mobile_no[1:]'''
     with Session(engine) as session:
-        data = session.exec(select(Sign).where(Sign.Mobile_no == login.Mobile_no)).first()
+        data = session.exec(select(Sign).where(Sign.Email_Address == login.Email_Address)).first()
         if data:
             if pwd_context.verify(login.Password, data.Password):
                 return 'Login successfully'
             else:
                 raise (HTTPException(status_code=422,
-                                         detail="Enter correct password for your mobile number"))
+                                         detail="Enter correct password for your Email Address"))
         else:
-            raise (HTTPException(status_code=422, detail="Mobile number not found"))
+            raise (HTTPException(status_code=422, detail="Email Address not found"))
     return 'login successfully'
 
 
 @app.post('/forgot')
 def forgot(forgots:Forgot):
-    global otp
+    forgot_otp = ""
+    for i in range(6):
+        forgot_otp += str(random.randint(0,9))
+    sendingOtp(forgots.Email_Address,forgot_otp)
+    return forgot_otp
+    #global otp
     '''that means use the global otp variable'''
-    if forgots.Mobile_no[0] == '0':
-        forgots.Mobile_no = forgots.Mobile_no[1:]
-        print(forgots.Mobile_no)
-    with Session(engine) as session:
+    '''if forgots.Mobile_no[0] == '0':
+        forgots.Mobile_no = forgots.Mobile_no[1:]'''
+    '''with Session(engine) as session:
         data = session.exec(select(Sign).where(Sign.Mobile_no == forgots.Mobile_no)).first()
         if data:
             otp = random.randint(111111, 999999)
             return otp
         else:
-            raise (HTTPException(status_code=422, detail="Mobile number does not exist"))
+            raise (HTTPException(status_code=422, detail="Mobile number does not exist"))'''
 
 
 @app.put('/C_password')
 def C_password(passwords: Passwords):
-    if passwords.Mobile_no[0] == '0':
-        passwords.Mobile_no = passwords.Mobile_no[1:]
+    '''if passwords.Mobile_no[0] == '0':
+        passwords.Mobile_no = passwords.Mobile_no[1:]'''
     '''in javascript of forgotpassword with use of localstorage stored the user enter mobile number,so that we can use it in password.js page'''
     with Session(engine) as session:
-        data = session.exec(select(Sign).where(Sign.Mobile_no == passwords.Mobile_no)).first()
+        data = session.exec(select(Sign).where(Sign.Email_Address == passwords.Email_Address)).first()
         if pwd_context.verify(passwords.Password, data.Password):
             raise (HTTPException(status_code=422, detail='Please choose a different password'))
         else:

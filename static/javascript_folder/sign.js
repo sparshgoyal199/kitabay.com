@@ -10,7 +10,6 @@ fetch('/static/html_folder/index.html')
     {header.innerHTML = data}
 )
 .catch(error => {
-    console.log('some error occured');
     header.innerHTML = 'Some error occured'
 })
 
@@ -126,12 +125,17 @@ async function submitting(e){
         return res.json()
     })
     .then(data =>{
+        //console.log(data[0]);
+        let form_data = data[0]
+        //because localStorage can only store data as strings.
+        localStorage.setItem('object',JSON.stringify(form_data))
+        localStorage.setItem('signup_otp',data[1])
         swal({
             icon:"success",
-            text: "Sign in successfully",
+            text: `OTP sent to ${JSON.stringify(form_data.Email_Address)}`,
             className: "sweetBox"
           }).then(()=>{
-            window.open("/static/html_folder/log_in.html","_parent")
+            window.open("/static/html_folder/verify_otp.html","_parent")
         })
     })
     .catch(e => {
