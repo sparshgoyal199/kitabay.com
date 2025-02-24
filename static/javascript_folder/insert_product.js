@@ -8,6 +8,9 @@ let checks = 0
 let valid = 1
 let inputting = document.querySelectorAll(".adjust")
 let complete = false;
+let showData;
+let getData;
+let getRecords;
 
 //for validating hand-to-hand input field
 let submits = document.querySelector(".submitss")
@@ -105,7 +108,7 @@ function bringing(event){
 }
 //this funtiion is running when we click on how many records to bring
 
-function get_data(limit,page,filter,isearch=1){
+function get_data(limit,page,filter){
     fetch(`/table_data/${limit}/${page}/${filter}`).
     then(res => {
         if (!res.ok) {
@@ -116,6 +119,8 @@ function get_data(limit,page,filter,isearch=1){
         return res.json()}
 )
     .then(data =>{
+        getData = data[0]
+        getRecords = data[1]
         loadingFilling(data[0],data[1],limit,page)      
         totalRecords = data[1];
     })
@@ -693,10 +698,17 @@ function searching(event){
     let searched = event.target.value
     //these line will always remain common because we need to when the user is cutting down the word to less than 3 then we need to remove the existing ui data and then show the existing ui data which is first 5 records
     if (searched.length < 3) {
-        get_data(document.querySelector('.selections').value,forBack,f,0);
+        if (getData) {
+            setTimeout(()=>{
+                loadingFilling(getData,getRecords,document.querySelector('.selections').value,forBack)
+            },800)
+        }
+        else{
+            get_data(document.querySelector('.selections').value,forBack,f,0);
+        }
     }
     else{
-        setTimeout(()=>{fetch(`/searching/${searched}`)
+        fetch(`/searching/${searched}`)
         .then(res => {
             if (!res.ok) {
                 return res.text().then(response => {
@@ -712,7 +724,7 @@ function searching(event){
                 text: `${e}`,
                 className: "sweetBox"
               })
-        })},800)
+        })
     }
 }
 
