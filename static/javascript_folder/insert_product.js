@@ -701,7 +701,7 @@ function searching(event){
         if (getData) {
             setTimeout(()=>{
                 loadingFilling(getData,getRecords,document.querySelector('.selections').value,forBack)
-            },800)
+            },1200)
         }
         else{
             get_data(document.querySelector('.selections').value,forBack,f,0);
