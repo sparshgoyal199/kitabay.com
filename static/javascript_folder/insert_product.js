@@ -209,12 +209,30 @@ window.onload = ()=>{
     get_data(5,1,"sort by");
 }
 
+function hiding(e){
+    if(e.target.className != 'info_extract' && !document.querySelector('.info_extract').contains(e.target)){
+        removing()
+        //document.querySelector('.info_extract').style.display = 'none'
+        document.querySelector('.body').removeEventListener('click',hiding)
+    }
+}
+
+function setNull(){
+    let form_arr = document.querySelector('.product_info')
+    for (const element of form_arr) {
+        if (element.className != 'submitss') {
+            element.value = '';
+        }
+    }
+}
 
 function uploads(event){ 
     document.querySelector('.info_extract').style.display = 'flex'
     //existing form is opening
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
-    
+    setTimeout(()=>{
+        document.querySelector('.body').addEventListener('click',hiding);
+    },1)
     buttons.forEach(e => {
         if (e.className != 'submitss') {
             e.style.pointerEvents = 'none'
@@ -230,6 +248,7 @@ function uploads(event){
     document.querySelector('.inp').disabled = true
     if (event.target.className == 'uploads text-[2.4vh] w-[5.3vw] h-[5.2vh] rounded-[2vh]') {
         f.addEventListener('click',submittings)
+        setNull();
     }
     else{
         struct = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
@@ -680,6 +699,7 @@ function submittings(e){
         removing();*/
         //because to normal the things we use removing function
         f.removeEventListener('click',submittings)
+        alert('data added successfully')
         location.reload();
         //here we cant write swal function as it is asynchr code(which runs always in last) and our page is loading automatically page loading prevent running of async code that's why simple alert here
     })
@@ -701,7 +721,7 @@ function searching(event){
         if (getData) {
             setTimeout(()=>{
                 loadingFilling(getData,getRecords,document.querySelector('.selections').value,forBack)
-            },1200)
+            },2000)
         }
         else{
             get_data(document.querySelector('.selections').value,forBack,f,0);
