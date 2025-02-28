@@ -11,6 +11,7 @@ let complete = false;
 let showData;
 let getData;
 let getRecords;
+let lock = false;
 
 //for validating hand-to-hand input field
 let submits = document.querySelector(".submitss")
@@ -721,14 +722,17 @@ function searching(event){
         if (getData) {
             setTimeout(()=>{
                 loadingFilling(getData,getRecords,document.querySelector('.selections').value,forBack)
-            },2000)
+            },1200)
         }
         else{
             get_data(document.querySelector('.selections').value,forBack,f,0);
         }
     }
     else{
-        fetch(`/searching/${searched}`)
+        console.log(lock);
+        
+        if(!lock) {
+            fetch(`/searching/${searched}`)
         .then(res => {
             if (!res.ok) {
                 return res.text().then(response => {
@@ -745,6 +749,11 @@ function searching(event){
                 className: "sweetBox"
               })
         })
+        lock = true;
+        setTimeout(()=>{
+            lock = false;
+        },500)
+        }
     }
 }
 
