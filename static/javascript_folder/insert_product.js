@@ -12,6 +12,7 @@ let showData;
 let getData;
 let getRecords;
 let lock = false;
+let seacrhBarLength;
 
 //for validating hand-to-hand input field
 let submits = document.querySelector(".submitss")
@@ -717,20 +718,20 @@ function searching(event){
     let f = document.querySelector('.hoverFocus').textContent
     //f representing the filter value which filter is going on
     let searched = event.target.value
+    seacrhBarLength = searched.length
     //these line will always remain common because we need to when the user is cutting down the word to less than 3 then we need to remove the existing ui data and then show the existing ui data which is first 5 records
     if (searched.length < 3) {
         if (getData) {
-            setTimeout(()=>{
-                loadingFilling(getData,getRecords,document.querySelector('.selections').value,forBack)
-            },1200)
+            // setTimeout(()=>{
+            //     loadingFilling(getData,getRecords,document.querySelector('.selections').value,forBack)
+            // },1200)
+            loadingFilling(getData,getRecords,document.querySelector('.selections').value,forBack)
         }
         else{
             get_data(document.querySelector('.selections').value,forBack,f,0);
         }
     }
     else{
-        console.log(lock);
-        
         if(!lock) {
             fetch(`/searching/${searched}`)
         .then(res => {
@@ -741,7 +742,9 @@ function searching(event){
             }
             return res.json()
         }).then(data =>{   
-            loadingFilling(data,totalRecords,document.querySelector('.selections').value,forBack,0)
+            if (seacrhBarLength >= 3) {
+                loadingFilling(data,totalRecords,document.querySelector('.selections').value,forBack,0)
+            }
         }).catch(e => {
             swal({
                 icon:"error",
