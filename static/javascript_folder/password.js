@@ -66,7 +66,7 @@ function submittings(e){
         return res.json()
     })
     .then(data =>{
-        swal({
+        swal.fire({
             icon:"success",
             text: "Password changed successfully",
             className: "sweetBox"
@@ -76,7 +76,7 @@ function submittings(e){
           })
     })
     .catch(e => {
-        swal({
+        swal.fire({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"

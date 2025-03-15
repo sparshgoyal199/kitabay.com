@@ -130,7 +130,7 @@ async function submitting(e){
         //because localStorage can only store data as strings.
         localStorage.setItem('object',JSON.stringify(form_data))
         localStorage.setItem('signup_otp',data[1])
-        swal({
+        swal.fire({
             icon:"success",
             text: `OTP sent to ${JSON.stringify(form_data.Email_Address)}`,
             className: "sweetBox"
@@ -139,7 +139,7 @@ async function submitting(e){
         })
     })
     .catch(e => {
-        swal({
+        swal.fire({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"

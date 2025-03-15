@@ -127,7 +127,7 @@ function get_data(limit,page,filter){
         totalRecords = data[1];
     })
     .catch(e => {
-        swal({
+        swal.fire({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
@@ -446,7 +446,7 @@ function deleting(event){
         location.reload();
     })
     .catch(e => {
-        swal({
+        swal.fire({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
@@ -577,7 +577,7 @@ function editing(event){
         location.reload()
     })
     .catch(e => {
-        swal({
+        swal.fire({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
@@ -706,7 +706,7 @@ function submittings(e){
         //here we cant write swal function as it is asynchr code(which runs always in last) and our page is loading automatically page loading prevent running of async code that's why simple alert here
     })
     .catch(e => {
-        swal({
+        swal.fire({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
@@ -746,7 +746,7 @@ function searching(event){
                 loadingFilling(data,totalRecords,document.querySelector('.selections').value,forBack,0)
             }
         }).catch(e => {
-            swal({
+            swal.fire({
                 icon:"error",
                 text: `${e}`,
                 className: "sweetBox"
@@ -795,7 +795,7 @@ function viewing(event){
 ).then(data => { 
     document.querySelector('.static_image').src = `${data}`
 }).catch(e => {
-    swal({
+    swal.fire({
         icon:"error",
         text: `${e}`,
         className: "sweetBox"

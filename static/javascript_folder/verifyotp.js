@@ -66,7 +66,7 @@ function checking(e){
                 }
                 return res.json()}
             ).then(data => {
-                swal({
+                swal.fire({
                     icon:"success",
                     text: `${data}`,
                     className: "sweetBox"
@@ -80,7 +80,7 @@ function checking(e){
                     //window.open('/static/html_folder/log_in.html','_self')
                   })
             }).catch(e => {
-                swal({
+                swal.fire({
                     icon:"error",
                     text: `${e}`,
                     className: "sweetBox"
@@ -88,7 +88,7 @@ function checking(e){
             })
         }
         else{
-            swal({
+            swal.fire({
             icon:"success",
             text: "OTP verified",
             className: "sweetBox"
@@ -100,7 +100,7 @@ function checking(e){
         }
     }
     else{
-        swal({
+        swal.fire({
             title: "Incorrect OTP",
             text: `${value}`,
             className: "sweetBox"
@@ -135,7 +135,7 @@ function resending(e){
         return res.json()}
 )
     .then(data =>{
-        swal({
+        swal.fire({
             icon:"success",
             text: `OTP sent to ${JSON.stringify(gmail.Email_Address)}`,
             className: "sweetBox"

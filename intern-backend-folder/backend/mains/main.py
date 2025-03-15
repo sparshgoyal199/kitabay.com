@@ -121,7 +121,6 @@ def posting(signs: Signs):
 
 @app.post('/postingData')
 def postingData(validate:Sign):
-    print(validate)
     with Session(engine) as session:
         session.add(validate)
         #it matches automatically - instance/object of which table

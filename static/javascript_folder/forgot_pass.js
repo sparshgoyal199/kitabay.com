@@ -64,7 +64,7 @@ function forgotting(e){
         return res.json()}
 )
     .then(data =>{
-        swal({
+        swal.fire({
             /*title: "Your otp is",
             text: `${data}`,
             closeOnEsc: false,
@@ -83,7 +83,7 @@ function forgotting(e){
 
     })
     .catch(e => {
-        swal({
+        swal.fire({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
