@@ -21,21 +21,27 @@ let value = ''
 //let phone = localStorage.getItem('mobile')
 //let formData = {'Mobile_no':phone}
 let otp = localStorage.getItem('signup_otp')
+localStorage.removeItem('signup_otp')
 if(!otp){
     otp = localStorage.getItem('forgot_otp')
+    localStorage.removeItem('forgot_otp')
 }
 let form_data = JSON.parse(localStorage.getItem('object'))
+localStorage.removeItem('object')
+
 let gmail;
 if (form_data) {
    gmail = {'Email_Address':form_data.Email_Address}
 }
 else{
-    gmail = localStorage.getItem('forgot_gmail')
+    gmail = {'Email_Address':localStorage.getItem('forgot_gmail')}
+    //gmail = localStorage.getItem('forgot_gmail')
 }
 
 /*function checking_otp(){
 
 }*/
+
 
 function checking(e){
     let a = document.querySelectorAll('.otpNumber')
@@ -73,8 +79,8 @@ function checking(e){
                   }).then(() =>{
                     form_data = ''
                     gmail = ''
-                    localStorage.removeItem('object')
-                    localStorage.removeItem('signup_otp')
+                    //localStorage.removeItem('object')
+                    //localStorage.removeItem('signup_otp')
                     window.location.replace('/static/html_folder/log_in.html')
                     //window.top.close();
                     //window.open('/static/html_folder/log_in.html','_self')
@@ -84,6 +90,10 @@ function checking(e){
                     icon:"error",
                     text: `${e}`,
                     className: "sweetBox"
+                  }).then(()=>{
+                    let arr = document.querySelectorAll('#one')
+                    arr.forEach((input) => {input.value = ''})
+                    value = ''
                   })
             })
         }
@@ -93,7 +103,7 @@ function checking(e){
             text: "OTP verified",
             className: "sweetBox"
           }).then(() =>{
-            localStorage.removeItem('forgot_otp')
+            //localStorage.removeItem('forgot_otp')
             //localStorage.removeItem('forgot_gmail')
             window.location.replace('/static/html_folder/password.html')
           })
