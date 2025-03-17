@@ -27,13 +27,12 @@ let formData = {
     'Code':"",
     'Mobile_no':""
 };
-
+let allCodes,allcodesJson
 
 
 (async function printing(){
     let data = document.querySelector('.selection')
-    let allCodes,allcodesJson
-    if (allcodesJson == null && allcodesJson == undefined) {
+    if (allcodesJson == null || allcodesJson == undefined) {
         allCodes = await fetch('https://restcountries.com/v3.1/independent?status=true')
         allcodesJson = await allCodes.json()
     }
@@ -66,32 +65,32 @@ function togging(event){
     }
 }
 
-function myfunc(event){
-    let a = event.target.value.length
-    if(a == 3){
-        document.querySelector('.all').style.width = `${a*18}px`
-        return ;
-    }
-    if(a == 5){
-        document.querySelector('.all').style.width = `${a*15.5}px`
-        return ;
-    }
-    if(a == 6){
-        document.querySelector('.all').style.width = `${a*13}px`
-        return ;
-    }
-    if(a <= 10 && a > 6){
-        document.querySelector('.all').style.width = `${a*11.5}px`
-        return ;
-    }
-    if(a <= 14 && a > 10){
-        document.querySelector('.all').style.width = `${a*9}px`
-        return ;
-    }
-    else{
-        document.querySelector('.all').style.width = `${a*8.5}px`
-    }
-}
+// function myfunc(event){
+//     let a = event.target.value.length
+//     if(a == 3){
+//         document.querySelector('.all').style.width = `${a*18}px`
+//         return ;
+//     }
+//     if(a == 5){
+//         document.querySelector('.all').style.width = `${a*15.5}px`
+//         return ;
+//     }
+//     if(a == 6){
+//         document.querySelector('.all').style.width = `${a*13}px`
+//         return ;
+//     }
+//     if(a <= 10 && a > 6){
+//         document.querySelector('.all').style.width = `${a*11.5}px`
+//         return ;
+//     }
+//     if(a <= 14 && a > 10){
+//         document.querySelector('.all').style.width = `${a*9}px`
+//         return ;
+//     }
+//     else{
+//         document.querySelector('.all').style.width = `${a*8.5}px`
+//     }
+// }
 
 async function submitting(e){
     for (const i of form) {
@@ -133,6 +132,7 @@ async function submitting(e){
         swal.fire({
             icon:"success",
             text: `OTP sent to ${JSON.stringify(form_data.Email_Address)}`,
+            //text: `OTP sent to ${form_data.Email_Address}`,
             className: "sweetBox"
           }).then(()=>{
             window.open("/static/html_folder/verify_otp.html","_parent")

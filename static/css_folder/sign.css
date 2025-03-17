@@ -14,7 +14,6 @@
 .image{
     background-image: url(/static/image/login_bg.jpg);
     height: calc(95.7vh - 7vh);
-    min-height: 470px;
     width: 100%;
     display: flex;
     justify-content: center;

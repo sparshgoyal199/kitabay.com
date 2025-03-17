@@ -60,7 +60,17 @@
                     return;
                 }
             }
-            if (/[0-9]/.test(event.target.value)) {
+            else if(event.key == 'ArrowRight'){
+                if(event.target.nextElementSibling){
+                    event.target.nextElementSibling.focus();
+                    return;
+                }
+                else{
+                    event.target.focus();
+                    return;
+                }
+            }
+            else if (/[0-9]/.test(event.target.value)) {
                 if(event.target.nextElementSibling){
                     event.target.nextElementSibling.focus();
                 }
