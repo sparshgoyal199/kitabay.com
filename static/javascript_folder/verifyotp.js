@@ -16,18 +16,17 @@ fetch('/static/html_folder/index.html')
 
 let check = document.querySelector('#submit')
 let resend = document.querySelector('#resend')
-//let otp = localStorage.getItem('otp');
 let value = ''
-//let phone = localStorage.getItem('mobile')
-//let formData = {'Mobile_no':phone}
 let otp = localStorage.getItem('signup_otp')
 localStorage.removeItem('signup_otp')
+
+let form_data = JSON.parse(localStorage.getItem('object'))
+localStorage.removeItem('object')
+
 if(!otp){
     otp = localStorage.getItem('forgot_otp')
     localStorage.removeItem('forgot_otp')
 }
-let form_data = JSON.parse(localStorage.getItem('object'))
-localStorage.removeItem('object')
 
 let gmail;
 if (form_data) {
@@ -35,7 +34,6 @@ if (form_data) {
 }
 else{
     gmail = {'Email_Address':localStorage.getItem('forgot_gmail')}
-    //gmail = localStorage.getItem('forgot_gmail')
 }
 
 /*function checking_otp(){
@@ -51,7 +49,6 @@ function checking(e){
     
     if (otp == value) {
         if (form_data) {
-            //that means it is sign_up wala otp
             fetch('/postingData',{
                 method:'POST',
                 headers:{
@@ -79,11 +76,7 @@ function checking(e){
                   }).then(() =>{
                     form_data = ''
                     gmail = ''
-                    //localStorage.removeItem('object')
-                    //localStorage.removeItem('signup_otp')
                     window.location.replace('/static/html_folder/log_in.html')
-                    //window.top.close();
-                    //window.open('/static/html_folder/log_in.html','_self')
                   })
             }).catch(e => {
                 swal.fire({

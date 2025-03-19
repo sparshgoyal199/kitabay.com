@@ -18,9 +18,7 @@ fetch('/static/html_folder/index.html')
 
 let form = document.querySelector('.form')
 let submits = document.querySelector('.submit')
-/*let formData = {
-    'Mobile_no':""
-}*/
+
 let formData = {
     'Email_Address':''
 }
@@ -65,17 +63,11 @@ function forgotting(e){
 )
     .then(data =>{
         swal.fire({
-            /*title: "Your otp is",
-            text: `${data}`,
-            closeOnEsc: false,
-            closeOnClickOutside: false,
-            className: "sweetBox"*/
             icon:"success",
             text: `OTP sent to ${JSON.stringify(formData.Email_Address)}`,
             className: "sweetBox"
           }).then((value) => {
             otp_data = data
-            //ocalStorage.setItem('mobile',formData['Mobile_no'])
             localStorage.setItem('forgot_otp',otp_data)
             localStorage.setItem('forgot_gmail',formData['Email_Address'])
             window.open('/static/html_folder/verify_otp.html','_parent')
