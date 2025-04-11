@@ -13,6 +13,7 @@ fetch('/static/html_folder/index.html')
     header.innerHTML = 'Some error occured'
 })
 
+const BASE_URL = (window.location.hostname.toString() === '127.0.0.1') ? 'http://localhost:80' : 'https://kitabay-com-455z.onrender.com'
 let getFlag =  {};
 let form = document.querySelector('.form')
 let phoneCode = document.querySelector('.selected')
@@ -33,16 +34,14 @@ let allCodes,allcodesJson
 (async function printing(){
     let data = document.querySelector('.selection')
     if (allcodesJson == null || allcodesJson == undefined) {
-        allCodes = await fetch('https://restcountries.com/v3.1/independent?status=true')
+        allCodes = await fetch('https://countriesnow.space/api/v0.1/countries/codes')
         allcodesJson = await allCodes.json()
     }
-    for (const i of allcodesJson) {
+    for (const i of allcodesJson["data"]) {
         let createOption = document.createElement('option')
-            createOption.textContent = `${i['name']['common']}`
-
-            createOption.value =  `${i['idd']['root']}${i['idd']['suffixes'][0]}`
-
-            getFlag[`${i['idd']['root']}${i['idd']['suffixes'][0]}`] = i['cca2']
+            createOption.textContent = `${i['name']}`
+            createOption.value =  `${i['dial_code']}`
+            getFlag[`${i['dial_code']}`] = i['code'].toLowerCase()
             data.append(createOption)
     }
 })()
@@ -65,34 +64,8 @@ function togging(event){
     }
 }
 
-// function myfunc(event){
-//     let a = event.target.value.length
-//     if(a == 3){
-//         document.querySelector('.all').style.width = `${a*18}px`
-//         return ;
-//     }
-//     if(a == 5){
-//         document.querySelector('.all').style.width = `${a*15.5}px`
-//         return ;
-//     }
-//     if(a == 6){
-//         document.querySelector('.all').style.width = `${a*13}px`
-//         return ;
-//     }
-//     if(a <= 10 && a > 6){
-//         document.querySelector('.all').style.width = `${a*11.5}px`
-//         return ;
-//     }
-//     if(a <= 14 && a > 10){
-//         document.querySelector('.all').style.width = `${a*9}px`
-//         return ;
-//     }
-//     else{
-//         document.querySelector('.all').style.width = `${a*8.5}px`
-//     }
-// }
 
-async function submitting(e){
+async function submitting(e){    
     for (const i of form) {
         if(i.name != 'button'){
             if (i.value) {
@@ -106,12 +79,12 @@ async function submitting(e){
     if (!form.reportValidity()) {
         return ;
     }
-
     e.preventDefault()
-    fetch('/posting',{
+    fetch(`${BASE_URL}/posting`,{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
+            'Access-Control-Allow-Origin':'http://127.0.0.1:5502'
         },
         body:JSON.stringify(formData)
     })
@@ -124,15 +97,12 @@ async function submitting(e){
         return res.json()
     })
     .then(data =>{
-        //console.log(data[0]);
         let form_data = data[0]
-        //because localStorage can only store data as strings.
         localStorage.setItem('object',JSON.stringify(form_data))
         localStorage.setItem('signup_otp',data[1])
         swal.fire({
             icon:"success",
             text: `OTP sent to ${JSON.stringify(form_data.Email_Address)}`,
-            //text: `OTP sent to ${form_data.Email_Address}`,
             className: "sweetBox"
           }).then(()=>{
             window.open("/static/html_folder/verify_otp.html","_parent")

@@ -16,6 +16,7 @@ fetch('/static/html_folder/index.html')
 })
 
 
+const BASE_URL = (window.location.hostname.toString() === '127.0.0.1') ? 'http://localhost:80' : 'https://kitabay-com-455z.onrender.com'
 let form = document.querySelector('.form')
 let submits = document.querySelector('.submit')
 
@@ -41,7 +42,7 @@ function forgotting(e){
     }
 
     e.preventDefault()
-    fetch('/forgot',{
+    fetch(`${BASE_URL}/forgot`,{
         method:'POST',
         headers:{
             'Content-Type':'application/json',

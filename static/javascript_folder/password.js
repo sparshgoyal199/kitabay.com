@@ -6,6 +6,8 @@ fetch('/static/html_folder/index.html')
     })
 })
 
+const BASE_URL = (window.location.hostname.toString() === '127.0.0.1') ? 'http://localhost:80' : 'https://kitabay-com-455z.onrender.com'
+
 let submit = document.querySelector('.submit')
 let formData = {
     'Password':'',
@@ -45,7 +47,7 @@ function submittings(e){
         return ;
     }
 
-    fetch('/C_password',{
+    fetch(`${BASE_URL}/C_password`,{
         method:'PUT',
         headers:{
             'Content-Type':'application/json',

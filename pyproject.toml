@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "intern-backend-folder"
+name = "intern_backend_folder"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 packages = [
-    { include = "backend/mains", from = "intern-backend-folder" },
+    { include = "backend/mains", from = "intern_backend_folder" },
 ]
 
 [tool.poetry.dependencies]
@@ -14,7 +14,6 @@ python = "^3.11"
 fastapi = "^0.111.0"
 uvicorn = "^0.30.1"
 sqlmodel = "^0.0.19"
-requests = "^2.32.3"
 aiohttp = "^3.9.5"
 phonenumbers = "^8.13.40"
 psycopg2 = "^2.9.9"
@@ -31,9 +30,12 @@ fuzzywuzzy = "^0.18.0"
 python-levenshtein = "^0.26.1"
 gunicorn = "^23.0.0"
 supabase = "^2.13.0"
+pyjwt = {extras = ["crypto"], version = "^2.10.1"}
+python-jose = "^3.4.0"
+requests = "^2.32.3"
 
 [tool.poetry.scripts]
-dev="intern-backend-folder.backend.mains.main:start"
+dev="intern_backend_folder.backend.mains.main:start"
 
 [build-system]
 requires = ["poetry-core"]

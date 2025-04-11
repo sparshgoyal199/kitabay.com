@@ -14,6 +14,7 @@ fetch('/static/html_folder/index.html')
     header.innerHTML = 'Some error occured'
 })
 
+const BASE_URL = (window.location.hostname.toString() === '127.0.0.1') ? 'http://localhost:80' : 'https://kitabay-com-455z.onrender.com'
 let check = document.querySelector('#submit')
 let resend = document.querySelector('#resend')
 let value = ''
@@ -36,10 +37,6 @@ else{
     gmail = {'Email_Address':localStorage.getItem('forgot_gmail')}
 }
 
-/*function checking_otp(){
-
-}*/
-
 
 function checking(e){
     let a = document.querySelectorAll('.otpNumber')
@@ -49,13 +46,12 @@ function checking(e){
     
     if (otp == value) {
         if (form_data) {
-            fetch('/postingData',{
+            fetch(`${BASE_URL}/postingData`,{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
                 },
                 body:JSON.stringify(form_data)
-                //body:JSON.stringify(formData)
             }).then(res => {
                 if (!res.ok) {
                     if (res.status == 422) {
@@ -96,8 +92,6 @@ function checking(e){
             text: "OTP verified",
             className: "sweetBox"
           }).then(() =>{
-            //localStorage.removeItem('forgot_otp')
-            //localStorage.removeItem('forgot_gmail')
             window.location.replace('/static/html_folder/password.html')
           })
         }
@@ -116,13 +110,12 @@ function checking(e){
 }
 
 function resending(e){
-    fetch('/forgot',{
+    fetch(`${BASE_URL}/forgot`,{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
         },
         body:JSON.stringify(gmail)
-        //body:JSON.stringify(formData)
     })
     .then(res => {
         if (!res.ok) {

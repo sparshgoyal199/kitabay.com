@@ -6,6 +6,9 @@ let formData = {
     "Password":""
 }
 
+
+const BASE_URL = (window.location.hostname.toString() === '127.0.0.1') ? 'http://localhost:80' : 'https://kitabay-com-455z.onrender.com'
+
 fetch('/static/html_folder/index.html')
 .then(res => {
     if (!res.ok) {
@@ -51,7 +54,7 @@ function submitting(e){
     }
 
     e.preventDefault()
-    fetch('/logging',{
+    fetch(`${BASE_URL}/logging`,{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -72,12 +75,13 @@ function submitting(e){
         return res.json()
     })
     .then(data =>{
+        console.log(data);
+        localStorage.setItem("token",data)
         swal.fire({
             icon:"success",
             text: "Log in successfully",
             className: "sweetBox"
           }).then(() => {
-            // Open a new page after the SweetAlert box is closed
             window.open("/static/html_folder/insert_product.html", "_parent");
         });
     })

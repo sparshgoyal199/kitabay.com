@@ -14,10 +14,8 @@ let getRecords;
 let lock = false;
 let seacrhBarLength;
 
-//for validating hand-to-hand input field
 let submits = document.querySelector(".submitss")
 let totalRecords = 0;
-//above variable is created for already calculating the total number of vale its value will be taken from the get_data function and its value will be fixed already
 
 if (!navigator.onLine) {  
     alert('You are offline. Please check your internet connection.');
@@ -44,14 +42,13 @@ if (!navigator.onLine) {
     })
 })();
 
+const BASE_URL = (window.location.hostname.toString() === '127.0.0.1') ? 'http://localhost:80' : 'https://kitabay-com-455z.onrender.com'
 
 function forward(event){
     if (forBack != 50) {
         forBack += 1
         event.target.previousElementSibling.textContent = `${forBack} of 50`
-        //above representing which page i am on in now
         first_data = document.querySelector('.selections').value
-        //first_data how many data to be brought
         let deletes = document.querySelector('.row_append')
         let count2 = deletes.children.length - 1;
         
@@ -62,7 +59,6 @@ function forward(event){
         let filter = document.querySelector('.hoverFocus').textContent
         get_data(first_data,forBack,filter)
         document.querySelector('.inp').value = ''
-        //to clear the search bar
     }
 }
 
@@ -97,15 +93,25 @@ function bringing(event){
     get_data(first,forBack,filter)
     document.querySelector('.inp').value = ''
 }
-//this funtiion is running when we click on how many records to bring
 
 function get_data(limit,page,filter){
-    fetch(`/table_data/${limit}/${page}/${filter}`).
+    let has_authenticated = true
+    fetch(`${BASE_URL}/table_data/${limit}/${page}/${filter}`,{
+        headers: {
+            "Authorization":'Bearer ' + localStorage.getItem("token")
+          }
+    }).
     then(res => {
-        if (!res.ok) {
-            return res.text().then(response => {
+        if (!res.ok) {   
+            if (res.status == 401) {
+                has_authenticated = false
+                throw new Error("Please login")
+            }         
+            else{
+                return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
             }) 
+            }
         }
         return res.json()}
 )
@@ -120,14 +126,18 @@ function get_data(limit,page,filter){
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
+          }).then(()=>{
+            if (!has_authenticated) {
+                window.open("/static/html_folder/log_in.html", "_parent");
+              }
           })
-    })
+    }
+    
+)
 };
-//get_data bringing the data from the backend then this data is being shown to ui through loadinfilling
 
 function loadingFilling(data,records,limit,page,search = 1){
     let deletes = document.querySelector('.row_append')
-        //to delete the exisiting data
     let count2 = deletes.children.length - 1;
     while (count2 != -1) {
         deletes.children[count2].remove()
@@ -139,7 +149,6 @@ function loadingFilling(data,records,limit,page,search = 1){
         z = limit*(page-1) + 1 
     }
     else{
-        //if we are showing the records through searching
         z = 1;
     }
     for (const i of data) {
@@ -189,7 +198,6 @@ function loadingFilling(data,records,limit,page,search = 1){
     }
     document.querySelector('.state').textContent = `Results:${limit*(page-1) + 1} - ${parseInt(limit*page)} of ${records}`
 }
-//loading filling is just showing the data to ui
 
 window.onload = ()=>{
     get_data(5,1,"sort by");
@@ -198,7 +206,6 @@ window.onload = ()=>{
 function hiding(e){
     if(e.target.className != 'info_extract' && !document.querySelector('.info_extract').contains(e.target)){
         removing()
-        //document.querySelector('.info_extract').style.display = 'none'
         document.querySelector('.body').removeEventListener('click',hiding)
     }
 }
@@ -214,7 +221,6 @@ function setNull(){
 
 function uploads(event){ 
     document.querySelector('.info_extract').style.display = 'flex'
-    //existing form is opening
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
     buttons.forEach(e => {
         if (e.className != 'submitss') {
@@ -235,7 +241,6 @@ function uploads(event){
     }
     else{
         struct = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
-        //picking that row when click on edit
         removeAtrributes(struct);     
         f.addEventListener('click',editing)
     }
@@ -291,7 +296,6 @@ function inputValidating(e){
 
 function validating(a,b){
     if (a == "star") {
-        //isNaN checking it is the valid number or not
         if (isNaN(parseFloat(b)) || !(0 <= parseFloat(b) <= 5)) {
             checks += 1;        
         }
@@ -333,7 +337,6 @@ function validating(a,b){
 
 function removing(){
     document.querySelector('.info_extract').style.display = 'none'
-    //to remove the form
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
     
     buttons.forEach(e => {
@@ -343,7 +346,6 @@ function removing(){
     });
 
     let magic = document.querySelectorAll('main > *,header');
-    //main > *,that means pick all the childerns of the main tag
     magic.forEach(e => {
         if (e.className != 'info_extract') {
             e.style.opacity = '1'
@@ -360,7 +362,6 @@ function removeAtrributes(struct){
         e.nextElementSibling.removeAttribute("required")
         if (e.nextElementSibling.name == 'star') {
             a = struct.querySelector(`[name=${e.nextElementSibling.name}]`).children[0].children[0].textContent
-            //how to interpret above by select that td in struct which is which name is equals to e.nextelementsibling.name
         }
         if (e.nextElementSibling.name == 'author' || e.nextElementSibling.name == 'name' || e.nextElementSibling.name == 'quantity') {
             a = struct.querySelector(`[name=${e.nextElementSibling.name}]`).textContent
@@ -381,7 +382,6 @@ function removeAtrributes(struct){
         
         e.nextElementSibling.value = a
         e.style.visibility = "hidden"
-        //so that 'red star' can be hide'
     })
 }
 
@@ -389,15 +389,21 @@ function removeAtrributes(struct){
 function deleting(event){
     event.preventDefault();
     let d = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
-    //d is representing whole product row
     let g = d.children[1].textContent
-    //g is representing the product id
     d.remove();
-    fetch(`/deleting/${g}`,{
+    let has_authenticated = true
+    fetch(`${BASE_URL}/deleting/${g}`,{
+        headers: {
+            "Authorization":'Bearer ' + localStorage.getItem("token")
+          },
         method:'DELETE'
     })
     .then(res => {
         if (!res.ok) {
+            if (res.status == 401) {
+                has_authenticated = false
+                throw new Error("Please login")
+            }   
             return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
             })  
@@ -413,12 +419,14 @@ function deleting(event){
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
+          }).then(()=>{
+            if (!has_authenticated) {
+                window.open("/static/html_folder/log_in.html", "_parent");
+              }
           })
     })
 }
-//above funtion is helping in deleting the record
 
-//this is for edit and delete the content of the row
 function emptyFeildFill(struct,i){
     let a = struct.querySelector(`[name=${i.name}]`)
     
@@ -450,12 +458,9 @@ function editing(event){
     event.preventDefault();
     let t = 0
     let fo = document.querySelector('.product_info')
-    //it is used to stop the default action and it is not necessary that every event will have the default actionm
     var today = new Date();
     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
     var dateTime = date;
-    //this above is very important as it does not implement the required attribute in input tag as we have run the remove_attribute function dont take it as that it simplies pick up the html input tags
-    //but the same story would be different in upload button because it is not in the flow
 
     let form_data = document.querySelector('.product_info')
     let forms = new FormData()
@@ -472,14 +477,12 @@ function editing(event){
         else if(i.className != 'submitss'){ 
             if (!i.value) {
                 emptyFeildFill(struct,i)
-                //above func is filling the feild if the feild value is empty btw field value will be always filled but if the user empties the field then this will ensure no empty value
             }
             validating(i.name,i.value);
             forms.append(`${i.name}`,i.value)  
         }
         if (valid == 0) {
             valid = 1;
-            //DisplayingErrors(check_errors,form_data);
             check_errors = {}
             checks = 0;
             return ;
@@ -490,11 +493,19 @@ function editing(event){
         alert('You are offline. Please check your internet connection.');
         return;
     }
-    fetch(`/updating2${t}`,{
+    let has_authenticated = true;
+    fetch(`${BASE_URL}/updating2${t}`,{
+        headers: {
+            "Authorization":'Bearer ' + localStorage.getItem("token")
+          },
         method:'PUT',
         body:forms
     })
     .then(res => {
+        if (res.status == 401) {
+            has_authenticated = false
+            throw new Error("Please login")
+        }   
         if (!res.ok) {
             return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
@@ -513,6 +524,10 @@ function editing(event){
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
+          }).then(()=>{
+            if (!has_authenticated) {
+                window.open("/static/html_folder/log_in.html", "_parent");
+              }
           })
     })
 }
@@ -520,7 +535,6 @@ function editing(event){
 function submittings(e){
     e.preventDefault();
     var today = new Date();
-    //it is used to stop the default action and it is not necessary that every event will have the default action
     var date = today.getFullYear()+'-'+today.getMonth()+1+'-'+today.getDate();
     var dateTime = date;
     let form_data = document.querySelector('.product_info')
@@ -530,11 +544,8 @@ function submittings(e){
 
     let forms = new FormData()
     forms.append("time",dateTime)
-    //specifically designed for handling form data, especially when dealing with file uploads and complex form submissions 
     for (const i of form_data) {
-        //speciality here is that it only picks the input tag
         if (i.name) {
-            //i.name is here so that we cant choose button tag
             if (i.name == 'image') {
                 validating(i.name,i.files[0])
                 forms.append(`${i.name}`,i.files[0])
@@ -542,61 +553,57 @@ function submittings(e){
             else{
                 validating(i.name,i.value);
                 forms.append(`${i.name}`,i.value)  
-                /*input tag name and backend table name should be match */
-                //i.value is used to denote the value of input tag
-                //.name is used to denote the name of input tag 
             }
             if (valid == 0) {
                 valid = 1;
-                //DisplayingErrors(check_errors,form_data);
                 check_errors = {}
                 checks = 0;
                 return ;
             }
-            //now this whole checks the custom validating
         }
     }
-    // if (!navigator.onLine) {
-    //     alert('You are offline. Please check your internet connection.');
-    //     return;
-    // }
-    fetch('/uploading2',{
+    let has_authenticated = true
+    fetch(`${BASE_URL}/uploading2`,{
+        headers: {
+            "Authorization":'Bearer ' + localStorage.getItem("token")
+          },
         method:'POST',
         body:forms
     })
     .then(res => {
         if (!res.ok) {
-            //res.text is itself a promise response is the result of promise
+            if (res.status == 401) {
+                has_authenticated = false
+                throw new Error("Please login")
+            }  
             return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
-                //response.substring for customising the format of error send by the backend
             })  
         }
-        //we can also show the customise error message into frontend
         return res.json()
-        //first of all convert the content of backend into json format
     })
     .then(data =>{  
         f.removeEventListener('click',submittings)
         alert('data added successfully')
         location.reload();
-        //here we cant write swal function as it is asynchr code(which runs always in last) and our page is loading automatically page loading prevent running of async code that's why simple alert here
     })
     .catch(e => {
         swal.fire({
             icon:"error",
             text: `${e}`,
             className: "sweetBox"
+          }).then(()=>{
+            if (!has_authenticated) {
+                window.open("/static/html_folder/log_in.html", "_parent");
+            }
           })
     })
 }
 
 function searching(event){    
     let f = document.querySelector('.hoverFocus').textContent
-    //f representing the filter value which filter is going on
     let searched = event.target.value
     seacrhBarLength = searched.length
-    //these line will always remain common because we need to when the user is cutting down the word to less than 3 then we need to remove the existing ui data and then show the existing ui data which is first 5 records
     if (searched.length < 3) {
         if (getData) {
             loadingFilling(getData,getRecords,document.querySelector('.selections').value,forBack)
@@ -607,9 +614,18 @@ function searching(event){
     }
     else{
         if(!lock) {
-            fetch(`/searching/${searched}`)
+            let has_authenticated = true;
+            fetch(`${BASE_URL}/searching/${searched}`,{
+                headers: {
+                    "Authorization":'Bearer ' + localStorage.getItem("token")
+                  }
+            })
         .then(res => {
             if (!res.ok) {
+                if (res.status == 401) {
+                    has_authenticated = false
+                    throw new Error("Please login")
+                } 
                 return res.text().then(response => {
                     throw new Error(response.substring(11,response.length-2))
                 })
@@ -624,6 +640,10 @@ function searching(event){
                 icon:"error",
                 text: `${e}`,
                 className: "sweetBox"
+              }).then(()=>{
+                if (!has_authenticated) {
+                    window.open("/static/html_folder/log_in.html", "_parent");
+                }
               })
         })
         lock = true;
@@ -636,7 +656,6 @@ function searching(event){
 
 
 function viewing(event){
-    //cant run removing here because it include extra things
     let buttons = document.querySelectorAll('button,a,.books,.dropy,.all')
     buttons.forEach(e => {
         if (e.className != 'closed material-symbols-outlined text-red-600 mb-[-1.7vh] mr-[-1vh] z-2 invisible' && e.className != 'submitss') {
@@ -654,11 +673,19 @@ function viewing(event){
     document.querySelector('.inp').disabled = true
     document.querySelector('.closed').classList.remove('invisible')
     let i = event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.textContent
-    //i represents the product id
     
-    fetch(`/gettingImage/${i}`).
+    let has_authenticated = true;
+    fetch(`${BASE_URL}/gettingImage/${i}`,{
+        headers: {
+            "Authorization":'Bearer ' + localStorage.getItem("token")
+          }
+    }).
     then(res => {
         if (!res.ok) {
+            if (res.status == 401) {
+                has_authenticated = false
+                throw new Error("Please login")
+            } 
             return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
             })   
@@ -666,12 +693,15 @@ function viewing(event){
         return res.json()}
 ).then(data => { 
     document.querySelector('.static_image').src = `${data}`
-    //data reprsents file global path
 }).catch(e => {
     swal.fire({
         icon:"error",
         text: `${e}`,
         className: "sweetBox"
+      }).then(()=>{
+        if (!has_authenticated) {
+            window.open("/static/html_folder/log_in.html", "_parent");
+        }
       })
 })
     
@@ -679,7 +709,6 @@ function viewing(event){
 
 function ErrorImage(event){
     event.target.src = '/static/image/image_error.webp'
-    //this is our image which is shown when image is not found in the system
 }
 
 function closes(event){
@@ -689,13 +718,10 @@ function closes(event){
     removing();
 }
 
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
 function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
   
-  // Close the dropdown menu if the user clicks outside of it
   window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
       var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -717,19 +743,15 @@ function addition(event){
         count2 -= 1;
     }
     let parTag = event.target.parentNode.previousElementSibling
-    //parTag representing the current filter value
     parTag.textContent = `sort by: ${event.target.textContent}`
         
     first_data = document.querySelector('.selections').value
     //first_data representing limit
     get_data(first_data,forBack,parTag.textContent)
 }
-//addition is running when we click oon filter the data
-//this function is special as it is filtering that data which is being shown by the page and limit
 inputting.forEach(e =>{
     e.addEventListener('input',inputValidating)
 })
 
 e.addEventListener('change',bringing)
 document.querySelector('.static_image').addEventListener('error',ErrorImage)
-    //The error event is triggered when there is an issue with loading the resource (e.g., an image fails to load)
