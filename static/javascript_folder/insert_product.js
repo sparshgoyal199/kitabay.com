@@ -12,11 +12,12 @@ let showData;
 let getData;
 let getRecords;
 let lock = false;
+let lock2 = false;
 let seacrhBarLength;
-
+let bookToId = new Map();
 let submits = document.querySelector(".submitss")
 let totalRecords = 0;
-
+let google_id;
 if (!navigator.onLine) {  
     alert('You are offline. Please check your internet connection.');
 }
@@ -102,16 +103,13 @@ function get_data(limit,page,filter){
           }
     }).
     then(res => {
-        if (!res.ok) {   
+        if (!res.ok) {      
             if (res.status == 401) {
-                has_authenticated = false
-                throw new Error("Please login")
-            }         
-            else{
+                has_authenticated = false    
+            }      
                 return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
             }) 
-            }
         }
         return res.json()}
 )
@@ -152,6 +150,8 @@ function loadingFilling(data,records,limit,page,search = 1){
         z = 1;
     }
     for (const i of data) {
+        console.log(i);
+        
         let row = document.createElement('tr')
         row.className = 'rows group'
         row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
@@ -185,7 +185,7 @@ function loadingFilling(data,records,limit,page,search = 1){
                     </td>`
         let d = row.children
         d[0].textContent = z;
-        d[1].textContent = i['product_id']
+        d[1].textContent = i['id']
         d[2].textContent = i['name']
         d[3].textContent = i['author']
         d[4].children[0].textContent = `₹${i['price']}`
@@ -242,6 +242,8 @@ function uploads(event){
     else{
         struct = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
         removeAtrributes(struct);     
+        document.getElementById('AuthIdentity').disabled = true
+        document.getElementById('BookNames').disabled = true
         f.addEventListener('click',editing)
     }
     setTimeout(()=>{
@@ -389,7 +391,10 @@ function removeAtrributes(struct){
 function deleting(event){
     event.preventDefault();
     let d = event.target.parentNode.parentNode.parentNode.parentNode.parentNode
+    console.log(d);
     let g = d.children[1].textContent
+    console.log(d.children[1]);
+    
     d.remove();
     let has_authenticated = true
     fetch(`${BASE_URL}/deleting/${g}`,{
@@ -401,9 +406,8 @@ function deleting(event){
     .then(res => {
         if (!res.ok) {
             if (res.status == 401) {
-                has_authenticated = false
-                throw new Error("Please login")
-            }   
+                has_authenticated = false    
+            } 
             return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
             })  
@@ -465,7 +469,8 @@ function editing(event){
     let form_data = document.querySelector('.product_info')
     let forms = new FormData()
     forms.append("time",dateTime)
-    forms.append('old',struct.querySelector('[name=products_id]').textContent)
+    forms.append('book_id',struct.querySelector('[name=products_id]').textContent)
+    console.log(struct.querySelector('[name=products_id]').textContent);
     for (const i of form_data) { 
         if(i.name == "image"){
             if(i.files[0]){
@@ -494,19 +499,18 @@ function editing(event){
         return;
     }
     let has_authenticated = true;
-    fetch(`${BASE_URL}/updating2${t}`,{
+    fetch(`${BASE_URL}/update2${t}`,{
         headers: {
             "Authorization":'Bearer ' + localStorage.getItem("token")
           },
         method:'PUT',
         body:forms
     })
-    .then(res => {
-        if (res.status == 401) {
-            has_authenticated = false
-            throw new Error("Please login")
-        }   
+    .then(res => { 
         if (!res.ok) {
+            if (res.status == 401) {
+                has_authenticated = false    
+            }
             return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
             }) 
@@ -520,6 +524,7 @@ function editing(event){
         location.reload()
     })
     .catch(e => {
+        removing()
         swal.fire({
             icon:"error",
             text: `${e}`,
@@ -562,8 +567,9 @@ function submittings(e){
             }
         }
     }
+    forms.append('google_id',google_id)
     let has_authenticated = true
-    fetch(`${BASE_URL}/uploading2`,{
+    fetch(`${BASE_URL}/upload`,{
         headers: {
             "Authorization":'Bearer ' + localStorage.getItem("token")
           },
@@ -573,9 +579,8 @@ function submittings(e){
     .then(res => {
         if (!res.ok) {
             if (res.status == 401) {
-                has_authenticated = false
-                throw new Error("Please login")
-            }  
+                has_authenticated = false    
+            }
             return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
             })  
@@ -588,6 +593,7 @@ function submittings(e){
         location.reload();
     })
     .catch(e => {
+        removing();
         swal.fire({
             icon:"error",
             text: `${e}`,
@@ -623,9 +629,8 @@ function searching(event){
         .then(res => {
             if (!res.ok) {
                 if (res.status == 401) {
-                    has_authenticated = false
-                    throw new Error("Please login")
-                } 
+                    has_authenticated = false    
+                }
                 return res.text().then(response => {
                     throw new Error(response.substring(11,response.length-2))
                 })
@@ -683,9 +688,8 @@ function viewing(event){
     then(res => {
         if (!res.ok) {
             if (res.status == 401) {
-                has_authenticated = false
-                throw new Error("Please login")
-            } 
+                has_authenticated = false    
+            }
             return res.text().then(response => {
                 throw new Error(response.substring(11,response.length-2))
             })   
@@ -746,12 +750,99 @@ function addition(event){
     parTag.textContent = `sort by: ${event.target.textContent}`
         
     first_data = document.querySelector('.selections').value
-    //first_data representing limit
     get_data(first_data,forBack,parTag.textContent)
+}
+
+function fillDataListOptions(data,dataList){
+    bookToId.clear();
+    data.items.forEach(function(x){
+        if(!bookToId.has(x.volumeInfo.title)){
+            let book_name = x.volumeInfo.title
+            let optTag = document.createElement('option')
+            optTag.textContent = book_name
+            optTag.value = book_name
+            dataList.append(optTag)
+            bookToId.set(book_name,x.id);
+        }
+    })
+}
+
+function detAuthor(){
+    document.getElementById('AuthIdentity').disabled = false
+    document.getElementById('AuthIdentity').value = ''
+    let kitab = document.getElementById('BookNames').value
+    if (kitab) {
+        fetch(`https://www.googleapis.com/books/v1/volumes/${bookToId.get(kitab)}`).
+    then(res => {
+        if (!res.ok) {
+            if (res.status == 503) {
+                throw new Error("Please choose valid book")
+            } 
+            return res.text().then(response => {
+                throw new Error(response.substring(11,response.length-2))
+            })   
+        }
+        return res.json()}
+        ).then(data => { 
+            google_id = data['id']
+             data['volumeInfo']['authors'].forEach(function(x){
+                if (document.getElementById('AuthIdentity').value) {
+                    document.getElementById('AuthIdentity').value = document.getElementById('AuthIdentity').value +','+x;
+                }
+                else {
+                    document.getElementById('AuthIdentity').value = x;
+                }
+             })
+             document.getElementById('AuthIdentity').disabled = true
+        }).catch(e => {
+            //removing();
+            swal.fire({
+                icon:"error",
+                text: `${e}`,
+                className: "sweetBox"
+              })
+        })
+    }
+}
+
+function fetchBookNames(event){
+    if (event.target.value.length >= 3){
+        let dataList = document.getElementById('brow')
+        let bookName = event.target.value;
+        if(!lock2){
+            fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${bookName}&fields=items(id,volumeInfo/title)&key=AIzaSyBcGAHv0T-1oGKmHlWKbGtZBbK2NSLVFkI`).
+        then(res => {
+            if (!res.ok) {
+                if (res.status == 401) {
+                    throw new Error("error status 401")
+                } 
+                return res.text().then(response => {
+                    throw new Error(response.substring(11,response.length-2))
+                })   
+            }
+            return res.json()}
+    ).then(data => { 
+        fillDataListOptions(data,dataList)
+    }).catch(e => {
+        //removing();
+        swal.fire({
+            icon:"error",
+            text: `${e}`,
+            className: "sweetBox"
+          })
+    })
+    lock2 = true;
+    setTimeout(()=>{
+        dataList.innerHTML = ''
+       lock2 = false;
+    },500)
+        }
+    }
 }
 inputting.forEach(e =>{
     e.addEventListener('input',inputValidating)
 })
+
 
 e.addEventListener('change',bringing)
 document.querySelector('.static_image').addEventListener('error',ErrorImage)

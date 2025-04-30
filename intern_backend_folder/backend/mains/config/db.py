@@ -15,6 +15,11 @@ engine = create_engine(connection_str)
 
 
 def create_table():
-    SQLModel.metadata.create_all(engine)
+    try:
+        SQLModel.metadata.create_all(engine)
+    except Exception as e:
+        print("An exception occurred")
+        print(e)
+        return None
 
 

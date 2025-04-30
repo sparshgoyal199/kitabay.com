@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, AutoString
+from sqlmodel import SQLModel, AutoString, Relationship
 from pydantic import StringConstraints, EmailStr, model_validator
 from sqlmodel import Field
 import requests
@@ -7,6 +7,11 @@ from fastapi import HTTPException, Path
 from sqlalchemy import LargeBinary, Column
 import phonenumbers
 
+
+GenericType = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True)
+]
 
 UsernameType = Annotated[
     str,
@@ -42,15 +47,37 @@ image_type = Annotated[
 ]
 
 
-class Signs(SQLModel):
-    User_id: int | None = Field(default=None, primary_key=True)
+class UserBookLinkValidate(SQLModel):
+    user_id: int | None = Field(default=None, foreign_key="users.id", primary_key=True)
+    book_id: int | None = Field(default=None, foreign_key="books.book_id", primary_key=True)
+    star: Annotated[float, Path(gt=0, le=5)]
+    price: Annotated[int, Path(gt=0)]
+    s_price: Annotated[int, Path(gt=0)]
+    quantity: Annotated[int, Path(gt=0)]
+    discount: Annotated[int, Path(gt=0)]
+    time: Annotated[time_type, Field()]
+    image: Annotated[image_type, Field()]
+
+    @model_validator(mode="after")
+    def validate_all_fields(self):
+        if self.s_price == self.price:
+            raise HTTPException(status_code=422, detail="Price and del price values cannot be same")
+        return self
+
+
+class UserBookLink(UserBookLinkValidate,table=True):
+    user: "Users" = Relationship(back_populates="book_links")
+    book: "Books" = Relationship(back_populates="user_links")
+
+
+class UserValidate(SQLModel):
+    id: int | None = Field(default=None, primary_key=True)
     Username: Annotated[UsernameType, Field(unique=True)]
     Email_Address: EmailStr = Field(unique=True, sa_type=AutoString)
     Password: Annotated[PasswordType, Field()]
     Confirm_password: Annotated[PasswordType, Field()]
     Code: Annotated[CodeType, Field(default='+91')]
     Mobile_no: Annotated[Mobile_no_type, Field(min_length=5, max_length=15, unique=True)]
-
     @model_validator(mode="after")
     def validate_all_fields(self):
         count = [0, 0, 0, 0]
@@ -106,8 +133,8 @@ class Signs(SQLModel):
         return self
 
 
-class Sign(Signs, table=True):
-    pass
+class Users(UserValidate, table=True):
+    book_links: list[UserBookLink] = Relationship(back_populates='user')
 
 
 class Login(SQLModel):
@@ -163,20 +190,8 @@ class Passwords(SQLModel):
         return self
 
 
-class ProductInfo(SQLModel, table=True):
-    product_id: int | None = Field(default=None, primary_key=True)
-    name: str
-    author: str
-    star: float
-    price: int
-    s_price: int
-    quantity: int
-    discount: int
-    image: bytes = Field(sa_column=Column(LargeBinary(length=(2 ** 32) - 1)))
-
-
-class ProductInfo2Validations(SQLModel):
-    product_id: int | None = Field(default=None, primary_key=True)
+class ProductValidate(SQLModel):
+    id: int | None = Field(default=None, primary_key=True)
     name: Annotated[name_type, Field()]
     author: Annotated[author_type, Field()]
     star: Annotated[float, Path(gt=0, le=5)]
@@ -194,5 +209,14 @@ class ProductInfo2Validations(SQLModel):
         return self
 
 
-class ProductInfo2(ProductInfo2Validations, table=True):
+class Products(ProductValidate, table=True):
     pass
+
+
+class Books(SQLModel,table=True):
+    book_id: int | None = Field(default=None, primary_key=True)
+    name: Annotated[name_type, Field()]
+    author: Annotated[author_type, Field()]
+    google_id: Annotated[GenericType, Field(unique=True)]
+
+    user_links: list[UserBookLink] = Relationship(back_populates='book')

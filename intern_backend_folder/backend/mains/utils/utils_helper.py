@@ -3,7 +3,7 @@ from typing import Optional
 import jwt
 import os
 from dotenv import load_dotenv
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 load_dotenv()
@@ -23,20 +23,32 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
+
+# def verify_token(token: str = Depends(Oauth2_scheme)):
+# #     try:
+# #         decoded_token = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+# #         if decoded_token:
+# #             return decoded_token
+# #         else:
+# #             raise (HTTPException(status_code=422, detail='Invalid token'))
+# #     except Exception as e:
+# #         print('An exception occurred')
+# #         print(e)
+# #         raise (HTTPException(status_code=422, detail=f'{e}'))
 
 def verify_token(token: str = Depends(Oauth2_scheme)):
     try:
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if decoded_token:
             return decoded_token
         else:
-            return None
+            raise HTTPException(status_code=422, detail='Invalid token')
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail='Token has expired')
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail='Invalid token')
     except Exception as e:
-        print('An exception occurred')
-        print(e)
-        return None
-
-
+        raise HTTPException(status_code=500, detail=f'Internal Server Error: {str(e)}')
 

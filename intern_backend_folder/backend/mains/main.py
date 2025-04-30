@@ -20,7 +20,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, Response
 from pathlib import Path
 from email.message import EmailMessage
-from .model.sign import Signs, Sign, Login, Forgot, Passwords, ProductInfo, ProductInfo2, ProductInfo2Validations
+from .model.db_models import UserValidate, Users, Login, Forgot, Passwords, Products, ProductValidate, Books, UserBookLink, UserBookLinkValidate
 from .config.db import create_table, engine, supabase, SUPABASE_URL
 from .utils.utils_helper import create_access_token, verify_token
 
@@ -36,7 +36,6 @@ app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 @app.get("/")
 def read_index():
-    # Access your HTML file
     with open(frontend_path / 'html_folder/sign.html', 'r') as file:
         #above is the absoulte path of that system
         html_content = file.read()
@@ -60,7 +59,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder({"detail": b}),
     )
-
 
 
 @app.exception_handler(IntegrityError)
@@ -87,34 +85,44 @@ def sendingOtp(email, signup_otp):
 
 
 @app.post('/posting')
-async def posting(signs: Signs):
-    validate = Sign.model_validate(signs)
-    validate.Password = pwd_context.hash(validate.Password)
-    validate.Confirm_password = validate.Password
-    signup_otp = ""
-    for i in range(6):
-        signup_otp += str(random.randint(0, 9))
-    sendingOtp(validate.Email_Address, signup_otp)
-    return [validate, signup_otp]
+async def posting(user: UserValidate):
+    try:
+        validate = Users.model_validate(user)
+        validate.Password = pwd_context.hash(validate.Password)
+        validate.Confirm_password = validate.Password
+        signup_otp = ""
+        for i in range(6):
+            signup_otp += str(random.randint(0, 9))
+        sendingOtp(validate.Email_Address, signup_otp)
+        return [validate, signup_otp]
+    except Exception as e:
+        print("An exception occurred")
+        print(e)
+        raise (HTTPException(status_code=422, detail=f'{e}'))
+
 
 
 @app.post('/postingData')
-def postingData(validate: Sign):
-    with Session(engine) as session:
-        session.add(validate)
-        session.commit()
-        session.refresh(validate)
-    return 'sign up successfully'
-
+def postingData(validate: Users):
+    try:
+        with Session(engine) as session:
+            session.add(validate)
+            session.commit()
+            session.refresh(validate)
+        return 'sign up successfully'
+    except Exception as e:
+        print("An exception occurred")
+        print(e)
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 @app.post('/logging')
 def logging(login: Login):
     try:
         with Session(engine) as session:
-            data = session.exec(select(Sign).where(Sign.Email_Address == login.Email_Address)).first()
+            data = session.exec(select(Users).where(Users.Email_Address == login.Email_Address)).first()
             if data:
                 if pwd_context.verify(login.Password, data.Password):
-                    token = create_access_token(data={"User_id": data.User_id})
+                    token = create_access_token(data={"id": data.id})
                     return token
                 else:
                     raise (HTTPException(status_code=422,
@@ -124,41 +132,52 @@ def logging(login: Login):
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
 @app.post('/forgot')
 def forgot(forgots: Forgot):
-    forgot_otp = ""
-    for i in range(6):
-        forgot_otp += str(random.randint(0, 9))
-    sendingOtp(forgots.Email_Address, forgot_otp)
-    return forgot_otp
+    try:
+        forgot_otp = ""
+        for i in range(6):
+            forgot_otp += str(random.randint(0, 9))
+        sendingOtp(forgots.Email_Address, forgot_otp)
+        return forgot_otp
+    except Exception as e:
+        print("An exception occurred")
+        print(e)
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
 @app.put('/C_password')
 def C_password(passwords: Passwords):
-    with Session(engine) as session:
-        data = session.exec(select(Sign).where(Sign.Email_Address == passwords.Email_Address)).first()
-        if pwd_context.verify(passwords.Password, data.Password):
-            raise (HTTPException(status_code=422, detail='Please choose a different password'))
-        else:
-            passwords.Password = pwd_context.hash(passwords.Password)
-            passwords.Confirm_password = passwords.Password
-            password_data = passwords.model_dump(exclude_unset=True)
-            data.sqlmodel_update(password_data)
-            session.commit()
-            session.refresh(data)
-            return 'password has been change'
+    try:
+        with Session(engine) as session:
+            data = session.exec(select(Users).where(Users.Email_Address == passwords.Email_Address)).first()
+            if pwd_context.verify(passwords.Password, data.Password):
+                raise (HTTPException(status_code=422, detail='Please choose a different password'))
+            else:
+                passwords.Password = pwd_context.hash(passwords.Password)
+                passwords.Confirm_password = passwords.Password
+                password_data = passwords.model_dump(exclude_unset=True)
+                data.sqlmodel_update(password_data)
+                session.commit()
+                session.refresh(data)
+                return 'password has been change'
+    except Exception as e:
+        print("An exception occurred")
+        print(e)
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
-@app.post('/uploading2')
-async def uploading2(name: str = Form(...), author: str = Form(...), star: float = Form(...), price: int = Form(...),
-                     s_price: int = Form(...), quantity: int = Form(...), discount: int = Form(...),
-                     time: str = Form(...), image: UploadFile = Form(...), user=Depends(verify_token)):
+@app.post('/upload')
+async def upload(name: str = Form(...), author: str = Form(...), star: float = Form(...), price: int = Form(...),
+                 s_price: int = Form(...), quantity: int = Form(...), discount: int = Form(...),
+                 time: str = Form(...), image: UploadFile = Form(...), google_id: str = Form(), user=Depends(verify_token)):
     try:
         if not user:
-            raise HTTPException(status_code=422, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid token")
+        token_id = user.get('id')
         images = await image.read()
 
         filename = image.filename
@@ -171,45 +190,59 @@ async def uploading2(name: str = Form(...), author: str = Form(...), star: float
 
         # Get the public URL (if bucket is public)
         generated_name = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{token_name}"
-
-        products = ProductInfo2Validations(name=name, author=author, star=star, price=price, s_price=s_price,
-                                           quantity=quantity, discount=discount, time=time, image=generated_name)
-        validate = ProductInfo2.model_validate(products)
-        print(generated_name)
+        book = Books(name=name, author=author, google_id=google_id)
         with Session(engine) as session:
-            session.add(validate)
+            book_exist = session.exec(select(Books).where(Books.google_id == google_id)).first()
+            if not book_exist:
+                BookUserInstance = UserBookLink(user_id=token_id, book=book, star=star, price=price, s_price=s_price,
+                                                quantity=quantity, discount=discount, time=time, image=generated_name)
+            else:
+                BookUserInstance = UserBookLink(user_id=token_id, book_id=book_exist.book_id, star=star, price=price, s_price=s_price,
+                                                quantity=quantity, discount=discount, time=time, image=generated_name)
+            session.add(BookUserInstance)
             session.commit()
-            session.refresh(validate)
-            return [generated_name, validate.product_id]
+            session.refresh(BookUserInstance)
+        '''products = ProductValidate(name=name, author=author, star=star, price=price, s_price=s_price,
+                                    quantity=quantity, discount=discount, time=time, image=generated_name)
+        validate = Products.model_validate(products)
+        with Session(engine) as session:
+            login_user = session.exec(select(Users).where(Users.id == token_id)).first()
+            login_user.products.append(validate)
+            session.add(login_user)
+            session.commit()
+            session.refresh(login_user)
+            return [generated_name, validate.id]'''
 
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
+
 
 '''Get-Process | Where-Object { $_.ProcessName -eq "python" } | Stop-Process -Force
 '''
 '''for killing the background process'''
 
 
-@app.put('/updating20')
-async def updating2(old: int = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...),
-                    price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...),
-                    discount: str = Form(...), time: str = Form(...), user=Depends(verify_token)):
+@app.put('/update0')
+async def update0(book_id: int = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...),
+                  price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...),
+                  discount: str = Form(...), time: str = Form(...), user=Depends(verify_token)):
     try:
         if not user:
-            raise HTTPException(status_code=422, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid token")
+        token_id = user.get('id')
         with Session(engine) as session:
-            peices = session.exec(select(ProductInfo2).where(ProductInfo2.product_id == old)).first()
+            peices = session.exec(select(UserBookLink).where(UserBookLink.book_id == book_id) and UserBookLink.user_id == token_id).first()
             if not star:
                 star = peices.star
             if not quantity:
                 quantity = peices.quantity
-            products = ProductInfo2(product_id=peices.product_id, name=name, author=author, star=star, price=price,
-                                    s_price=s_price, quantity=quantity, discount=discount, time=time,
-                                    image=peices.image)
-            products = ProductInfo2.model_validate(products)
-            form_data = products.model_dump(exclude_unset=True)
+            edited_books = UserBookLinkValidate(book_id=peices.book_id, user_id=peices.id, name=name, author=author, star=star, price=price,
+                                s_price=s_price, quantity=quantity, discount=discount, time=time,
+                                image=peices.image)
+            edited_book = UserBookLink.model_validate(edited_books)
+            form_data = UserBookLink.model_dump(exclude_unset=True)
             peices.sqlmodel_update(form_data)
             session.commit()
             session.refresh(peices)
@@ -217,17 +250,17 @@ async def updating2(old: int = Form(...), name: str = Form(...), author: str = F
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
-
-@app.put('/updating21')
-async def updating2(old: int = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...),
-                    price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...),
-                    discount: str = Form(...), image: UploadFile = Form(...), time: str = Form(...), user=Depends(verify_token)):
+@app.put('/update1')
+async def update1(old: int = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...),
+                  price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...),
+                  discount: str = Form(...), image: UploadFile = Form(...), time: str = Form(...),
+                  user=Depends(verify_token)):
     try:
         if not user:
-            raise HTTPException(status_code=422, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid token")
         with Session(engine) as session:
             if image:
                 images = await image.read()
@@ -242,15 +275,15 @@ async def updating2(old: int = Form(...), name: str = Form(...), author: str = F
 
             # Get the public URL (if bucket is public)
             generated_name = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{token_name}"
-            peices = session.exec(select(ProductInfo2).where(ProductInfo2.product_id == old)).first()
+            peices = session.exec(select(Products).where(Products.id == old)).first()
             if not star:
                 star = peices.star
             if not quantity:
                 quantity = peices.quantity
-            products = ProductInfo2Validations(product_id=peices.product_id, name=name, author=author, star=star,
-                                               price=price, s_price=s_price, quantity=quantity, discount=discount,
-                                               image=generated_name, time=time)
-            products = ProductInfo2.model_validate(products)
+            products = ProductValidate(id=peices.id, name=name, author=author, star=star,
+                                        price=price, s_price=s_price, quantity=quantity, discount=discount,
+                                        image=generated_name, time=time)
+            products = Products.model_validate(products)
             form_data = products.model_dump(exclude_unset=True)
             peices.sqlmodel_update(form_data)
             session.commit()
@@ -259,74 +292,87 @@ async def updating2(old: int = Form(...), name: str = Form(...), author: str = F
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
-@app.delete('/deleting/{product_id}')
-def deleting(product_id: str, user=Depends(verify_token)):
+@app.delete('/deleting/{id}')
+def deleting(id: str, user=Depends(verify_token)):
     try:
         if not user:
-            raise HTTPException(status_code=422, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid token")
         with Session(engine) as session:
-            peices = session.exec(select(ProductInfo2).where(ProductInfo2.product_id == product_id)).first()
+            peices = session.exec(select(Products).where(Products.id == id)).first()
             session.delete(peices)
             session.commit()
             return "delete successfully"
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
+
 
 @app.get('/table_data/{limits}/{skip}/{filters}')
 def table_data(limits: int, skip: int, filters: str, user=Depends(verify_token)):
     try:
         if not user:
-            raise HTTPException(status_code=422, detail="Invalid token")
-        a = []
+            raise HTTPException(status_code=401, detail="Invalid token")
+        token_id = user.get('id')
+        total_books = []
         v = 0
         skip = (skip - 1) * limits
+        count = 0
         with Session(engine) as session:
-            if filters == "sort by":
-                v = session.exec(select(ProductInfo2).offset(skip).limit(limits)).all()
+            user = session.exec(select(Users).where(Users.id == token_id)).first()
+            specified_userBooks = user.book_links
+            for each_record in specified_userBooks:
+                count += 1
+                each_book = session.exec(select(Books).where(Books.book_id == each_record.book_id)).first()
+                b = {"id": each_record.book_id, "name": each_book.name, "author": each_book.author, "price": each_record.price,
+                     "s_price": each_record.s_price,
+                     "star": each_record.star, "quantity": each_record.quantity, "discount": each_record.discount, "time": each_record.time, "image": each_record.image}
+                total_books.append(b)
+            return [total_books, count]
+            '''if filters == "sort by":
+                v = session.exec(select(Products).offset(skip).limit(limits)).all()
             elif filters == "sort by: Featured":
-                v = session.exec(select(ProductInfo2).offset(skip).limit(limits)).all()
+                v = session.exec(select(Products).offset(skip).limit(limits)).all()
             elif filters == "sort by: Prices: Low to High":
-                v = session.exec(select(ProductInfo2).offset(skip).limit(limits).order_by(ProductInfo2.price)).all()
+                v = session.exec(select(Products).offset(skip).limit(limits).order_by(Products.price)).all()
             elif filters == "sort by: Prices: High to Low":
                 v = session.exec(
-                    select(ProductInfo2).offset(skip).limit(limits).order_by(desc(ProductInfo2.price))).all()
+                    select(Products).offset(skip).limit(limits).order_by(desc(Products.price))).all()
             elif filters == "sort by: Ratings":
                 v = session.exec(
-                    select(ProductInfo2).offset(skip).limit(limits).order_by(desc(ProductInfo2.star))).all()
+                    select(Products).offset(skip).limit(limits).order_by(desc(Products.star))).all()
             else:
                 v = session.exec(
-                    select(ProductInfo2).offset(skip).limit(limits).order_by(desc(ProductInfo2.quantity))).all()
+                    select(Products).offset(skip).limit(limits).order_by(desc(Products.quantity))).all()
 
-            y = session.exec(select(func.count(ProductInfo2.product_id))).one()
+            y = session.exec(select(func.count(Products.id))).one()
             for i in v:
-                b = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price,
+                b = {"id": i.id, "name": i.name, "author": i.author, "price": i.price,
                      "s_price": i.s_price,
                      "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
                 a.append(b)
-        return [a, y]
+        return [a, y]'''
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
 @app.get('/searching/{keyword}')
 def searching(keyword: str, user=Depends(verify_token)):
     try:
         if not user:
-            raise HTTPException(status_code=422, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid token")
         k = []
         with Session(engine) as session:
-            filters1 = session.exec(select(ProductInfo2).where(
-                ProductInfo2.author.like('%' + keyword + '%') | ProductInfo2.name.like('%' + keyword + '%'))).all()
+            filters1 = session.exec(select(Products).where(
+                Products.author.like('%' + keyword + '%') | Products.name.like('%' + keyword + '%'))).all()
 
             for i in filters1:
-                bb = {"product_id": i.product_id, "name": i.name, "author": i.author, "price": i.price,
+                bb = {"id": i.id, "name": i.name, "author": i.author, "price": i.price,
                       "s_price": i.s_price,
                       "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
                 if bb not in k:
@@ -335,21 +381,21 @@ def searching(keyword: str, user=Depends(verify_token)):
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
-@app.get('/gettingImage/{product_id}')
-def gettingImage(product_id: int, user=Depends(verify_token)):
+@app.get('/gettingImage/{id}')
+def gettingImage(id: int, user=Depends(verify_token)):
     try:
         if not user:
-            raise HTTPException(status_code=422, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid token")
         with Session(engine) as session:
-            image = session.exec(select(ProductInfo2.image).where(ProductInfo2.product_id == product_id)).first()
+            image = session.exec(select(Products.image).where(Products.id == id)).first()
             return image
     except Exception as e:
         print("An exception occurred")
         print(e)
-        return None
+        raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
 def start():

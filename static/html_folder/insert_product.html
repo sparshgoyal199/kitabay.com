@@ -76,7 +76,8 @@
               <div class="sames">
                <div>
                  <span class="redss">*</span>
-                 <input name="name" class="product_name adjust placeholder-gray-800" type="text" placeholder="Enter Product name,Volume and Edition" required>
+                 <input name="name" class="product_name adjust placeholder-gray-800" type="text" placeholder="Enter Product name,Volume and Edition" list="brow" oninput="fetchBookNames(event)" onchange="detAuthor()" id="BookNames" required>
+                 <datalist id="brow"></datalist>
                </div>
                <span class="fonts"></span>
               </div><!--end of div1-->
@@ -84,7 +85,7 @@
               <div class="sames">
                <div>
                  <span class="redss">*</span>
-                 <input name="author" type="text" class="author_names adjust placeholder-gray-800" placeholder="Enter Author Name" required>
+                 <input name="author" type="text" class="author_names adjust placeholder-gray-800" id="AuthIdentity" placeholder="Enter Author Name" required>
                </div>
                <span class="fonts"></span>
               </div><!--end of div2-->
