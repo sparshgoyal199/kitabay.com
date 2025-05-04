@@ -15,7 +15,7 @@
     background-color: white;
     border-radius: 2vh;
     position: absolute;
-    z-index: 9999;
+    z-index: 1;
     top: -600px;
     left: 470px;
     animation: smooth-appear 0.8s ease forwards;

@@ -60,8 +60,8 @@ class UserBookLinkValidate(SQLModel):
 
     @model_validator(mode="after")
     def validate_all_fields(self):
-        if self.s_price == self.price:
-            raise HTTPException(status_code=422, detail="Price and del price values cannot be same")
+        if self.s_price < self.price:
+            raise HTTPException(status_code=422, detail="list price should be greater than sale price")
         return self
 
 

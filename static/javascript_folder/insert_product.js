@@ -5,7 +5,7 @@ let e = document.querySelector('.selections')
 let forBack = 1
 let first_data = document.querySelector('.selections').value
 let checks = 0
-let valid = 1
+let valid = 0
 let inputting = document.querySelectorAll(".adjust")
 let complete = false;
 let showData;
@@ -115,6 +115,7 @@ function get_data(limit,page,filter){
 )
     .then(data =>{
         getData = data[0]
+        console.log(getData);
         getRecords = data[1]
         loadingFilling(data[0],data[1],limit,page)      
         totalRecords = data[1];
@@ -149,9 +150,7 @@ function loadingFilling(data,records,limit,page,search = 1){
     else{
         z = 1;
     }
-    for (const i of data) {
-        console.log(i);
-        
+    for (const i of data) {      
         let row = document.createElement('tr')
         row.className = 'rows group'
         row.innerHTML = `<th class="text-[2.4vh]" scope="row" name="id"></th>
@@ -204,7 +203,7 @@ window.onload = ()=>{
 }
 
 function hiding(e){
-    if(e.target.className != 'info_extract' && !document.querySelector('.info_extract').contains(e.target)){
+    if(e.target.className != 'info_extract' && !document.querySelector('.info_extract').contains(e.target) && e.target.className != 'swal2-confirm swal2-styled'){
         removing()
         document.querySelector('.body').removeEventListener('click',hiding)
     }
@@ -213,7 +212,8 @@ function hiding(e){
 function setNull(){
     let form_arr = document.querySelector('.product_info')
     for (const element of form_arr) {
-        if (element.className != 'submitss') {
+        if (element.className != 'submitss' && element.className != 'product_image') {
+            element.parentNode.nextElementSibling.textContent = '';
             element.value = '';
         }
     }
@@ -244,10 +244,12 @@ function uploads(event){
         removeAtrributes(struct);     
         document.getElementById('AuthIdentity').disabled = true
         document.getElementById('BookNames').disabled = true
+        valid = 1
         f.addEventListener('click',editing)
     }
     setTimeout(()=>{
-        document.querySelector('.body').addEventListener('click',hiding);
+        document.querySelector('.body').addEventListener('click',hiding)
+        //**if i dont write in the set-timeout then it is mysterious that hiding function will automatically */
     },1)
 }
 
@@ -416,7 +418,15 @@ function deleting(event){
     }
 )
     .then(data =>{
-        location.reload();
+        swal.fire({
+            icon:"success",
+            text: 'row deleted successfully',
+            className: "sweetBox"
+        }).then(
+            ()=>{
+                location.reload()
+            }
+        )
     })
     .catch(e => {
         swal.fire({
@@ -470,7 +480,6 @@ function editing(event){
     let forms = new FormData()
     forms.append("time",dateTime)
     forms.append('book_id',struct.querySelector('[name=products_id]').textContent)
-    console.log(struct.querySelector('[name=products_id]').textContent);
     for (const i of form_data) { 
         if(i.name == "image"){
             if(i.files[0]){
@@ -487,7 +496,6 @@ function editing(event){
             forms.append(`${i.name}`,i.value)  
         }
         if (valid == 0) {
-            valid = 1;
             check_errors = {}
             checks = 0;
             return ;
@@ -499,7 +507,7 @@ function editing(event){
         return;
     }
     let has_authenticated = true;
-    fetch(`${BASE_URL}/update2${t}`,{
+    fetch(`${BASE_URL}/update${t}`,{
         headers: {
             "Authorization":'Bearer ' + localStorage.getItem("token")
           },
@@ -521,7 +529,16 @@ function editing(event){
         f.removeEventListener('click',editing)
         removing();
         t = 0
-        location.reload()
+        //location.reload()
+        swal.fire({
+            icon:"success",
+            text: 'row updated successfully',
+            className: "sweetBox"
+        }).then(
+            ()=>{
+                location.reload()
+            }
+        )
     })
     .catch(e => {
         removing()
@@ -560,7 +577,6 @@ function submittings(e){
                 forms.append(`${i.name}`,i.value)  
             }
             if (valid == 0) {
-                valid = 1;
                 check_errors = {}
                 checks = 0;
                 return ;
@@ -593,7 +609,7 @@ function submittings(e){
         location.reload();
     })
     .catch(e => {
-        removing();
+        removing()
         swal.fire({
             icon:"error",
             text: `${e}`,
@@ -678,6 +694,7 @@ function viewing(event){
     document.querySelector('.inp').disabled = true
     document.querySelector('.closed').classList.remove('invisible')
     let i = event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.textContent
+    console.log(i);
     
     let has_authenticated = true;
     fetch(`${BASE_URL}/gettingImage/${i}`,{
@@ -696,6 +713,7 @@ function viewing(event){
         }
         return res.json()}
 ).then(data => { 
+    console.log(data);
     document.querySelector('.static_image').src = `${data}`
 }).catch(e => {
     swal.fire({
@@ -726,17 +744,18 @@ function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
   
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
+window.onclick = function(event) {
+    //document.querySelector('.body').addEventListener('click',hiding)
+  if (!event.target.matches('.dropbtn')) {  
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
       }
     }
+  }
 }
 
 function addition(event){
@@ -785,6 +804,9 @@ function detAuthor(){
         return res.json()}
         ).then(data => { 
             google_id = data['id']
+            if(!data['volumeInfo']['authors']){
+                throw new Error("Please choose valid book")
+            }
              data['volumeInfo']['authors'].forEach(function(x){
                 if (document.getElementById('AuthIdentity').value) {
                     document.getElementById('AuthIdentity').value = document.getElementById('AuthIdentity').value +','+x;
@@ -794,8 +816,10 @@ function detAuthor(){
                 }
              })
              document.getElementById('AuthIdentity').disabled = true
+             document.getElementById('BookNames').parentNode.nextElementSibling.textContent = ''
+             valid = 1;
         }).catch(e => {
-            //removing();
+            document.getElementById('BookNames').parentNode.nextElementSibling.textContent = 'Please enter valid book'
             swal.fire({
                 icon:"error",
                 text: `${e}`,

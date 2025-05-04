@@ -233,19 +233,19 @@ async def update0(book_id: int = Form(...), name: str = Form(...), author: str =
             raise HTTPException(status_code=401, detail="Invalid token")
         token_id = user.get('id')
         with Session(engine) as session:
-            peices = session.exec(select(UserBookLink).where(UserBookLink.book_id == book_id) and UserBookLink.user_id == token_id).first()
+            existing_book = session.exec(select(UserBookLink).where(UserBookLink.book_id == book_id and UserBookLink.user_id == token_id)).first()
             if not star:
-                star = peices.star
+                star = existing_book.star
             if not quantity:
-                quantity = peices.quantity
-            edited_books = UserBookLinkValidate(book_id=peices.book_id, user_id=peices.id, name=name, author=author, star=star, price=price,
+                quantity = existing_book.quantity
+            edited_book = UserBookLinkValidate(book_id=existing_book.book_id, user_id=existing_book.user_id, name=name, author=author, star=star, price=price,
                                 s_price=s_price, quantity=quantity, discount=discount, time=time,
-                                image=peices.image)
-            edited_book = UserBookLink.model_validate(edited_books)
-            form_data = UserBookLink.model_dump(exclude_unset=True)
-            peices.sqlmodel_update(form_data)
+                                image=existing_book.image)
+            edited_book = UserBookLink.model_validate(edited_book)
+            form_data = UserBookLink.model_dump(exclude_unset=True, self=edited_book)
+            existing_book.sqlmodel_update(form_data)
             session.commit()
-            session.refresh(peices)
+            session.refresh(existing_book)
             return "no editing in image"
     except Exception as e:
         print("An exception occurred")
@@ -254,40 +254,42 @@ async def update0(book_id: int = Form(...), name: str = Form(...), author: str =
 
 
 @app.put('/update1')
-async def update1(old: int = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...),
+async def update1(book_id: int = Form(...), name: str = Form(...), author: str = Form(...), star: str = Form(...),
                   price: str = Form(...), s_price: str = Form(...), quantity: str = Form(...),
                   discount: str = Form(...), image: UploadFile = Form(...), time: str = Form(...),
                   user=Depends(verify_token)):
+    global images
     try:
         if not user:
             raise HTTPException(status_code=401, detail="Invalid token")
+        token_id = user.get('id')
+        if image:
+            images = await image.read()
+        filename = image.filename
+        extension = filename.split(".")[1]
+        if extension not in ["png", "jpeg", "jpg"]:
+            raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
         with Session(engine) as session:
-            if image:
-                images = await image.read()
-            filename = image.filename
-            extension = filename.split(".")[1]
-            if extension not in ["png", "jpeg", "jpg"]:
-                raise (HTTPException(status_code=423, detail='Please choose png,jpg or jpeg image format'))
-
-            token_name = secrets.token_hex(10) + "." + extension
-            response = supabase.storage.from_(BUCKET_NAME).upload(token_name, images,
-                                                                  file_options={"content-type": image.content_type})
+            existing_book = session.exec(select(UserBookLink).where(
+                UserBookLink.book_id == book_id and UserBookLink.user_id == token_id)).first()
+            generated_name = existing_book.image[86:]
+            response = supabase.storage.from_(BUCKET_NAME).upload(generated_name, images,
+                                                                  file_options={"content-type": image.content_type, "upsert": "true"})
 
             # Get the public URL (if bucket is public)
-            generated_name = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{token_name}"
-            peices = session.exec(select(Products).where(Products.id == old)).first()
             if not star:
-                star = peices.star
+                star = existing_book.star
             if not quantity:
-                quantity = peices.quantity
-            products = ProductValidate(id=peices.id, name=name, author=author, star=star,
-                                        price=price, s_price=s_price, quantity=quantity, discount=discount,
-                                        image=generated_name, time=time)
-            products = Products.model_validate(products)
-            form_data = products.model_dump(exclude_unset=True)
-            peices.sqlmodel_update(form_data)
+                quantity = existing_book.quantity
+            edited_books = UserBookLinkValidate(book_id=existing_book.book_id, user_id=existing_book.user_id, name=name,
+                                                author=author, star=star, price=price,
+                                                s_price=s_price, quantity=quantity, discount=discount, time=time,
+                                                image=existing_book.image)
+            edited_book = UserBookLink.model_validate(edited_books)
+            form_data = UserBookLink.model_dump(exclude_unset=True, self=edited_book)
+            existing_book.sqlmodel_update(form_data)
             session.commit()
-            session.refresh(peices)
+            session.refresh(existing_book)
             return generated_name
     except Exception as e:
         print("An exception occurred")
@@ -295,14 +297,16 @@ async def update1(old: int = Form(...), name: str = Form(...), author: str = For
         raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
-@app.delete('/deleting/{id}')
-def deleting(id: str, user=Depends(verify_token)):
+@app.delete('/deleting/{book_id}')
+def deleting(book_id: str, user=Depends(verify_token)):
     try:
         if not user:
             raise HTTPException(status_code=401, detail="Invalid token")
+        token_id = user.get('id')
         with Session(engine) as session:
-            peices = session.exec(select(Products).where(Products.id == id)).first()
-            session.delete(peices)
+            delete_to_delete = session.exec(select(UserBookLink).where(
+                UserBookLink.book_id == book_id and UserBookLink.user_id == token_id)).first()
+            session.delete(delete_to_delete)
             session.commit()
             return "delete successfully"
     except Exception as e:
@@ -321,9 +325,30 @@ def table_data(limits: int, skip: int, filters: str, user=Depends(verify_token))
         v = 0
         skip = (skip - 1) * limits
         count = 0
+        specified_userBooks = ''
         with Session(engine) as session:
-            user = session.exec(select(Users).where(Users.id == token_id)).first()
-            specified_userBooks = user.book_links
+            if filters == "sort by":
+                specified_userBooks = session.exec(select(UserBookLink).where(UserBookLink.user_id == token_id).offset(skip).limit(limits)).all()
+            elif filters == "sort by: Featured":
+                specified_userBooks = session.exec(
+                    select(UserBookLink).where(UserBookLink.user_id == token_id).offset(skip).limit(limits)).all()
+            elif filters == "sort by: Prices: Low to High":
+                specified_userBooks = session.exec(
+                    select(UserBookLink).where(UserBookLink.user_id == token_id).order_by(UserBookLink.price).offset(skip).limit(limits)).all()
+            elif filters == "sort by: Prices: High to Low":
+                specified_userBooks = session.exec(
+                    select(UserBookLink).where(UserBookLink.user_id == token_id).order_by(UserBookLink.price.desc()).offset(
+                        skip).limit(limits)).all()
+            elif filters == "sort by: Ratings":
+                specified_userBooks = session.exec(
+                    select(UserBookLink).where(UserBookLink.user_id == token_id).order_by(
+                        UserBookLink.star.desc()).offset(
+                        skip).limit(limits)).all()
+            else:
+                specified_userBooks = session.exec(
+                    select(UserBookLink).where(UserBookLink.user_id == token_id).order_by(
+                        UserBookLink.quantity.desc()).offset(
+                        skip).limit(limits)).all()
             for each_record in specified_userBooks:
                 count += 1
                 each_book = session.exec(select(Books).where(Books.book_id == each_record.book_id)).first()
@@ -332,29 +357,6 @@ def table_data(limits: int, skip: int, filters: str, user=Depends(verify_token))
                      "star": each_record.star, "quantity": each_record.quantity, "discount": each_record.discount, "time": each_record.time, "image": each_record.image}
                 total_books.append(b)
             return [total_books, count]
-            '''if filters == "sort by":
-                v = session.exec(select(Products).offset(skip).limit(limits)).all()
-            elif filters == "sort by: Featured":
-                v = session.exec(select(Products).offset(skip).limit(limits)).all()
-            elif filters == "sort by: Prices: Low to High":
-                v = session.exec(select(Products).offset(skip).limit(limits).order_by(Products.price)).all()
-            elif filters == "sort by: Prices: High to Low":
-                v = session.exec(
-                    select(Products).offset(skip).limit(limits).order_by(desc(Products.price))).all()
-            elif filters == "sort by: Ratings":
-                v = session.exec(
-                    select(Products).offset(skip).limit(limits).order_by(desc(Products.star))).all()
-            else:
-                v = session.exec(
-                    select(Products).offset(skip).limit(limits).order_by(desc(Products.quantity))).all()
-
-            y = session.exec(select(func.count(Products.id))).one()
-            for i in v:
-                b = {"id": i.id, "name": i.name, "author": i.author, "price": i.price,
-                     "s_price": i.s_price,
-                     "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
-                a.append(b)
-        return [a, y]'''
     except Exception as e:
         print("An exception occurred")
         print(e)
@@ -366,17 +368,19 @@ def searching(keyword: str, user=Depends(verify_token)):
     try:
         if not user:
             raise HTTPException(status_code=401, detail="Invalid token")
+        token_id = user.get("id")
         k = []
         with Session(engine) as session:
-            filters1 = session.exec(select(Products).where(
-                Products.author.like('%' + keyword + '%') | Products.name.like('%' + keyword + '%'))).all()
-
-            for i in filters1:
-                bb = {"id": i.id, "name": i.name, "author": i.author, "price": i.price,
-                      "s_price": i.s_price,
-                      "star": i.star, "quantity": i.quantity, "discount": i.discount, "time": i.time, "image": i.image}
-                if bb not in k:
-                    k.append(bb)
+            filters2 = session.exec(select(Books).where(Books.author.ilike('%' + keyword + '%') | Books.name.ilike('%' + keyword + '%'))).all()
+            print(filters2)
+            filters1 = session.exec(select(Books, UserBookLink).join(UserBookLink).where(UserBookLink.user_id == token_id and UserBookLink.book_id == Books.book_id
+                )).all()
+            for book, usersbook in filters1:
+                bb = {"id": book.book_id, "name": book.name, "author": book.author, "price": usersbook.price,
+                      "s_price": usersbook.s_price,
+                      "star": usersbook.star, "quantity": usersbook.quantity, "discount": usersbook.discount,
+                      "time": usersbook.time, "image": usersbook.image}
+                k.append(bb)
             return k
     except Exception as e:
         print("An exception occurred")
@@ -384,13 +388,16 @@ def searching(keyword: str, user=Depends(verify_token)):
         raise (HTTPException(status_code=422, detail=f'{e}'))
 
 
-@app.get('/gettingImage/{id}')
-def gettingImage(id: int, user=Depends(verify_token)):
+@app.get('/gettingImage/{book_id}')
+def gettingImage(book_id: int, user=Depends(verify_token)):
     try:
         if not user:
             raise HTTPException(status_code=401, detail="Invalid token")
+        token_id = user.get('id')
         with Session(engine) as session:
-            image = session.exec(select(Products.image).where(Products.id == id)).first()
+            image = session.exec(select(UserBookLink.image).where(
+                UserBookLink.book_id == book_id and UserBookLink.user_id == token_id)).first()
+            print(image)
             return image
     except Exception as e:
         print("An exception occurred")
