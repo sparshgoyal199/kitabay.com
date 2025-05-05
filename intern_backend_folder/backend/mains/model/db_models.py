@@ -133,6 +133,11 @@ class UserValidate(SQLModel):
         return self
 
 
+'''we are joining Users and UserBookLink not via the third table but via foreign key which is defined on UserBookLink'''
+'''if we use relationship attribute then we need to specify in case of via third table joining'''
+'''relationship is established between Users and UserBookLink'''
+
+
 class Users(UserValidate, table=True):
     book_links: list[UserBookLink] = Relationship(back_populates='user')
 

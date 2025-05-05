@@ -605,8 +605,13 @@ function submittings(e){
     })
     .then(data =>{  
         f.removeEventListener('click',submittings)
-        alert('data added successfully')
-        location.reload();
+        swal.fire({
+            icon:"success",
+            text: `data added successfully`,
+            className: "sweetBox"
+          }).then(()=>{
+            location.reload();
+          })
     })
     .catch(e => {
         removing()
